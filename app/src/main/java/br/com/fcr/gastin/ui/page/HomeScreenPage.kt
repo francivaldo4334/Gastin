@@ -70,12 +70,12 @@ fun HomeScreenPage(navController: NavController,onMonthBefore:()->Unit,onMonthNe
                     }
                 },
                 listOptions = listOf(
-                    Pair("Adicionar categoria +",{}),
-                    Pair("Adicionar despesa +",{}),
-                    Pair("Adicionar receita +",{}),
-                    Pair("Remover categoria -",{}),
-                    Pair("Remover despesa -",{}),
-                    Pair("Remover receita +",{}),
+                    Pair("+Adicionar categoria",{}),
+                    Pair("+Adicionar despesa",{}),
+                    Pair("+Adicionar receita",{}),
+                    Pair("-Remover categoria",{}),
+                    Pair("-Remover despesa",{}),
+                    Pair("-Remover receita",{}),
                     Pair("Como funciona?",{}),
                 ),
                 enable = openDropDownTop,
@@ -111,8 +111,8 @@ fun HomeScreenPage(navController: NavController,onMonthBefore:()->Unit,onMonthNe
                     dropDownMoreOptions(
                         listOptions = listOf(
                             Pair("Ver categorias",{}),
-                            Pair("Adicionar categoria +",{}),
-                            Pair("Remover categoria -",{})
+                            Pair("+Adicionar categoria",{}),
+                            Pair("-Remover categoria",{})
                         ),
                         enable = openDropDownDashboard,
                         onDismiss = {

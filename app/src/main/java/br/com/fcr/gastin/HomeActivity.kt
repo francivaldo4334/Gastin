@@ -56,8 +56,6 @@ class HomeActivity : ComponentActivity() {
                     color = MaterialTheme.colors.background
                 ) {
                     val navController = rememberNavController()
-                    var openMoreOptionsDespesa by remember{ mutableStateOf(false) }
-                    var openMoreOptionsReceita by remember{ mutableStateOf(false) }
                     NavHost(modifier = Modifier.padding(top = statusBarHeigth),navController = navController, startDestination = Route.HOME){
                         composable(Route.HOME){
                             HomeScreenPage(navController,onMonthBefore = { /*TODO*/ }, onMonthNext = {/*TODO*/}){
@@ -70,16 +68,6 @@ class HomeActivity : ComponentActivity() {
                             ListValuesScreenPage(
                                 navController = navController,
                                 title = "Despesas",
-                                onMoreOptions = { openMoreOptionsDespesa = true },
-                                content = {
-                                    dropDownMoreOptions(listOptions = listOf(
-                                        Pair("Selecionar todos"){},
-                                        Pair("Excluir"){},
-                                        Pair("Editar"){},
-                                    ), enable = openMoreOptionsDespesa) {
-                                        openMoreOptionsDespesa = false
-                                    }
-                                },
                                 listItem = listOf(
                                     Tetra("descricao","01/02/2023",1000,0),
                                     Tetra("descricao","01/02/2023",1000,1),
@@ -93,16 +81,6 @@ class HomeActivity : ComponentActivity() {
                             ListValuesScreenPage(
                                 navController = navController,
                                 title = "Receitas",
-                                onMoreOptions = { openMoreOptionsDespesa = true },
-                                content = {
-                                    dropDownMoreOptions(listOptions = listOf(
-                                        Pair("Selecionar todos"){},
-                                        Pair("Excluir"){},
-                                        Pair("Editar"){},
-                                    ), enable = openMoreOptionsDespesa) {
-                                        openMoreOptionsDespesa = false
-                                    }
-                                },
                                 listItem = listOf(
                                     Tetra("descricao","01/02/2023",1000,0),
                                     Tetra("descricao","01/02/2023",1000,1),

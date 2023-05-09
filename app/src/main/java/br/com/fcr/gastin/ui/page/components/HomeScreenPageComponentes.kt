@@ -7,6 +7,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.sharp.Delete
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -61,13 +65,39 @@ fun dropDownMoreOptions(customItem:(@Composable ColumnScope.()->Unit)? = null, l
         if(customItem != null)
             customItem()
         listOptions.forEach {
-            Box(modifier = Modifier
+            Row(modifier = Modifier
                 .height(40.dp)
                 .fillMaxWidth()
-                .clickable { it.second;onDismiss() }
+                .clickable { it.second();onDismiss() }
                 .padding(horizontal = 16.dp),
-                contentAlignment = Alignment.CenterStart) {
-                Text(text = it.first, fontSize = 14.sp)
+                verticalAlignment = Alignment.CenterVertically) {
+                var text = it.first
+                if(it.first.first() == '+') {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_add),
+                        contentDescription = "",
+                        modifier = Modifier
+                            .size(16.dp)
+                            .clip(CircleShape)
+                            .background(Color.Red),
+                        tint = MaterialTheme.colors.background
+                    )
+                    text = text.removePrefix("+")
+                }
+                else if(it.first.first() == '-') {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_minus),
+                        contentDescription = "",
+                        modifier = Modifier
+                            .size(16.dp)
+                            .clip(CircleShape)
+                            .background(Color.Green),
+                        tint = MaterialTheme.colors.background
+                    )
+                    text = text.removePrefix("-")
+                }
+                Spacer(modifier = Modifier.width(12.dp))
+                Text(text = text, fontSize = 14.sp)
             }
         }
     }

@@ -4,10 +4,7 @@ import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -17,7 +14,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -27,39 +23,47 @@ import br.com.fcr.gastin.R
 import br.com.fcr.gastin.ui.page.components.dropDownMoreOptions
 import br.com.fcr.gastin.ui.utils.Tetra
 import br.com.fcr.gastin.ui.utils.toMonetaryString
-
+private var listIdCheckeds by mutableStateOf(listOf<Int>())
 @Composable
-fun ListValuesScreenPage(navController: NavController,title:String,onMoreOptions:()->Unit,content:@Composable ()->Unit,listItem:List<Tetra<String,String,Int,Int>>){
+fun ListValuesScreenPage(navController: NavController,title:String,listItem:List<Tetra<String,String,Int,Int>>){
     var showAllCheckBox by remember {mutableStateOf(false)}
-    var listIdCheckeds by remember { mutableStateOf(mutableListOf<Int>()) }
+    var openMoreOptions by remember{ mutableStateOf(false) }
     BackHandler {
-        if(showAllCheckBox)
+        if(showAllCheckBox) {
             showAllCheckBox = false
+            listIdCheckeds = emptyList()
+        }
         else
             navController.popBackStack()
     }
-    Column(
-        Modifier
-            .fillMaxSize()
-            .padding(16.dp)) {
+    Column(Modifier.fillMaxSize()){
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text(text = title, fontSize = 24.sp)
+            Text(text = title, fontSize = 24.sp, modifier = Modifier.padding(start = 16.dp, top = 16.dp))
             Column {
-                IconButton(onClick = onMoreOptions) {
+                IconButton(onClick = {openMoreOptions = true}) {
                     Icon(painter = painterResource(id = R.drawable.ic_more_options_chorts), contentDescription = "")
                 }
-                content()
+                dropDownMoreOptions(listOptions = listOf(
+                    Pair("Selecionar tudo"){
+                        showAllCheckBox = true
+                        listIdCheckeds = listItem.map { it.tetra }
+                    },
+                    Pair("-Excluir"){},
+                    Pair("+Adicionar"){},
+                    Pair("Editar"){},
+                ), enable = openMoreOptions) {
+                    openMoreOptions = false
+                }
             }
         }
         LazyColumn(modifier = Modifier
             .fillMaxWidth()
-            .padding(0.dp)
+            .padding(horizontal = 16.dp)
         ){
             item { 
                 Spacer(modifier = Modifier.height(32.dp))
             }
             items(listItem){(descricao,data,value,id)->
-                var check by remember{ mutableStateOf(false) }
                 Column {
                     Row(
                         modifier = Modifier
@@ -68,7 +72,6 @@ fun ListValuesScreenPage(navController: NavController,title:String,onMoreOptions
                                 detectTapGestures(
                                     onLongPress = {
                                         Log.d("TESTE", "OK")
-                                        check = true
                                         listIdCheckeds += id
                                         showAllCheckBox = listIdCheckeds.isNotEmpty()
                                     }
@@ -118,13 +121,12 @@ fun ListValuesScreenPage(navController: NavController,title:String,onMoreOptions
                             ) {
                                 Spacer(modifier = Modifier.width(16.dp))
                                 Checkbox(
-                                    checked = check,
+                                    checked = listIdCheckeds.any { it == id },
                                     onCheckedChange = {
-                                        check = it
-                                        if(check)
+                                        if(it)
                                             listIdCheckeds += id
                                         else
-                                            listIdCheckeds -=id
+                                            listIdCheckeds -= id
                                         Log.d("CHECK",listIdCheckeds.toString())
 
                                     }
@@ -144,8 +146,6 @@ fun ListValuesScreenPagePreview(){
     ListValuesScreenPage(
         navController = rememberNavController(),
         title = "Despesas",
-        onMoreOptions = { /*TODO*/ },
-        content = {},
         listItem = listOf(
             Tetra("descricao","01/02/2023",1000,0),
             Tetra("descricao","01/02/2023",1000,1),
