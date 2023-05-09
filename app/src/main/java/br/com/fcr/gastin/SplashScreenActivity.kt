@@ -9,6 +9,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
+import br.com.fcr.gastin.ui.common.Constants
 import br.com.fcr.gastin.ui.page.SplashScreenPage
 import br.com.fcr.gastin.ui.theme.GastinTheme
 import kotlinx.coroutines.Dispatchers
