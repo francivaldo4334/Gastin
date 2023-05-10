@@ -1,6 +1,5 @@
 package br.com.fcr.gastin.ui.page
 
-import android.content.Context.MODE_PRIVATE
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
@@ -8,13 +7,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import br.com.fcr.gastin.HomeActivity
 import br.com.fcr.gastin.ui.common.Constants
 import br.com.fcr.gastin.ui.utils.Route
 import br.com.fcr.gastin.ui.page.components.*
@@ -53,8 +50,8 @@ fun HomeScreenPage(navController: NavController,onMonthBefore:()->Unit,onMonthNe
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        top(onMonthBefore,onMonthNext, onOptions = {openDropDownTop = ! openDropDownTop}){
-            dropDownMoreOptions(
+        HomeScreentop(onMonthBefore,onMonthNext, onOptions = {openDropDownTop = ! openDropDownTop}){
+            DropDownMoreOptions(
                 customItem = {
                     Row(modifier = Modifier
                         .height(40.dp)
@@ -87,12 +84,12 @@ fun HomeScreenPage(navController: NavController,onMonthBefore:()->Unit,onMonthNe
             //Informacoes de topo
             item{
                 Spacer(modifier = Modifier.size(16.dp))
-                informes(100,50,50)
+                HomeScreenInformes(100,50,50)
                 Spacer(modifier = Modifier.size(32.dp))
             }
             //Visao geral de informacoes
             item {
-                visaoGeral(
+                HomeScreenVisaoGeral(
                     valorReceitas = 100,
                     valorDespesas = 100,
                     onReceitas = {
@@ -105,10 +102,10 @@ fun HomeScreenPage(navController: NavController,onMonthBefore:()->Unit,onMonthNe
             }
             //Dashboard
             item{
-                dashboard(categorias,{
+                HomeScreenDashboard(categorias,{
                     openDropDownDashboard = true
                 }){
-                    dropDownMoreOptions(
+                    DropDownMoreOptions(
                         listOptions = listOf(
                             Pair("Ver categorias",{}),
                             Pair("+Adicionar categoria",{}),
@@ -122,7 +119,7 @@ fun HomeScreenPage(navController: NavController,onMonthBefore:()->Unit,onMonthNe
             }
             //Evolucao de despesas
             item {
-                evolucaoDespesas(values,days,
+                HomeScreenEvolucaoDespesas(values,days,
                     onClick = {
                         openDropDownEvolucao = true
                     },
@@ -132,7 +129,7 @@ fun HomeScreenPage(navController: NavController,onMonthBefore:()->Unit,onMonthNe
                     onNext = {
 
                     }){
-                    dropDownMoreOptions(
+                    DropDownMoreOptions(
                         listOptions = listOf(
                             Pair("Visualiar por mes",{}),
                             Pair("Visualizar por quinzena",{}),
@@ -144,6 +141,14 @@ fun HomeScreenPage(navController: NavController,onMonthBefore:()->Unit,onMonthNe
                         })
                 }
             }
+        }
+    }
+    Box(modifier = Modifier.fillMaxSize()){
+        FloatingActionButton(
+            modifier = Modifier.align(Alignment.BottomEnd),
+            onClick = { /*TODO*/ }
+        ) {
+
         }
     }
 }

@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import br.com.fcr.gastin.R
-import br.com.fcr.gastin.ui.page.components.dropDownMoreOptions
+import br.com.fcr.gastin.ui.page.components.DropDownMoreOptions
 import br.com.fcr.gastin.ui.utils.Tetra
 import br.com.fcr.gastin.ui.utils.toMonetaryString
 private var listIdCheckeds by mutableStateOf(listOf<Int>())
@@ -43,7 +43,7 @@ fun ListValuesScreenPage(navController: NavController,title:String,listItem:List
                 IconButton(onClick = {openMoreOptions = true}) {
                     Icon(painter = painterResource(id = R.drawable.ic_more_options_chorts), contentDescription = "")
                 }
-                dropDownMoreOptions(listOptions = listOf(
+                DropDownMoreOptions(listOptions = listOf(
                     Pair("Selecionar tudo"){
                         showAllCheckBox = true
                         listIdCheckeds = listItem.map { it.tetra }
