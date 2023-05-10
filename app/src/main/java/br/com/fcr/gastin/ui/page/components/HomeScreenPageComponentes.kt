@@ -79,7 +79,7 @@ fun dropDownMoreOptions(customItem:(@Composable ColumnScope.()->Unit)? = null, l
                         modifier = Modifier
                             .size(16.dp)
                             .clip(CircleShape)
-                            .background(Color.Red),
+                            .background(Color.Green),
                         tint = MaterialTheme.colors.background
                     )
                     text = text.removePrefix("+")
@@ -91,7 +91,7 @@ fun dropDownMoreOptions(customItem:(@Composable ColumnScope.()->Unit)? = null, l
                         modifier = Modifier
                             .size(16.dp)
                             .clip(CircleShape)
-                            .background(Color.Green),
+                            .background(Color.Red),
                         tint = MaterialTheme.colors.background
                     )
                     text = text.removePrefix("-")
