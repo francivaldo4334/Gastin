@@ -10,6 +10,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -30,7 +31,7 @@ fun HomeScreenDashboard(categorias:List<Triple<String,Int, Color>>, onClickMore:
                 Modifier
                     .fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
             ){
-                Text(text = "Despesas", fontSize = 14.sp, modifier = Modifier.padding(top = 16.dp, start = 16.dp))
+                Text(text = stringResource(id = R.string.txt_despesas), fontSize = 14.sp, modifier = Modifier.padding(top = 16.dp, start = 16.dp))
                 Column(){
                     IconButton(
                         onClick = onClickMore

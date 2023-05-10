@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import br.com.fcr.gastin.R
@@ -27,7 +28,7 @@ fun HomeScreenEvolucaoDespesas(listValues:List<Int>, listDays:List<Pair<Int,Stri
     ) {
         Column {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text(text = "Evolucao das despesas", fontSize = 14.sp, modifier = Modifier.padding(top = 16.dp, start = 16.dp))
+                Text(text = stringResource(R.string.txt_evolucao_das_despesas), fontSize = 14.sp, modifier = Modifier.padding(top = 16.dp, start = 16.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     IconButton(onClick = onBefore) {
                         Icon(painter = painterResource(id = R.drawable.ic_left), contentDescription = "")

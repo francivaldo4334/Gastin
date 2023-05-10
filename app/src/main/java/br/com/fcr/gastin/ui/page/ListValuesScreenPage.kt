@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -48,13 +49,13 @@ fun ListValuesScreenPage(navController: NavController,title:String,listItem:List
                     Icon(painter = painterResource(id = R.drawable.ic_more_options_chorts), contentDescription = "")
                 }
                 DropDownMoreOptions(listOptions = listOf(
-                    Pair("Selecionar tudo"){
+                    Pair(stringResource(R.string.txt_selecionar_tudo)){
                         showAllCheckBox = true
                         listIdCheckeds = listItem.map { it.tetra }
                     },
-                    Pair("-Excluir"){},
-                    Pair("+Adicionar"){},
-                    Pair("Editar"){},
+                    Pair(stringResource(R.string.txt_excluir)){},
+                    Pair(stringResource(R.string.txt_adicionar)){},
+                    Pair(stringResource(R.string.txt_editar)){},
                 ), enable = openMoreOptions) {
                     openMoreOptions = false
                 }
@@ -78,7 +79,6 @@ fun ListValuesScreenPage(navController: NavController,title:String,listItem:List
                             .pointerInput(Unit) {
                                 detectTapGestures(
                                     onLongPress = {
-                                        Log.d("TESTE", "OK")
                                         listIdCheckeds += id
                                         showAllCheckBox = listIdCheckeds.isNotEmpty()
                                     }
@@ -115,16 +115,8 @@ fun ListValuesScreenPage(navController: NavController,title:String,listItem:List
                             Text(text = value.toMonetaryString(), fontSize = 12.sp)
                             AnimatedVisibility(
                                 visible = showAllCheckBox,
-                                enter = expandHorizontally(
-                                    animationSpec = tween(
-                                        durationMillis = 500
-                                    )
-                                ),
-                                exit = shrinkHorizontally(
-                                    animationSpec = tween(
-                                        durationMillis = 500
-                                    )
-                                )
+                                enter = expandHorizontally() + slideInHorizontally(),
+                                exit = shrinkHorizontally() + slideOutHorizontally()
                             ) {
                                 Spacer(modifier = Modifier.width(16.dp))
                                 Checkbox(
@@ -134,7 +126,6 @@ fun ListValuesScreenPage(navController: NavController,title:String,listItem:List
                                             listIdCheckeds += id
                                         else
                                             listIdCheckeds -= id
-                                        Log.d("CHECK",listIdCheckeds.toString())
 
                                     }
                                 )

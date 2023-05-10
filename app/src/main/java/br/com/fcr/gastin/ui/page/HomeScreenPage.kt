@@ -1,11 +1,9 @@
 package br.com.fcr.gastin.ui.page
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -13,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -22,13 +21,20 @@ import br.com.fcr.gastin.R
 import br.com.fcr.gastin.ui.common.Constants
 import br.com.fcr.gastin.ui.utils.Route
 import br.com.fcr.gastin.ui.page.components.*
+import br.com.fcr.gastin.ui.utils.Tetra
 
 @Composable
-fun HomeScreenPage(navController: NavController,onMonthBefore:()->Unit,onMonthNext:()->Unit,onSwitch:(Boolean)->Unit) {
+fun HomeScreenPage(
+    navController: NavController,
+    onMonthBefore:()->Unit,
+    onMonthNext:()->Unit,
+    onSwitchTheme:(Boolean)->Unit,
+    onNewRegister:(Tetra<Boolean,Int,String,Int>)->Unit
+) {
     var openDropDownTop by remember {mutableStateOf(false)}
     var openDropDownDashboard by remember {mutableStateOf(false)}
     var openDropDownEvolucao by remember {mutableStateOf(false)}
-    var openDropDownAddItem by remember { mutableStateOf(false) }
+    var openDropUpNewRegister by remember { mutableStateOf(false) }
     val categorias = listOf(
         Triple("tstee",1,Color(0xFF269FB9)),
         Triple("tstee",2,Color(0xFFA6ED0E)),
@@ -68,20 +74,20 @@ fun HomeScreenPage(navController: NavController,onMonthBefore:()->Unit,onMonthNe
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(text = "Modo escuro", fontSize = 14.sp)
+                        Text(text = stringResource(R.string.txt_modo_escuro), fontSize = 14.sp)
                         Switch(checked = Constants.IsDarkTheme, onCheckedChange = {
-                            onSwitch(it)
+                            onSwitchTheme(it)
                         })
                     }
                 },
                 listOptions = listOf(
-                    Pair("+Adicionar categoria",{}),
-                    Pair("+Adicionar despesa",{}),
-                    Pair("+Adicionar receita",{}),
-                    Pair("-Remover categoria",{}),
-                    Pair("-Remover despesa",{}),
-                    Pair("-Remover receita",{}),
-                    Pair("Como funciona?",{}),
+                    Pair(stringResource(R.string.txt_adicionar_categoria),{}),
+                    Pair(stringResource(R.string.txt_adicionar_despesa),{}),
+                    Pair(stringResource(R.string.txt_adicionar_receita),{}),
+                    Pair(stringResource(R.string.txt_remover_categoria),{}),
+                    Pair(stringResource(R.string.txt_remover_despesa),{}),
+                    Pair(stringResource(R.string.txt_remover_receita),{}),
+                    Pair(stringResource(R.string.txt_como_funciona),{}),
                 ),
                 enable = openDropDownTop,
                 onDismiss = {
@@ -115,9 +121,9 @@ fun HomeScreenPage(navController: NavController,onMonthBefore:()->Unit,onMonthNe
                 }){
                     DropDownMoreOptions(
                         listOptions = listOf(
-                            Pair("Ver categorias",{}),
-                            Pair("+Adicionar categoria",{}),
-                            Pair("-Remover categoria",{})
+                            Pair(stringResource(R.string.txt_ver_categorias),{}),
+                            Pair(stringResource(R.string.txt_adicionar_categoria),{}),
+                            Pair(stringResource(R.string.txt_remover_categoria),{})
                         ),
                         enable = openDropDownDashboard,
                         onDismiss = {
@@ -139,9 +145,9 @@ fun HomeScreenPage(navController: NavController,onMonthBefore:()->Unit,onMonthNe
                     }){
                     DropDownMoreOptions(
                         listOptions = listOf(
-                            Pair("Visualiar por mes",{}),
-                            Pair("Visualizar por quinzena",{}),
-                            Pair("Visualizar por semana",{})
+                            Pair(stringResource(R.string.txt_visualizar_por_mes),{}),
+                            Pair(stringResource(R.string.txt_visualizar_por_quinzena),{}),
+                            Pair(stringResource(R.string.txt_visualizar_por_semana),{})
                         ),
                         enable = openDropDownEvolucao,
                         onDismiss = {
@@ -165,20 +171,9 @@ fun HomeScreenPage(navController: NavController,onMonthBefore:()->Unit,onMonthNe
                 .clip(CircleShape),
             backgroundColor = MaterialTheme.colors.surface,
             onClick = {
-                openDropDownAddItem = true
+                openDropUpNewRegister = true
             }
         ) {
-            DropDownMoreOptions(
-                enable = openDropDownAddItem,
-                listOptions = listOf(
-                    Pair("+Adicionar categoria",{}),
-                    Pair("+Adicionar despesa",{}),
-                    Pair("+Adicionar receita",{}),
-                ),
-                onDismiss = {
-                    openDropDownAddItem = false
-                }
-            )
             Icon(
                 painter = painterResource(id = R.drawable.ic_add),
                 contentDescription = "",
@@ -188,9 +183,14 @@ fun HomeScreenPage(navController: NavController,onMonthBefore:()->Unit,onMonthNe
             )
         }
     }
+    DropUpNewRegister(
+        enable = openDropUpNewRegister,
+        onDismiss = {openDropUpNewRegister = false},
+        onActionsResult = onNewRegister
+    )
 }
 @Composable
 @Preview(showBackground = true)
 private fun HomeScreenPagePreview(){
-    HomeScreenPage(rememberNavController(),{},{}){}
+    HomeScreenPage(rememberNavController(),{},{},{},{})
 }

@@ -10,8 +10,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.*
+import br.com.fcr.gastin.R
 import br.com.fcr.gastin.ui.utils.toMonetaryString
 
 @Composable
@@ -41,9 +43,9 @@ fun HomeScreenVisaoGeral(valorReceitas:Int, valorDespesas:Int, onReceitas:()->Un
                 Text(
                     text =
                     if(isDespesas)
-                        "Despesas"
+                        stringResource(id = R.string.txt_despesas)
                     else
-                        "Receitas",
+                        stringResource(id = R.string.txt_receitas),
                     fontWeight = FontWeight.Light,
                     fontSize = 14.sp
                 )
@@ -61,7 +63,7 @@ fun HomeScreenVisaoGeral(valorReceitas:Int, valorDespesas:Int, onReceitas:()->Un
             .padding(horizontal = 16.dp)
             .padding(bottom = 16.dp)) {
         Column(Modifier.fillMaxWidth()) {
-            Text(text = "Visao geral", fontSize = 14.sp, modifier = Modifier
+            Text(text = stringResource(R.string.txt_visao_geral), fontSize = 14.sp, modifier = Modifier
                 .padding(horizontal = 16.dp)
                 .padding(top = 16.dp))
             Spacer(modifier = Modifier.size(16.dp))

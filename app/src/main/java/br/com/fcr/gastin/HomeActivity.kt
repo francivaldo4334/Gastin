@@ -26,7 +26,7 @@ class HomeActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         val sharedPreferences = getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE)
         val editor = sharedPreferences.edit()
-        Constants.IsDarkTheme = sharedPreferences.getBoolean("theme",false)
+        Constants.IsDarkTheme = sharedPreferences.getBoolean(Constants.IS_DARKTHEM,false)
         setContent {
             GastinTheme(Constants.IsDarkTheme) {//Gestao de gasto
                 // A surface container using the 'background' color from the theme
@@ -43,16 +43,24 @@ class HomeActivity : ComponentActivity() {
                     val navController = rememberNavController()
                     NavHost(modifier = Modifier.padding(top = statusBarHeigth),navController = navController, startDestination = Route.HOME){
                         composable(Route.HOME){
-                            HomeScreenPage(navController,onMonthBefore = { /*TODO*/ }, onMonthNext = {/*TODO*/}){
-                                editor.putBoolean("theme", it)
-                                editor.apply()
-                                Constants.IsDarkTheme = sharedPreferences.getBoolean("theme",false)
-                            }
+                            HomeScreenPage(
+                                navController = navController,
+                                onMonthBefore = { /*TODO*/ },
+                                onMonthNext = {/*TODO*/},
+                                onSwitchTheme = {
+                                    editor.putBoolean(Constants.IS_DARKTHEM, it)
+                                    editor.apply()
+                                    Constants.IsDarkTheme = sharedPreferences.getBoolean(Constants.IS_DARKTHEM,false)
+                                },
+                                onNewRegister = {
+
+                                }
+                            )
                         }
                         composable(Route.LISTA_DESPESAS){
                             ListValuesScreenPage(
                                 navController = navController,
-                                title = "Despesas",
+                                title = getString(R.string.txt_despesas),
                                 listItem = listOf(
                                     Tetra("descricao","01/02/2023",1000,0),
                                     Tetra("descricao","01/02/2023",1000,1),
@@ -65,7 +73,7 @@ class HomeActivity : ComponentActivity() {
                         composable(Route.LISTA_RESEITAS){
                             ListValuesScreenPage(
                                 navController = navController,
-                                title = "Receitas",
+                                title = getString(R.string.txt_receitas),
                                 listItem = listOf(
                                     Tetra("descricao","01/02/2023",1000,0),
                                     Tetra("descricao","01/02/2023",1000,1),
