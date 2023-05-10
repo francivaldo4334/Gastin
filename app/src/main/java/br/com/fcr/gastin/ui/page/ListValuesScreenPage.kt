@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -28,6 +29,9 @@ private var listIdCheckeds by mutableStateOf(listOf<Int>())
 fun ListValuesScreenPage(navController: NavController,title:String,listItem:List<Tetra<String,String,Int,Int>>){
     var showAllCheckBox by remember {mutableStateOf(false)}
     var openMoreOptions by remember{ mutableStateOf(false) }
+    if(listIdCheckeds.isEmpty()){
+        showAllCheckBox = false
+    }
     BackHandler {
         if(showAllCheckBox) {
             showAllCheckBox = false
@@ -68,6 +72,9 @@ fun ListValuesScreenPage(navController: NavController,title:String,listItem:List
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
+                            .clickable {
+
+                            }
                             .pointerInput(Unit) {
                                 detectTapGestures(
                                     onLongPress = {

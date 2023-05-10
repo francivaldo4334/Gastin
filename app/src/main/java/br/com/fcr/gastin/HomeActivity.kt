@@ -1,5 +1,6 @@
 package br.com.fcr.gastin
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -20,6 +21,7 @@ import br.com.fcr.gastin.ui.utils.Route
 import br.com.fcr.gastin.ui.utils.Tetra
 
 class HomeActivity : ComponentActivity() {
+    @SuppressLint("InternalInsetResource")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val sharedPreferences = getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE)
