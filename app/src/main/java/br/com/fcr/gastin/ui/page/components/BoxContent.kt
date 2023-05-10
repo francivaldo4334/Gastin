@@ -23,7 +23,7 @@ fun BoxContent(modifier: Modifier = Modifier.fillMaxSize(),enablePadding:Boolean
         )
         .background(MaterialTheme.colors.surface)
         .border(1.dp, MaterialTheme.colors.onBackground.copy(0.1f), RoundedCornerShape(16.dp))
-        .padding(if(enablePadding) 16.dp else 0.dp)
+        .padding(if (enablePadding) 16.dp else 0.dp)
     ){
         content()
     }

@@ -1,17 +1,24 @@
 package br.com.fcr.gastin.ui.page
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import br.com.fcr.gastin.R
 import br.com.fcr.gastin.ui.common.Constants
 import br.com.fcr.gastin.ui.utils.Route
 import br.com.fcr.gastin.ui.page.components.*
@@ -21,6 +28,7 @@ fun HomeScreenPage(navController: NavController,onMonthBefore:()->Unit,onMonthNe
     var openDropDownTop by remember {mutableStateOf(false)}
     var openDropDownDashboard by remember {mutableStateOf(false)}
     var openDropDownEvolucao by remember {mutableStateOf(false)}
+    var openDropDownAddItem by remember { mutableStateOf(false) }
     val categorias = listOf(
         Triple("tstee",1,Color(0xFF269FB9)),
         Triple("tstee",2,Color(0xFFA6ED0E)),
@@ -143,12 +151,41 @@ fun HomeScreenPage(navController: NavController,onMonthBefore:()->Unit,onMonthNe
             }
         }
     }
-    Box(modifier = Modifier.fillMaxSize()){
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .padding(16.dp)){
         FloatingActionButton(
-            modifier = Modifier.align(Alignment.BottomEnd),
-            onClick = { /*TODO*/ }
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .border(
+                    1.dp,
+                    MaterialTheme.colors.onBackground.copy(0.1f),
+                    CircleShape
+                )
+                .clip(CircleShape),
+            backgroundColor = MaterialTheme.colors.surface,
+            onClick = {
+                openDropDownAddItem = true
+            }
         ) {
-
+            DropDownMoreOptions(
+                enable = openDropDownAddItem,
+                listOptions = listOf(
+                    Pair("+Adicionar categoria",{}),
+                    Pair("+Adicionar despesa",{}),
+                    Pair("+Adicionar receita",{}),
+                ),
+                onDismiss = {
+                    openDropDownAddItem = false
+                }
+            )
+            Icon(
+                painter = painterResource(id = R.drawable.ic_add),
+                contentDescription = "",
+                modifier = Modifier
+                    .size(24.dp),
+                tint = MaterialTheme.colors.onBackground
+            )
         }
     }
 }
