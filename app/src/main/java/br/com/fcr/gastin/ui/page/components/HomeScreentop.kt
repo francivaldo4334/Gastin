@@ -15,7 +15,9 @@ fun HomeScreentop(onMonthBefore:()->Unit, onMonthNext:()->Unit, onOptions:()->Un
         Box(
             Modifier
                 .fillMaxWidth()
-                .height(56.dp), contentAlignment = Alignment.CenterEnd){
+                .height(56.dp),
+            contentAlignment = Alignment.CenterEnd
+        ){
             Row(modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),

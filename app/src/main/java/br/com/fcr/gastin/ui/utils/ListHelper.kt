@@ -21,10 +21,10 @@ fun <T> List<T>.partitionList(): List<List<T>> {
     return partitions
 }
 public data class Tetra<out A, out B, out C,out D>(
-    public val first: A,
-    public val second: B,
-    public val third: C,
-    public val tetra: D
+    public var first: @UnsafeVariance A,
+    public var second: @UnsafeVariance B,
+    public var third: @UnsafeVariance C,
+    public var tetra: @UnsafeVariance D
 ) : Serializable {
     public override fun toString(): String = "($first, $second, $third, $tetra)"
 }

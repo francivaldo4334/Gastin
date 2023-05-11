@@ -5,6 +5,7 @@ import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
@@ -13,6 +14,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -34,17 +37,27 @@ fun BoxDropUpContent (enable:Boolean, onDismiss:()->Unit,content:@Composable Box
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .clickable {
-                    onDismiss()
-                }
+                .clickable(false, onClick = {})
                 .background(Color.Black.copy(0.7f))
         )
     }
-    Box(
+    Column(
         modifier = Modifier
             .fillMaxSize(),
-        contentAlignment = Alignment.BottomCenter
+        verticalArrangement = Arrangement.Bottom
     ) {
+        if(enable) {
+            Box(modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+                .pointerInput(Unit) {
+                    detectTapGestures (
+                        onTap ={
+                            onDismiss()
+                        }
+                    )
+                })
+        }
         AnimatedVisibility(
             visible = enable,
             enter = slideInVertically { it },

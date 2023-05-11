@@ -42,8 +42,14 @@ fun ListValuesScreenPage(navController: NavController,title:String,listItem:List
             navController.popBackStack()
     }
     Column(Modifier.fillMaxSize()){
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text(text = title, fontSize = 24.sp, modifier = Modifier.padding(start = 16.dp, top = 16.dp))
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(text = title, fontSize = 24.sp, modifier = Modifier.padding(start = 16.dp))
             Column {
                 IconButton(onClick = {openMoreOptions = true}) {
                     Icon(painter = painterResource(id = R.drawable.ic_more_options_chorts), contentDescription = "")

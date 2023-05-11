@@ -23,4 +23,8 @@
     <string name="txt_excluir">-Excluir</string>
     <string name="txt_adicionar">+Adicionar</string>
     <string name="txt_editar">Editar</string>
+    <string name="txt_inserir_dados">Inserir dados</string>
+    <string name="txt_valor">Valor</string>
+    <string name="txt_descricao">Descricao</string>
+    <string name="txt_salvar">Salvar</string>
 </resources>

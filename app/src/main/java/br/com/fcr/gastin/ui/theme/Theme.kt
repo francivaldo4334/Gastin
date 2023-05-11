@@ -9,13 +9,13 @@ import androidx.compose.ui.graphics.Color
 import br.com.fcr.gastin.ui.common.Constants
 
 private val DarkColorPalette = darkColors(
-    primary = Purple200,
+    primary = primary_dark,
     primaryVariant = Purple700,
     secondary = Teal200
 )
 
 private val LightColorPalette = lightColors(
-    primary = Purple500,
+    primary = primary_light,
     primaryVariant = Purple700,
     secondary = Teal200,
     background = background,
