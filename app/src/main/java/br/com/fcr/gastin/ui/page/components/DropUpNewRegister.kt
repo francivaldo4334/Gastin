@@ -21,7 +21,6 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
@@ -32,7 +31,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import br.com.fcr.gastin.HomeActivity
 import br.com.fcr.gastin.R
 import br.com.fcr.gastin.ui.utils.MaskTransformation
 import br.com.fcr.gastin.ui.utils.Tetra
@@ -59,7 +57,16 @@ private fun Item(isDespesas:Boolean,onClick:()->Unit){
                         Color.Red.copy(0.5f)
                     else
                         Color.Green.copy(0.5f)
-                ))
+                ), contentAlignment = Alignment.Center){
+                Icon(
+                    painter = painterResource(id = if (isDespesas)
+                        R.drawable.ic_minus
+                    else
+                        R.drawable.ic_add),
+                    contentDescription = "",
+                    tint = MaterialTheme.colors.background
+                )
+            }
             Spacer(modifier = Modifier.size(16.dp))
             Text(
                 text =
@@ -67,7 +74,6 @@ private fun Item(isDespesas:Boolean,onClick:()->Unit){
                     stringResource(id = R.string.txt_despesas)
                 else
                     stringResource(id = R.string.txt_receitas),
-                fontWeight = FontWeight.Light,
                 fontSize = 14.sp
             )
         }
@@ -76,13 +82,7 @@ private fun Item(isDespesas:Boolean,onClick:()->Unit){
     }
 }
 @Composable
-fun DropUpNewRegister (enable:Boolean,onDismiss:()->Unit,onActionsResult:(Tetra<Boolean,Int,String,Int>)->Unit){
-    val configuration = LocalConfiguration.current
-    val orientationScreen = configuration.orientation
-    val SELECT_TYPE_REGISTER = "SELECT_TYPE_REGISTER"
-    val INSERT_VALUES_REGISTER = "INSERT_VALUES_REGISTER"
-    var ROUTE by remember{ mutableStateOf(SELECT_TYPE_REGISTER)}
-    var IsDespesa = true
+fun DropUpNewRegister (IsDespesa:Boolean,enable:Boolean, onDismiss:()->Unit, onActionsResult:(Tetra<Boolean,Int,String,Int>)->Unit){
     var Valor by remember{ mutableStateOf("") }
     var Descricao by remember{ mutableStateOf("") }
     var openDropDownCategoria by remember { mutableStateOf(false) }
@@ -96,194 +96,129 @@ fun DropUpNewRegister (enable:Boolean,onDismiss:()->Unit,onActionsResult:(Tetra<
     val focusDescricao = remember {FocusRequester()}
     val focusValue = remember{FocusRequester()}
     val focusManeger = LocalFocusManager.current
-    val _onDismiss = {
+    BackHandler(enabled = enable) {
         onDismiss()
-        IsDespesa = true
-        Valor = ""
-        Descricao = ""
-        ROUTE = SELECT_TYPE_REGISTER
     }
-    val context = LocalContext.current as HomeActivity
-    BackHandler() {
-        if(!enable)
-            context.finish()
-        else if(ROUTE != SELECT_TYPE_REGISTER){
-            ROUTE = SELECT_TYPE_REGISTER
-        }else
-            _onDismiss()
-    }
-    BoxDropUpContent(enable = enable, onDismiss = _onDismiss) {
+    BoxDropUpContent(enable = enable, onDismiss = onDismiss) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 16.dp)
         ) {
-            AnimatedVisibility(
-                visible = ROUTE == SELECT_TYPE_REGISTER,
+            LaunchedEffect(key1 = Unit, block = {
+                focusValue.requestFocus()
+            })
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
             ) {
-                Column(
-                    Modifier
-                        .fillMaxWidth()) {
-                    Text(
-                        text = stringResource(id = R.string.txt_adicionar),
-                        modifier = Modifier.padding(start = 16.dp)
-                    )
-                    Spacer(modifier = Modifier.height(32.dp))
-                    Box(
-                        modifier = Modifier,
-                        contentAlignment = Alignment.Center
-                    ){
-                        val nextScreen = {
-                            ROUTE = INSERT_VALUES_REGISTER
-                        }
-                        when(orientationScreen){
-                            Configuration.ORIENTATION_PORTRAIT->{
-                                Column {
-                                    Item(isDespesas = true) {
-                                        IsDespesa = true
-                                        nextScreen()
-                                    }
-                                    Item(isDespesas = false) {
-                                        IsDespesa = false
-                                        nextScreen()
-                                    }
-                                }
+                Text(
+                    text = stringResource(R.string.txt_inserir_dados),
+                    modifier = Modifier.padding(start = 16.dp)
+                )
+                Spacer(modifier = Modifier.height(32.dp))
+                OutlinedTextField(
+                    label = {
+                        Text(text = stringResource(R.string.txt_valor))
+                    },
+                    value = Valor,
+                    onValueChange = {
+                        Valor = Regex("[^0-9]").replace(it,"")
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .focusRequester(focusValue),
+                    shape = RoundedCornerShape(16.dp),
+                    keyboardActions = KeyboardActions(onNext = {focusDescricao.requestFocus()}),
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next,keyboardType = KeyboardType.Number),
+                    visualTransformation = if(Valor.isEmpty()) VisualTransformation.None else MaskTransformation()
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                OutlinedTextField(
+                    label = {
+                        Text(text = stringResource(R.string.txt_descricao))
+                    },
+                    value = Descricao,
+                    onValueChange = {
+                        Descricao = it
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .focusRequester(focusDescricao),
+                    keyboardActions = KeyboardActions(onDone = {focusManeger.clearFocus()}),
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    shape = RoundedCornerShape(16.dp)
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+                Column{
+                    var width by remember{ mutableStateOf(0) }
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp)
+                            .onGloballyPositioned {
+                                width = it.size.width
                             }
-                            Configuration.ORIENTATION_LANDSCAPE->{
-                                Row {
-                                    Item(isDespesas = true) {
-                                        IsDespesa = true
-                                        nextScreen()
-                                    }
-                                    Item(isDespesas = false) {
-                                        IsDespesa = false
-                                        nextScreen()
-                                    }
+                            .clip(RoundedCornerShape(16.dp))
+                            .clickable { openDropDownCategoria = true }
+                            .border(4.dp, Color(Categoria.third), RoundedCornerShape(16.dp))
+                    ) {
+                        Text(
+                            text = Categoria.second,
+                            fontSize = 14.sp,
+                            modifier = Modifier.padding(start = 32.dp)
+                        )
+                        Icon(
+                            painter = painterResource(
+                                id = if(openDropDownCategoria)
+                                    R.drawable.ic_arrow_up
+                                else
+                                    R.drawable.ic_arrow_down
+                            ),
+                            contentDescription = "",
+                            modifier = Modifier.padding(end = 16.dp)
+                        )
+                    }
+                    DropdownMenu(
+                        expanded = openDropDownCategoria,
+                        onDismissRequest = { openDropDownCategoria = false },
+                        modifier = Modifier
+                            .width(
+                                with(Density){
+                                    width.toDp()
                                 }
+                            )
+                    ) {
+                        Categorias.forEach {
+                            Row(
+                                modifier = Modifier
+                                    .clickable {
+                                        Categoria = it
+                                        openDropDownCategoria = false
+                                    }
+                                    .padding(16.dp)
+                                    .fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(text = it.second)
+                                Box(modifier = Modifier
+                                    .size(24.dp)
+                                    .clip(CircleShape)
+                                    .background(Color(it.third)))
                             }
                         }
                     }
                 }
-            }
-            AnimatedVisibility(
-                visible = ROUTE == INSERT_VALUES_REGISTER,
-                enter = expandVertically(),
-                exit = shrinkVertically()
-            ) {
-                LaunchedEffect(key1 = Unit, block = {
-                    focusValue.requestFocus()
-                })
-                Column(
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)) {
-                    Text(
-                        text = stringResource(R.string.txt_inserir_dados),
-                        modifier = Modifier.padding(start = 16.dp)
-                    )
-                    Spacer(modifier = Modifier.height(32.dp))
-                    OutlinedTextField(
-                        label = {
-                            Text(text = stringResource(R.string.txt_valor))
-                        },
-                        value = Valor,
-                        onValueChange = {
-                            Valor = Regex("[^0-9]").replace(it,"")
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .focusRequester(focusValue),
-                        shape = RoundedCornerShape(16.dp),
-                        keyboardActions = KeyboardActions(onNext = {focusDescricao.requestFocus()}),
-                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next,keyboardType = KeyboardType.Number),
-                        visualTransformation = if(Valor.isEmpty()) VisualTransformation.None else MaskTransformation()
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    OutlinedTextField(
-                        label = {
-                            Text(text = stringResource(R.string.txt_descricao))
-                        },
-                        value = Descricao,
-                        onValueChange = {
-                            Descricao = it
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .focusRequester(focusDescricao),
-                        keyboardActions = KeyboardActions(onDone = {focusManeger.clearFocus()}),
-                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                        shape = RoundedCornerShape(16.dp)
-                    )
-                    Spacer(modifier = Modifier.height(24.dp))
-                    Column{
-                        var width by remember{ mutableStateOf(0) }
-                        Row(
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(56.dp)
-                                .onGloballyPositioned {
-                                    width = it.size.width
-                                }
-                                .clip(RoundedCornerShape(16.dp))
-                                .clickable { openDropDownCategoria = true }
-                                .border(4.dp, Color(Categoria.third), RoundedCornerShape(16.dp))
-                        ) {
-                            Text(
-                                text = Categoria.second,
-                                fontSize = 14.sp,
-                                modifier = Modifier.padding(start = 32.dp)
-                            )
-                            Icon(
-                                painter = painterResource(
-                                    id = if(openDropDownCategoria)
-                                        R.drawable.ic_arrow_up
-                                    else
-                                        R.drawable.ic_arrow_down
-                                ),
-                                contentDescription = "",
-                                modifier = Modifier.padding(end = 16.dp)
-                            )
-                        }
-                        DropdownMenu(
-                            expanded = openDropDownCategoria,
-                            onDismissRequest = { openDropDownCategoria = false },
-                            modifier = Modifier
-                                .width(
-                                    with(Density){
-                                        width.toDp()
-                                    }
-                                )
-                        ) {
-                            Categorias.forEach {
-                                Row(
-                                    modifier = Modifier
-                                        .clickable {
-                                            Categoria = it
-                                            openDropDownCategoria = false
-                                        }
-                                        .padding(16.dp)
-                                        .fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    Text(text = it.second)
-                                    Box(modifier = Modifier
-                                        .size(24.dp)
-                                        .clip(CircleShape)
-                                        .background(Color(it.third)))
-                                }
-                            }
-                        }
-                    }
-                    Spacer(modifier = Modifier.height(32.dp))
-                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd){
-                        TextButton(onClick = {
-                            onActionsResult(Tetra(IsDespesa,if(Valor.isEmpty()) 0 else Valor.toInt(),Descricao,Categoria.first))
-                            _onDismiss()
-                        }) {
-                            Text(text = stringResource(R.string.txt_salvar))
-                        }
+                Spacer(modifier = Modifier.height(32.dp))
+                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd){
+                    TextButton(onClick = {
+                        onActionsResult(Tetra(IsDespesa,if(Valor.isEmpty()) 0 else Valor.toInt(),Descricao,Categoria.first))
+                        onDismiss()
+                    }) {
+                        Text(text = stringResource(R.string.txt_salvar))
                     }
                 }
             }

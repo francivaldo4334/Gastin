@@ -10,6 +10,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.*
@@ -35,7 +36,16 @@ private fun item(isDespesas:Boolean,value:Int,onClick:()->Unit){
                         Color.Red.copy(0.5f)
                     else
                         Color.Green.copy(0.5f)
-                ))
+                ), contentAlignment = Alignment.Center){
+                Icon(
+                    painter = painterResource(id = if (isDespesas)
+                        R.drawable.ic_minus
+                    else
+                        R.drawable.ic_add),
+                    contentDescription = "",
+                    tint = MaterialTheme.colors.background
+                )
+            }
             Spacer(modifier = Modifier.size(16.dp))
             Text(
                 text =
@@ -43,13 +53,11 @@ private fun item(isDespesas:Boolean,value:Int,onClick:()->Unit){
                     stringResource(id = R.string.txt_despesas)
                 else
                     stringResource(id = R.string.txt_receitas),
-                fontWeight = FontWeight.Light,
                 fontSize = 14.sp
             )
         }
         Text(
             text = value.toMonetaryString(),
-            fontWeight = FontWeight.Light,
             fontSize = 14.sp)
     }
 }
