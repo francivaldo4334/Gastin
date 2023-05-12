@@ -15,6 +15,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import br.com.fcr.gastin.ui.common.Constants
 import br.com.fcr.gastin.ui.page.HomeScreenPage
+import br.com.fcr.gastin.ui.page.ListCategoriasPage
 import br.com.fcr.gastin.ui.page.ListValuesScreenPage
 import br.com.fcr.gastin.ui.theme.GastinTheme
 import br.com.fcr.gastin.ui.utils.Route
@@ -80,6 +81,18 @@ class HomeActivity : ComponentActivity() {
                                     Tetra("descricao","01/02/2023",1000,2),
                                     Tetra("descricao","01/02/2023",1000,3),
                                     Tetra("descricao","01/02/2023",1000,4)
+                                )
+                            )
+                        }
+                        composable(Route.LISTA_CATEGORIAS){
+                            ListCategoriasPage(
+                                navController = navController,
+                                listItem = listOf(
+                                    Tetra("Titulo","descricao",(0xffF00FFF).toInt(),0),
+                                    Tetra("Titulo","descricao",(0xffFFFFFF).toInt(),1),
+                                    Tetra("Titulo","descricao",(0xff00FFFF).toInt(),2),
+                                    Tetra("Titulo","descricao",(0xff00FF0F).toInt(),3),
+                                    Tetra("Titulo","descricao",(0xffFFF00F).toInt(),4)
                                 )
                             )
                         }

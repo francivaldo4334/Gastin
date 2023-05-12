@@ -6,6 +6,7 @@ object Route{
     val HOME = "HOME"
     val LISTA_DESPESAS = "LISTA_DESPESAS"
     val LISTA_RESEITAS = "LISTA_RESEITAS"
+    val LISTA_CATEGORIAS = "LISTA_CATEGORIAS"
 }
 fun Int.toMonetaryString():String{
     val valorDouble = this.toDouble() / 100

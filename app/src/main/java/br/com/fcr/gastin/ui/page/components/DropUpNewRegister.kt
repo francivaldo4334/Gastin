@@ -21,6 +21,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
@@ -31,6 +32,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import br.com.fcr.gastin.HomeActivity
 import br.com.fcr.gastin.R
 import br.com.fcr.gastin.ui.utils.MaskTransformation
 import br.com.fcr.gastin.ui.utils.Tetra
@@ -101,8 +103,11 @@ fun DropUpNewRegister (enable:Boolean,onDismiss:()->Unit,onActionsResult:(Tetra<
         Descricao = ""
         ROUTE = SELECT_TYPE_REGISTER
     }
+    val context = LocalContext.current as HomeActivity
     BackHandler() {
-        if(ROUTE != SELECT_TYPE_REGISTER){
+        if(!enable)
+            context.finish()
+        else if(ROUTE != SELECT_TYPE_REGISTER){
             ROUTE = SELECT_TYPE_REGISTER
         }else
             _onDismiss()
