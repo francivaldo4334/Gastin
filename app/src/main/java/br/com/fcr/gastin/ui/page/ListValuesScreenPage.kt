@@ -66,7 +66,7 @@ private fun listOptions(listOptions:List<Triple<String,()->Unit,Boolean>>,onDism
                 text = text.removePrefix("-")
             }
             Spacer(modifier = Modifier.width(12.dp))
-            Text(text = text, fontSize = 14.sp,color = Color.Unspecified.copy(if(it.third)  1f else 0.3f))
+            Text(text = text, fontSize = 14.sp,color = MaterialTheme.colors.onBackground.copy(if(it.third)  1f else 0.3f))
         }
     }
 }
