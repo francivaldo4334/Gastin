@@ -28,8 +28,3 @@ fun BoxContent(modifier: Modifier = Modifier.fillMaxSize(),enablePadding:Boolean
         content()
     }
 }
-@Preview(showBackground = true)
-@Composable
-fun BoxContentPreview(){
-    BoxContent(Modifier.fillMaxSize().padding(16.dp)) {}
-}

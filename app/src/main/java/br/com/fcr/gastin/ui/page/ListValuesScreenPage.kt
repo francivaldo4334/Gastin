@@ -18,18 +18,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import br.com.fcr.gastin.R
 import br.com.fcr.gastin.ui.page.components.DropDownMoreOptions
 import br.com.fcr.gastin.ui.page.components.DropUpNewRegister
 import br.com.fcr.gastin.ui.page.components.DropUpUpdateRegister
 import br.com.fcr.gastin.ui.page.components.DropUpViewRegister
-import br.com.fcr.gastin.ui.utils.Tetra
+import br.com.fcr.gastin.ui.page.viewmodels.CategoriaViewModel
+import br.com.fcr.gastin.ui.page.viewmodels.EmptyRegistroViewModel
+import br.com.fcr.gastin.ui.page.viewmodels.RegistroViewModel
 import br.com.fcr.gastin.ui.utils.toMonetaryString
+
 private var listIdCheckeds by mutableStateOf(listOf<Int>())
 @Composable
 private fun listOptions(listOptions:List<Triple<String,()->Unit,Boolean>>,onDismiss:()->Unit){
@@ -72,13 +73,20 @@ private fun listOptions(listOptions:List<Triple<String,()->Unit,Boolean>>,onDism
 }
 
 @Composable
-fun ListValuesScreenPage(navController: NavController,title:String,listItem:List<Tetra<String,String,Int,Int>>){
+fun ListValuesScreenPage(
+    navController: NavController,
+    title:String,
+    listItem:List<RegistroViewModel>,
+    onNewRegister:(RegistroViewModel)->Unit,
+    Categorias:List<CategoriaViewModel>
+){
     var showAllCheckBox by remember {mutableStateOf(false)}
     var openMoreOptions by remember{ mutableStateOf(false) }
     var openViewItem by remember { mutableStateOf(false) }
     var openUpdateItem by remember { mutableStateOf(false) }
     var openNewItem by remember { mutableStateOf(false) }
-    var IdSelected = 0
+    var IdSelect by remember{ mutableStateOf(0) }
+    var Categoria by remember { mutableStateOf(CategoriaViewModel(0,"","","",0)) }
     if(listIdCheckeds.isEmpty()){ showAllCheckBox = false }
     BackHandler {
         if(showAllCheckBox) {
@@ -107,7 +115,7 @@ fun ListValuesScreenPage(navController: NavController,title:String,listItem:List
                             listOptions = listOf(
                                 Triple(stringResource(R.string.txt_selecionar_tudo), {
                                     showAllCheckBox = true
-                                    listIdCheckeds = listItem.map { it.tetra }
+                                    listIdCheckeds = listItem.map { it.Id }
                                 }, true),
                                 Triple(stringResource(R.string.txt_adicionar), {
                                     openNewItem = true
@@ -135,7 +143,7 @@ fun ListValuesScreenPage(navController: NavController,title:String,listItem:List
             item { 
                 Spacer(modifier = Modifier.height(32.dp))
             }
-            items(listItem){(descricao,data,value,id)->
+            items(listItem){ register->
                 Column {
                     Row(
                         modifier = Modifier
@@ -143,11 +151,11 @@ fun ListValuesScreenPage(navController: NavController,title:String,listItem:List
                             .pointerInput(Unit) {
                                 detectTapGestures(
                                     onLongPress = {
-                                        listIdCheckeds += id
+                                        listIdCheckeds += register.Id
                                         showAllCheckBox = listIdCheckeds.isNotEmpty()
                                     },
                                     onTap = {
-                                        IdSelected = id
+                                        IdSelect = register.Id
                                         openViewItem = true
                                     }
                                 )
@@ -166,14 +174,14 @@ fun ListValuesScreenPage(navController: NavController,title:String,listItem:List
                             Spacer(modifier = Modifier.width(16.dp))
                             Column {
                                 Text(
-                                    text = descricao,
+                                    text = register.Description,
                                     fontSize = 12.sp,
                                     color = MaterialTheme.colors.onBackground.copy(0.5f),
                                     maxLines = 1
                                 )
                                 Spacer(modifier = Modifier.height(12.dp))
                                 Text(
-                                    text = data,
+                                    text = register.Date,
                                     fontSize = 12.sp,
                                     color = MaterialTheme.colors.onBackground.copy(0.5f),
                                     maxLines = 1
@@ -181,7 +189,7 @@ fun ListValuesScreenPage(navController: NavController,title:String,listItem:List
                             }
                         }
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(text = value.toMonetaryString(), fontSize = 12.sp)
+                            Text(text = register.Value.toMonetaryString(), fontSize = 12.sp)
                             AnimatedVisibility(
                                 visible = showAllCheckBox,
                                 enter = expandHorizontally() + slideInHorizontally(),
@@ -189,12 +197,12 @@ fun ListValuesScreenPage(navController: NavController,title:String,listItem:List
                             ) {
                                 Spacer(modifier = Modifier.width(16.dp))
                                 Checkbox(
-                                    checked = listIdCheckeds.any { it == id },
+                                    checked = listIdCheckeds.any { it == register.Id },
                                     onCheckedChange = {
                                         if(it)
-                                            listIdCheckeds += id
+                                            listIdCheckeds += register.Id
                                         else
-                                            listIdCheckeds -= id
+                                            listIdCheckeds -= register.Id
 
                                     }
                                 )
@@ -206,34 +214,25 @@ fun ListValuesScreenPage(navController: NavController,title:String,listItem:List
             }
         }
     }
-    DropUpViewRegister(IdSelected,openViewItem,{openViewItem = false})
-    DropUpUpdateRegister(
-        enable = openUpdateItem,
-        onDismiss = { openUpdateItem = false },
-        onActionsResult = {
-            listIdCheckeds = emptyList()
-    })
+    DropUpViewRegister(
+        IdRegister = IdSelect,
+        enable = openViewItem,
+        onDismiss = { openViewItem = false }
+    )
+//    DropUpUpdateRegister(
+//        enable = openUpdateItem,
+//        onDismiss = { openUpdateItem = false },
+//        _categoria = Categoria,
+//        Categorias = Categorias,
+//        registro = IdSelect,
+//        onActionsResult = {
+//            listIdCheckeds = emptyList()
+//        }
+//    )
     DropUpNewRegister(
-        IsDespesa =  title == stringResource(id = R.string.txt_despesas),
         enable = openNewItem,
         onDismiss = {openNewItem = false},
-        onActionsResult = {
-
-        }
-    )
-}
-@Composable
-@Preview(showBackground = true)
-fun ListValuesScreenPagePreview(){
-    ListValuesScreenPage(
-        navController = rememberNavController(),
-        title = "Despesas",
-        listItem = listOf(
-            Tetra("descricao","01/02/2023",1000,0),
-            Tetra("descricao","01/02/2023",1000,1),
-            Tetra("descricao","01/02/2023",1000,2),
-            Tetra("descricao","01/02/2023",1000,3),
-            Tetra("descricao","01/02/2023",1000,4)
-        )
+        onActionsResult = onNewRegister,
+        Categorias = Categorias
     )
 }

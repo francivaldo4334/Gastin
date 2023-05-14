@@ -28,27 +28,24 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import br.com.fcr.gastin.R
+import br.com.fcr.gastin.data.model.Registro
+import br.com.fcr.gastin.ui.page.viewmodels.CategoriaViewModel
+import br.com.fcr.gastin.ui.page.viewmodels.RegistroViewModel
 import br.com.fcr.gastin.ui.utils.MaskTransformation
 import br.com.fcr.gastin.ui.utils.Tetra
 
 @Composable
-fun DropUpUpdateRegister (enable:Boolean, onDismiss:()->Unit, onActionsResult:(Tetra<Boolean,Int,String,Int>)->Unit) {
+fun DropUpUpdateRegister (enable:Boolean, onDismiss:()->Unit,registro: RegistroViewModel,_categoria:CategoriaViewModel,Categorias:List<CategoriaViewModel>,onActionsResult:(RegistroViewModel)->Unit) {
     BackHandler(enabled = enable) {
         onDismiss()
     }
-    var Valor by remember{ mutableStateOf("") }
-    var Descricao by remember{ mutableStateOf("") }
+    var Valor by remember{ mutableStateOf(registro.Value.toString()) }
+    var Descricao by remember{ mutableStateOf(registro.Description) }
     val focusDescricao = remember {FocusRequester()}
     val focusManeger = LocalFocusManager.current
     var openDropDownCategoria by remember { mutableStateOf(false) }
-    var Categoria by remember{ mutableStateOf(Triple(0,"Selecione teste",0xFFFF0000)) }
-    val Categorias = listOf(
-        Triple(0,"Teste1",0xFFFF00FF),
-        Triple(1,"Teste2",0xFFFFFF00),
-        Triple(2,"Teste3",0xFF0F0F0F)
-    )
+    var Categoria by remember{ mutableStateOf(_categoria)}
     val Density = LocalDensity.current
-    var IsDespesa = false
     BoxDropUpContent(enable = enable, onDismiss = onDismiss) {
         Column(
             Modifier
@@ -105,10 +102,10 @@ fun DropUpUpdateRegister (enable:Boolean, onDismiss:()->Unit, onActionsResult:(T
                         }
                         .clip(RoundedCornerShape(16.dp))
                         .clickable { openDropDownCategoria = true }
-                        .border(4.dp, Color(Categoria.third), RoundedCornerShape(16.dp))
+                        .border(4.dp, Color(Categoria.Color), RoundedCornerShape(16.dp))
                 ) {
                     Text(
-                        text = Categoria.second,
+                        text = Categoria.Name,
                         fontSize = 14.sp,
                         modifier = Modifier.padding(start = 32.dp)
                     )
@@ -144,11 +141,11 @@ fun DropUpUpdateRegister (enable:Boolean, onDismiss:()->Unit, onActionsResult:(T
                                 .fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Text(text = it.second)
+                            Text(text = it.Name)
                             Box(modifier = Modifier
                                 .size(24.dp)
                                 .clip(CircleShape)
-                                .background(Color(it.third)))
+                                .background(Color(it.Color)))
                         }
                     }
                 }
@@ -156,7 +153,16 @@ fun DropUpUpdateRegister (enable:Boolean, onDismiss:()->Unit, onActionsResult:(T
             Spacer(modifier = Modifier.height(32.dp))
             Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd){
                 TextButton(onClick = {
-                    onActionsResult(Tetra(IsDespesa,if(Valor.isEmpty()) 0 else Valor.toInt(),Descricao,Categoria.first))
+                    onActionsResult(
+//                        Tetra(IsDespesa,if(Valor.isEmpty()) 0 else Valor.toInt(),Descricao,Categoria.first)
+                        RegistroViewModel(
+                            Id = registro.Id,
+                            Description = Descricao,
+                            Value = if(Valor.isEmpty()) 0 else Valor.toInt(),
+                            CategoriaFk = Categoria.Id,
+                            Date = ""
+                        )
+                    )
                     onDismiss()
                 }) {
                     Text(text = stringResource(R.string.txt_salvar))

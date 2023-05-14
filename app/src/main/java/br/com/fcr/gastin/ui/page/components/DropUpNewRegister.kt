@@ -32,6 +32,8 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import br.com.fcr.gastin.R
+import br.com.fcr.gastin.ui.page.viewmodels.CategoriaViewModel
+import br.com.fcr.gastin.ui.page.viewmodels.RegistroViewModel
 import br.com.fcr.gastin.ui.utils.MaskTransformation
 import br.com.fcr.gastin.ui.utils.Tetra
 
@@ -82,16 +84,11 @@ private fun Item(isDespesas:Boolean,onClick:()->Unit){
     }
 }
 @Composable
-fun DropUpNewRegister (IsDespesa:Boolean,enable:Boolean, onDismiss:()->Unit, onActionsResult:(Tetra<Boolean,Int,String,Int>)->Unit){
+fun DropUpNewRegister (enable:Boolean,Categorias:List<CategoriaViewModel>, onDismiss:()->Unit, onActionsResult:(RegistroViewModel)->Unit){
     var Valor by remember{ mutableStateOf("") }
     var Descricao by remember{ mutableStateOf("") }
     var openDropDownCategoria by remember { mutableStateOf(false) }
-    var Categoria by remember{ mutableStateOf(Triple(0,"Selecione teste",0xFFFF0000)) }
-    val Categorias = listOf(
-        Triple(0,"Teste1",0xFFFF00FF),
-        Triple(1,"Teste2",0xFFFFFF00),
-        Triple(2,"Teste3",0xFF0F0F0F)
-    )
+    var Categoria by remember{ mutableStateOf(CategoriaViewModel(0,"","","",0)) }
     val Density = LocalDensity.current
     val focusDescricao = remember {FocusRequester()}
     val focusValue = remember{FocusRequester()}
@@ -164,10 +161,10 @@ fun DropUpNewRegister (IsDespesa:Boolean,enable:Boolean, onDismiss:()->Unit, onA
                             }
                             .clip(RoundedCornerShape(16.dp))
                             .clickable { openDropDownCategoria = true }
-                            .border(4.dp, Color(Categoria.third), RoundedCornerShape(16.dp))
+                            .border(4.dp, Color(Categoria.Color), RoundedCornerShape(16.dp))
                     ) {
                         Text(
-                            text = Categoria.second,
+                            text = Categoria.Name,
                             fontSize = 14.sp,
                             modifier = Modifier.padding(start = 32.dp)
                         )
@@ -203,11 +200,11 @@ fun DropUpNewRegister (IsDespesa:Boolean,enable:Boolean, onDismiss:()->Unit, onA
                                     .fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
-                                Text(text = it.second)
+                                Text(text = it.Description)
                                 Box(modifier = Modifier
                                     .size(24.dp)
                                     .clip(CircleShape)
-                                    .background(Color(it.third)))
+                                    .background(Color(it.Color)))
                             }
                         }
                     }
@@ -215,7 +212,15 @@ fun DropUpNewRegister (IsDespesa:Boolean,enable:Boolean, onDismiss:()->Unit, onA
                 Spacer(modifier = Modifier.height(32.dp))
                 Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd){
                     TextButton(onClick = {
-                        onActionsResult(Tetra(IsDespesa,if(Valor.isEmpty()) 0 else Valor.toInt(),Descricao,Categoria.first))
+                        onActionsResult(
+                            RegistroViewModel(
+                                Id = 0,
+                                Description = Descricao,
+                                Value = if(Valor.isEmpty()) 0 else Valor.toInt(),
+                                CategoriaFk = Categoria.Id,
+                                Date = ""
+                            )
+                        )
                         onDismiss()
                     }) {
                         Text(text = stringResource(R.string.txt_salvar))
