@@ -65,6 +65,13 @@ class HomeViewModel constructor(
             )
         }
     }
+    fun updateRegister(registro:Registro){
+        viewModelScope.launch(Dispatchers.IO){
+            registroRepository.insert(
+                registro
+            )
+        }
+    }
 
     fun getCategorias():LiveData<List<Categoria>>{
         return categoriaRepository.getAll()
@@ -75,5 +82,13 @@ class HomeViewModel constructor(
     }
     fun getRegistro(ID: Int): LiveData<Registro>{
         return registroRepository.getById(ID)
+    }
+
+    fun deleteRegistros(IDs: List<Int>) {
+        viewModelScope.launch(Dispatchers.IO) {
+            IDs.forEach {
+                registroRepository.delete(it)
+            }
+        }
     }
 }

@@ -16,17 +16,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import br.com.fcr.gastin.HomeActivity
 import br.com.fcr.gastin.R
 import br.com.fcr.gastin.ui.page.components.DropDownMoreOptions
 import br.com.fcr.gastin.ui.page.components.DropUpNewRegister
 import br.com.fcr.gastin.ui.page.components.DropUpUpdateRegister
 import br.com.fcr.gastin.ui.page.components.DropUpViewRegister
 import br.com.fcr.gastin.ui.page.viewmodels.CategoriaViewModel
+import br.com.fcr.gastin.ui.page.viewmodels.EmptyCategoriaViewModel
 import br.com.fcr.gastin.ui.page.viewmodels.EmptyRegistroViewModel
 import br.com.fcr.gastin.ui.page.viewmodels.RegistroViewModel
 import br.com.fcr.gastin.ui.utils.toMonetaryString
@@ -86,7 +89,7 @@ fun ListValuesScreenPage(
     var openUpdateItem by remember { mutableStateOf(false) }
     var openNewItem by remember { mutableStateOf(false) }
     var IdSelect by remember{ mutableStateOf(0) }
-    var Categoria by remember { mutableStateOf(CategoriaViewModel(0,"","","",0)) }
+    val owner = LocalLifecycleOwner.current
     if(listIdCheckeds.isEmpty()){ showAllCheckBox = false }
     BackHandler {
         if(showAllCheckBox) {
@@ -121,8 +124,12 @@ fun ListValuesScreenPage(
                                     openNewItem = true
                                     listIdCheckeds = emptyList()
                                 }, true),
-                                Triple(stringResource(R.string.txt_excluir), {}, listIdCheckeds.size > 0),
+                                Triple(stringResource(R.string.txt_excluir), {
+                                    HomeActivity.homeViewModel.deleteRegistros(listIdCheckeds)
+                                    listIdCheckeds = emptyList()
+                                }, listIdCheckeds.size > 0),
                                 Triple(stringResource(R.string.txt_editar), {
+                                    IdSelect = listIdCheckeds.first()
                                     openUpdateItem = true
                                 }, listIdCheckeds.size == 1),
                             ),
@@ -219,16 +226,24 @@ fun ListValuesScreenPage(
         enable = openViewItem,
         onDismiss = { openViewItem = false }
     )
-//    DropUpUpdateRegister(
-//        enable = openUpdateItem,
-//        onDismiss = { openUpdateItem = false },
-//        _categoria = Categoria,
-//        Categorias = Categorias,
-//        registro = IdSelect,
-//        onActionsResult = {
-//            listIdCheckeds = emptyList()
-//        }
-//    )
+    DropUpUpdateRegister(
+        enable = openUpdateItem,
+        onDismiss = { openUpdateItem = false },
+        Categorias = Categorias,
+        IdRegeistro = IdSelect,
+        onActionsResult = { view->
+            HomeActivity.homeViewModel.getRegistro(view.Id).observe(owner){
+                if(it == null)
+                    return@observe
+                val registro = it
+                registro.Description = view.Description
+                registro.Value = view.Value
+                registro.CategoriaFk = if(view.CategoriaFk == null||view.CategoriaFk == 0)1 else view.CategoriaFk
+                HomeActivity.homeViewModel.updateRegister(registro)
+                listIdCheckeds = emptyList()
+            }
+        }
+    )
     DropUpNewRegister(
         enable = openNewItem,
         onDismiss = {openNewItem = false},

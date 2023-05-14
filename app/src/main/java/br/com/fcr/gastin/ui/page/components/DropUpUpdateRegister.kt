@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -27,25 +28,40 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import br.com.fcr.gastin.HomeActivity
 import br.com.fcr.gastin.R
 import br.com.fcr.gastin.data.model.Registro
 import br.com.fcr.gastin.ui.page.viewmodels.CategoriaViewModel
+import br.com.fcr.gastin.ui.page.viewmodels.EmptyCategoriaViewModel
 import br.com.fcr.gastin.ui.page.viewmodels.RegistroViewModel
+import br.com.fcr.gastin.ui.page.viewmodels.toView
 import br.com.fcr.gastin.ui.utils.MaskTransformation
 import br.com.fcr.gastin.ui.utils.Tetra
 
 @Composable
-fun DropUpUpdateRegister (enable:Boolean, onDismiss:()->Unit,registro: RegistroViewModel,_categoria:CategoriaViewModel,Categorias:List<CategoriaViewModel>,onActionsResult:(RegistroViewModel)->Unit) {
+fun DropUpUpdateRegister (enable:Boolean, onDismiss:()->Unit,IdRegeistro: Int,Categorias:List<CategoriaViewModel>,onActionsResult:(RegistroViewModel)->Unit) {
     BackHandler(enabled = enable) {
         onDismiss()
     }
-    var Valor by remember{ mutableStateOf(registro.Value.toString()) }
-    var Descricao by remember{ mutableStateOf(registro.Description) }
+    val txtCarregando = stringResource(R.string.txt_carregando)
+    var Valor by remember{ mutableStateOf(txtCarregando) }
+    var Descricao by remember{ mutableStateOf(txtCarregando) }
+    var openDropDownCategoria by remember { mutableStateOf(false) }
+    var Categoria by remember{ mutableStateOf(EmptyCategoriaViewModel())}
+
     val focusDescricao = remember {FocusRequester()}
     val focusManeger = LocalFocusManager.current
-    var openDropDownCategoria by remember { mutableStateOf(false) }
-    var Categoria by remember{ mutableStateOf(_categoria)}
     val Density = LocalDensity.current
+    val owner = LocalLifecycleOwner.current
+    HomeActivity.homeViewModel.getRegistro(IdRegeistro).observe(owner){
+        if(it == null)
+            return@observe
+        Valor = it.Value.toString()
+        Descricao = it.Description
+        HomeActivity.homeViewModel.getCategoria(if(it.CategoriaFk == 0) 1 else it.CategoriaFk).observe(owner){
+            Categoria = it.toView()
+        }
+    }
     BoxDropUpContent(enable = enable, onDismiss = onDismiss) {
         Column(
             Modifier
@@ -154,9 +170,8 @@ fun DropUpUpdateRegister (enable:Boolean, onDismiss:()->Unit,registro: RegistroV
             Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd){
                 TextButton(onClick = {
                     onActionsResult(
-//                        Tetra(IsDespesa,if(Valor.isEmpty()) 0 else Valor.toInt(),Descricao,Categoria.first)
                         RegistroViewModel(
-                            Id = registro.Id,
+                            Id = IdRegeistro,
                             Description = Descricao,
                             Value = if(Valor.isEmpty()) 0 else Valor.toInt(),
                             CategoriaFk = Categoria.Id,

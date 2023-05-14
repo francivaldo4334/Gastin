@@ -7,6 +7,9 @@ data class RegistroViewModel(val Id:Int,val Description:String,val Date:String,v
 fun EmptyRegistroViewModel():RegistroViewModel{
     return RegistroViewModel(0,"","",0,0)
 }
+fun EmptyCategoriaViewModel():CategoriaViewModel{
+    return CategoriaViewModel(0,"","","",0)
+}
 fun Registro.toView():RegistroViewModel{
     val formatter = SimpleDateFormat("dd/MM/yyyy")
     val dateString = formatter.format(this.CreateAT)
