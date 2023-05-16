@@ -119,13 +119,7 @@ class HomeActivity : ComponentActivity() {
                         composable(Route.LISTA_CATEGORIAS){
                             ListCategoriasPage(
                                 navController = navController,
-                                listItem = listOf(
-                                    Tetra("Titulo","descricao",(0xffF00FFF).toInt(),0),
-                                    Tetra("Titulo","descricao",(0xffFFFFFF).toInt(),1),
-                                    Tetra("Titulo","descricao",(0xff00FFFF).toInt(),2),
-                                    Tetra("Titulo","descricao",(0xff00FF0F).toInt(),3),
-                                    Tetra("Titulo","descricao",(0xffFFF00F).toInt(),4)
-                                )
+                                listItem = listCategoria.map { Tetra(it.Name,it.Description,it.Color,it.Id) }.filter { it.tetra != 1 }
                             )
                         }
                     }

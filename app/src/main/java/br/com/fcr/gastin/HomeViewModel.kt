@@ -91,4 +91,12 @@ class HomeViewModel constructor(
             }
         }
     }
+
+    fun deleteCategorias(IDs: List<Int>) {
+        viewModelScope.launch(Dispatchers.IO) {
+            IDs.forEach {
+                categoriaRepository.delete(it)
+            }
+        }
+    }
 }

@@ -1,5 +1,6 @@
 package br.com.fcr.gastin.ui.page
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.*
 import androidx.compose.foundation.background
@@ -21,17 +22,20 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import br.com.fcr.gastin.HomeActivity
 import br.com.fcr.gastin.R
 import br.com.fcr.gastin.ui.page.components.DropDownMoreOptions
+import br.com.fcr.gastin.ui.page.components.DropUpNewCategory
 import br.com.fcr.gastin.ui.utils.Tetra
 private var listIdCheckeds by mutableStateOf(listOf<Int>())
 @Composable
-fun ListCategoriasPage (navController: NavController, listItem:List<Tetra<String, String, Int, Int>>){
+fun ListCategoriasPage (navController: NavController, listItem:List<Tetra<String, String, Long, Int>>){
     var showAllCheckBox by remember { mutableStateOf(false) }
     var openMoreOptions by remember{ mutableStateOf(false) }
         if(listIdCheckeds.isEmpty()){
         showAllCheckBox = false
     }
+    var openDropUpNewCategory by remember{ mutableStateOf(false) }
     BackHandler {
         if(showAllCheckBox) {
             showAllCheckBox = false
@@ -58,9 +62,16 @@ fun ListCategoriasPage (navController: NavController, listItem:List<Tetra<String
                         showAllCheckBox = true
                         listIdCheckeds = listItem.map { it.tetra }
                     },
-                    Pair(stringResource(R.string.txt_excluir)){},
-                    Pair(stringResource(R.string.txt_adicionar)){},
-                    Pair(stringResource(R.string.txt_editar)){},
+                    Pair(stringResource(R.string.txt_excluir)){
+                        HomeActivity.homeViewModel.deleteCategorias(listIdCheckeds)
+                        listIdCheckeds = emptyList()
+                    },
+                    Pair(stringResource(R.string.txt_adicionar)){
+                        openDropUpNewCategory = true
+                    },
+                    Pair(stringResource(R.string.txt_editar)){
+
+                    },
                 ), enable = openMoreOptions) {
                     openMoreOptions = false
                 }
@@ -135,5 +146,8 @@ fun ListCategoriasPage (navController: NavController, listItem:List<Tetra<String
                 }
             }
         }
+    }
+    DropUpNewCategory(openDropUpNewCategory){
+        openDropUpNewCategory = false
     }
 }

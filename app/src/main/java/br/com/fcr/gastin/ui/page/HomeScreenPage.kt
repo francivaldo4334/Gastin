@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -17,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import br.com.fcr.gastin.HomeActivity
 import br.com.fcr.gastin.R
 import br.com.fcr.gastin.ui.common.Constants
 import br.com.fcr.gastin.ui.utils.Route
@@ -35,6 +37,17 @@ fun HomeScreenPage(
     var openDropDownDashboard by remember {mutableStateOf(false)}
     var openDropDownEvolucao by remember {mutableStateOf(false)}
     var openDropUpNewRegister by remember { mutableStateOf(false) }
+    var valorDespesas by remember { mutableStateOf(0) }
+    var valorReceitas by remember { mutableStateOf(0) }
+    val owner = LocalLifecycleOwner.current
+
+    HomeActivity.homeViewModel.getDespesas().observe(owner){
+        valorDespesas = it.sumOf { it.Value }
+    }
+    HomeActivity.homeViewModel.getReceitas().observe(owner){
+        valorReceitas = it.sumOf { it.Value }
+    }
+
     val categorias = listOf(
         Triple("tstee",1,Color(0xFF269FB9)),
         Triple("tstee",2,Color(0xFFA6ED0E)),
@@ -104,8 +117,8 @@ fun HomeScreenPage(
             //Visao geral de informacoes
             item {
                 HomeScreenVisaoGeral(
-                    valorReceitas = 100,
-                    valorDespesas = 100,
+                    valorReceitas = valorReceitas,
+                    valorDespesas = valorDespesas,
                     onReceitas = {
                         navController.navigate(Route.LISTA_RESEITAS)
                     },

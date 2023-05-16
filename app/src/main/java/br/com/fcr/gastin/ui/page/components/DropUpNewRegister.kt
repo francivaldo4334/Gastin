@@ -23,6 +23,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -31,9 +32,12 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import br.com.fcr.gastin.HomeActivity
 import br.com.fcr.gastin.R
 import br.com.fcr.gastin.ui.page.viewmodels.CategoriaViewModel
+import br.com.fcr.gastin.ui.page.viewmodels.EmptyCategoriaViewModel
 import br.com.fcr.gastin.ui.page.viewmodels.RegistroViewModel
+import br.com.fcr.gastin.ui.page.viewmodels.toView
 import br.com.fcr.gastin.ui.utils.MaskTransformation
 import br.com.fcr.gastin.ui.utils.Tetra
 
@@ -88,11 +92,15 @@ fun DropUpNewRegister (enable:Boolean,Categorias:List<CategoriaViewModel>, onDis
     var Valor by remember{ mutableStateOf("") }
     var Descricao by remember{ mutableStateOf("") }
     var openDropDownCategoria by remember { mutableStateOf(false) }
-    var Categoria by remember{ mutableStateOf(CategoriaViewModel(0,"","","",0)) }
+    var Categoria by remember{ mutableStateOf(EmptyCategoriaViewModel()) }
     val Density = LocalDensity.current
     val focusDescricao = remember {FocusRequester()}
     val focusValue = remember{FocusRequester()}
     val focusManeger = LocalFocusManager.current
+    val owner = LocalLifecycleOwner.current
+    HomeActivity.homeViewModel.getCategoria(1).observe(owner){
+        Categoria = it.toView()
+    }
     BackHandler(enabled = enable) {
         onDismiss()
     }

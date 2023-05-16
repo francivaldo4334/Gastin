@@ -30,4 +30,6 @@
     <string name="txt_categorias">Categorias</string>
     <string name="txt_categoria">Categoria</string>
     <string name="txt_carregando">Carregando...</string>
+    <string name="txt_nome">Nome</string>
+    <string name="txt_definir_cor">Definir cor</string>
 </resources>
