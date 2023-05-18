@@ -1,149 +1,208 @@
 package br.com.fcr.gastin.ui.page.components
 
-import android.graphics.RectF
+import android.graphics.Color.HSVToColor
 import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.RoundRect
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
-import kotlin.math.pow
-
-fun distance(offset0: Offset, offset1: Offset): Float {
-    return kotlin.math.sqrt((offset0.x - offset0.y).pow(2) + (offset1.x - offset1.y).pow(2))
+fun rgbToHex(R: Int, G: Int, B: Int): Color {
+    return Color(R,G,B)
 }
-//androidx.compose.ui.graphics
+fun mergeHexColors(color1: Long, color2: Long): Long {
+    val mergedColor = (color1 and 0x00FFFFFF) or (color2 and 0xFF000000)
+    return mergedColor
+}
 @Composable
 fun ColorPicker(
-    initialColor: Color,
     width:Int,
     onColorSelected: (Color) -> Unit
 ) {
     val density = LocalDensity.current.density
-    val size = (width/density)-(2*(56))
-    var Y1 by remember { mutableStateOf(24f) }
-    var Y2 by remember { mutableStateOf(24f) }
-    var X3 by remember { mutableStateOf(size*density-24f) }
-    var Y3 by remember { mutableStateOf(24f) }
-    val pointerSize = 24f*1.2f
+    val size = (width/density)-72
+    var colorMapOffset by rememberSaveable { mutableStateOf(0f) }
+    var colorMapHeight by rememberSaveable { mutableStateOf(size * density) }
+    var saturation by rememberSaveable { mutableStateOf(1f) }
+    var lightness by rememberSaveable { mutableStateOf(1f) }
+    var color by remember{ mutableStateOf(
+        Color.Red
+    ) }
+    color = getSelectedColor(
+        colorMapOffset = colorMapOffset,
+        colorMapHeight = colorMapHeight,
+        saturation = saturation,
+        lightness = lightness
+    )
     Row(
         Modifier
             .fillMaxWidth()
             .padding(vertical = 16.dp), horizontalArrangement = Arrangement.Center) {
-        Canvas(modifier = Modifier
-            .size(size.dp)
-            .pointerInput(Unit) {
-                detectDragGestures { change, dragAmount ->
-                    val newY = Y3 + dragAmount.y
-                    val newX = X3 + dragAmount.x
-                    val size1 = size * density
-                    if (newY > 24 && newY < size1 - 24)
-                        Y3 = newY
-                    if(newX > 24 && newX < size1 - 24)
-                        X3 = newX
-                }
-            }){
-            drawRoundRect(
-                color = Color.Red,
-                cornerRadius = CornerRadius(20f, 20f)
-            )
-            drawCircle(
-                radius = pointerSize,
-                color =  Color.Blue,
-                center = Offset(X3,Y3)
-            )
-        }
-        Spacer(modifier = Modifier.width(16.dp))
-        Canvas(modifier = Modifier
-            .height(size.dp)
-            .width(24.dp)
-            .pointerInput(Unit) {
-                detectDragGestures { change, dragAmount ->
-                    val newY = Y1 + dragAmount.y
-                    val size1 = size * density
-                    if (newY > 24 && newY < size1 - 24)
-                        Y1 = newY
-                }
-            }){
-            drawRoundRect(
-                color = Color.Red,
-                cornerRadius = CornerRadius(20f, 20f)
-            )
-            drawCircle(
-                radius = pointerSize,
-                color =  Color.Blue,
-                center = Offset(this.size.width/2, Y1)
-            )
-        }
-        Spacer(modifier = Modifier.width(16.dp))
-        Canvas(modifier = Modifier
-            .height(size.dp)
-            .width(24.dp)
-            .pointerInput(Unit) {
-                detectDragGestures { change, dragAmount ->
-                    val newY = Y2 + dragAmount.y
-                    val size1 = size * density
-                    if (newY > 24 && newY < size1 - 24)
-                        Y2 = newY
-                }
+        ScrollRect(
+            size = size,
+            colorBackground = getSelectedColor(
+                colorMapOffset = colorMapOffset,
+                colorMapHeight = colorMapHeight,
+                saturation = 1f,
+                lightness = 1f
+            ),
+            colorSelected = color,
+            onValueX = {
+                saturation = it
+                onColorSelected(color)
+            },
+            onValueY = {
+                lightness = it
+                onColorSelected(color)
             }
-        ){
-            drawRoundRect(
-                color = Color.Red,
-                cornerRadius = CornerRadius(20f, 20f)
-            )
-            drawCircle(
-                radius = pointerSize,
-                color =  Color.Blue,
-                center = Offset(this.size.width/2, Y2)
-            )
-        }
+        )
+        Spacer(modifier = Modifier.width(16.dp))
+        ScrollBar(
+            size = size,
+            onValue = { _colorMapOffset,_colorMapHeight->
+                colorMapOffset = _colorMapOffset
+                colorMapHeight = _colorMapHeight
+                onColorSelected(color)
+            }
+        )
     }
-//    var radius:Float = 0f
-//    var bitmap by remember {
-//        mutableStateOf(
-//            ImageBitmap(10,10,ImageBitmapConfig.Argb8888)
-//        )
-//    }
-//    Canvas(modifier = Modifier
-//        .size(width.dp)
-//        .pointerInput(Unit){
-//            this.detectTapGestures {
-//                
-//            }
-//        }
-//        .background(Color.Black)
-//    ) {
-//        bitmap = ImageBitmap(this.size.width.toInt(),this.size.height.toInt(),ImageBitmapConfig.Argb8888)
-//        radius = width.toFloat()/density
-//        val canvas = Canvas(bitmap)
-//        val paintSweep = Paint()
-//        val paintRadial = Paint()
-//        paintSweep.shader = SweepGradientShader(
-//            center = center,
-//            colors = listOf(
-//                Color.Blue,
-//                Color.Red,
-//                Color.Green,
-//                Color.Blue
-//            )
-//        )
-//        paintRadial.shader = RadialGradientShader(
-//            center = center,
-//            colors = listOf(
-//                Color.White,
-//                Color.Transparent
-//            ),
-//            radius = radius/1.5f
-//        )
-//        canvas.drawCircle(center,radius,paintSweep)
-//        canvas.drawCircle(center,radius,paintRadial)
-//        drawImage(bitmap)
-//    }
+}
+private fun calculateCorrectOffset(selectorOffset:Float,selectorRadius:Float):Float{
+    return selectorOffset + selectorRadius
+}
+private fun getSelectedColor(
+    colorMapOffset:Float, colorMapHeight:Float, saturation:Float, lightness:Float
+):Color{
+    val hue = (colorMapOffset/colorMapHeight)*360
+    return Color(
+        HSVToColor(
+            floatArrayOf(
+                hue,
+                saturation,
+                lightness
+            )
+        )
+    )
+}
+private fun createColorMap(colorMapHeight:Float):Brush{
+    val colors = mutableListOf<Color>()
+    for (   i in 0..360){
+        val saturation = 1f
+        val lightness = 1f
+        val hsv = HSVToColor(
+            floatArrayOf(
+                i.toFloat(),
+                saturation,
+                lightness
+            )
+        )
+        colors.add(Color(hsv))
+    }
+    return Brush.verticalGradient(
+        colors = colors,
+        startY = 0f,
+        endY = colorMapHeight
+    )
+}
+@Composable
+fun ScrollRect(size:Float,colorBackground:Color, colorSelected:Color, onValueX: (Float) -> Unit, onValueY: (Float) -> Unit){
+    val density = LocalDensity.current.density
+    var positionXLightBlack by remember { mutableStateOf(size*density-24f) }
+    var positionYLightBlack by remember { mutableStateOf(24f) }
+    val pointerSize = 24f*1.2f
+    Canvas(modifier = Modifier
+        .size(size.dp)
+        .pointerInput(Unit) {
+            detectDragGestures { change, dragAmount ->
+                val newY = positionYLightBlack + dragAmount.y
+                val newX = positionXLightBlack + dragAmount.x
+                val size1 = size * density
+                if (newY > 24 && newY < size1 - 24)
+                    positionYLightBlack = newY
+                if (newX > 24 && newX < size1 - 24)
+                    positionXLightBlack = newX
+                val percentualX = positionXLightBlack / size1
+                onValueX(percentualX)
+                val percentualY = positionYLightBlack / size1
+                onValueY( 1f - percentualY)
+            }
+        }){
+        drawRoundRect(
+            color = colorBackground,
+            cornerRadius = CornerRadius(20f)
+        )
+        drawRoundRect(
+            brush = Brush.horizontalGradient(listOf(
+                Color(0xFFFFFFFF),
+                        Color(0)
+            )),
+            cornerRadius = CornerRadius(20f)
+        )
+        drawRoundRect(
+            brush = Brush.verticalGradient(listOf(
+                Color(0),
+                Color(0xFF000000),
+            )),
+            cornerRadius = CornerRadius(20f)
+        )
+        drawCircle(
+            radius = pointerSize + 4f,
+            color =  Color.White,
+            center = Offset(positionXLightBlack,positionYLightBlack),
+        )
+        drawCircle(
+            radius = pointerSize,
+            color =  colorSelected,
+            center = Offset(positionXLightBlack,positionYLightBlack),
+        )
+    }
+}
+@Composable
+fun ScrollBar(size:Float,onValue:(Float,Float)->Unit){
+    val pointerWidth = 64f
+    val pointHeight = 40f
+    val density = LocalDensity.current.density
+    var positionBar by remember { mutableStateOf(0f) }
+
+    Canvas(modifier = Modifier
+        .height(size.dp)
+        .width(24.dp)
+        .pointerInput(Unit) {
+            detectDragGestures { change, dragAmount ->
+                val height = with(density) {
+                    size.dp.toPx()
+                }
+                val newY = positionBar + dragAmount.y
+                if (newY > 0 && newY < height - pointHeight) {
+                    positionBar = newY
+                }
+
+                onValue(
+                    calculateCorrectOffset(
+                        selectorOffset = newY - (height / 2),
+                        selectorRadius = height / 2
+                    ),
+                    height,
+                )
+            }
+        }){
+        drawRoundRect(
+            brush = createColorMap(this.size.height),
+            cornerRadius = CornerRadius(20f, 20f)
+        )
+        drawRoundRect(
+            cornerRadius = CornerRadius(8f),
+            size = Size(pointerWidth,pointHeight),
+            color =  Color(0xFFB4B4B4),
+            topLeft = Offset(((24f*density) - pointerWidth)/2, positionBar),
+        )
+    }
 }

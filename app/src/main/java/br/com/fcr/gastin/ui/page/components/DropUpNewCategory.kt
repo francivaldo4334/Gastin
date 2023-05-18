@@ -1,5 +1,6 @@
 package br.com.fcr.gastin.ui.page.components
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -15,6 +16,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
@@ -25,11 +27,12 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import br.com.fcr.gastin.R
+import br.com.fcr.gastin.ui.page.viewmodels.CategoriaViewModel
 import br.com.fcr.gastin.ui.page.viewmodels.RegistroViewModel
 import br.com.fcr.gastin.ui.utils.MaskTransformation
 
 @Composable
-fun DropUpNewCategory (enable:Boolean,onDismiss:()->Unit){
+fun DropUpNewCategory (enable:Boolean,onDismiss:()->Unit,onActionsResult:(CategoriaViewModel)->Unit){
     val focusValue = remember{FocusRequester()}
     val focusDescricao = remember{FocusRequester()}
     val focusManeger = LocalFocusManager.current
@@ -63,15 +66,14 @@ fun DropUpNewCategory (enable:Boolean,onDismiss:()->Unit){
                     },
                     value = Nome,
                     onValueChange = {
-                        Nome = Regex("[^0-9]").replace(it,"")
+                        Nome = it
                     },
                     modifier = Modifier
                         .fillMaxWidth()
                         .focusRequester(focusValue),
                     shape = RoundedCornerShape(16.dp),
                     keyboardActions = KeyboardActions(onNext = {focusDescricao.requestFocus()}),
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next,keyboardType = KeyboardType.Number),
-                    visualTransformation = if(Nome.isEmpty()) VisualTransformation.None else MaskTransformation()
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 OutlinedTextField(
@@ -90,7 +92,11 @@ fun DropUpNewCategory (enable:Boolean,onDismiss:()->Unit){
                     shape = RoundedCornerShape(16.dp)
                 )
                 Spacer(modifier = Modifier.height(24.dp))
-                Column{
+                Column( modifier = Modifier
+                    .clip(RoundedCornerShape(16.dp))
+                    .clickable { openDropDownColorPicker = true }
+                    .padding(horizontal = 16.dp)
+                ){
                     var width by remember{ mutableStateOf(0) }
                     Row(
                         horizontalArrangement = Arrangement.SpaceBetween,
@@ -98,11 +104,9 @@ fun DropUpNewCategory (enable:Boolean,onDismiss:()->Unit){
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(56.dp)
-                            .padding(horizontal = 16.dp)
                             .onGloballyPositioned {
                                 width = it.size.width
                             }
-                            .clickable { openDropDownColorPicker = true }
                     ) {
                         Text(
                             text = stringResource(R.string.txt_definir_cor),
@@ -124,23 +128,26 @@ fun DropUpNewCategory (enable:Boolean,onDismiss:()->Unit){
                                 }
                             )
                     ) {
-                        ColorPicker(colorSelect,width,{
-                            colorSelect = it
-                        })
+                        ColorPicker(
+                            width = width,
+                            onColorSelected = {
+                                colorSelect = it
+                            }
+                        )
                     }
                 }
                 Spacer(modifier = Modifier.height(32.dp))
                 Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd){
                     TextButton(onClick = {
-//                        onActionsResult(
-//                            RegistroViewModel(
-//                                Id = 0,
-//                                Description = Descricao,
-//                                Value = if(Nome.isEmpty()) 0 else Nome.toInt(),
-//                                CategoriaFk = Categoria.Id,
-//                                Date = ""
-//                            )
-//                        )
+                        onActionsResult(
+                            CategoriaViewModel(
+                                Id = 0,
+                                Description = Descricao,
+                                Name = Nome,
+                                Date = "",
+                                Color = colorToLongHex(colorSelect)
+                            )
+                        )
                         onDismiss()
                     }) {
                         Text(text = stringResource(R.string.txt_salvar))
@@ -149,4 +156,7 @@ fun DropUpNewCategory (enable:Boolean,onDismiss:()->Unit){
             }
         }
     }
+}
+fun colorToLongHex(color: Color): Long {
+    return color.toArgb().toLong()
 }

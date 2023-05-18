@@ -26,6 +26,7 @@ import br.com.fcr.gastin.HomeActivity
 import br.com.fcr.gastin.R
 import br.com.fcr.gastin.ui.page.components.DropDownMoreOptions
 import br.com.fcr.gastin.ui.page.components.DropUpNewCategory
+import br.com.fcr.gastin.ui.page.viewmodels.toModel
 import br.com.fcr.gastin.ui.utils.Tetra
 private var listIdCheckeds by mutableStateOf(listOf<Int>())
 @Composable
@@ -147,7 +148,12 @@ fun ListCategoriasPage (navController: NavController, listItem:List<Tetra<String
             }
         }
     }
-    DropUpNewCategory(openDropUpNewCategory){
-        openDropUpNewCategory = false
+    DropUpNewCategory(
+        enable = openDropUpNewCategory,
+        onDismiss = {
+            openDropUpNewCategory = false
+        }
+    ){
+        HomeActivity.homeViewModel.setCategoria(it.toModel())
     }
 }
