@@ -88,19 +88,21 @@ private fun Item(isDespesas:Boolean,onClick:()->Unit){
     }
 }
 @Composable
-fun DropUpNewRegister (enable:Boolean,Categorias:List<CategoriaViewModel>, onDismiss:()->Unit, onActionsResult:(RegistroViewModel)->Unit){
+fun DropUpNewRegister (
+    enable:Boolean,
+    Categorias:List<CategoriaViewModel>,
+    onDismiss:()->Unit,
+    onActionsResult:(RegistroViewModel)->Unit,
+    CategoriaDefault:CategoriaViewModel
+){
     var Valor by remember{ mutableStateOf("") }
     var Descricao by remember{ mutableStateOf("") }
     var openDropDownCategoria by remember { mutableStateOf(false) }
-    var Categoria by remember{ mutableStateOf(EmptyCategoriaViewModel()) }
+    var Categoria by remember{ mutableStateOf(CategoriaDefault) }
     val Density = LocalDensity.current
     val focusDescricao = remember {FocusRequester()}
     val focusValue = remember{FocusRequester()}
     val focusManeger = LocalFocusManager.current
-    val owner = LocalLifecycleOwner.current
-    HomeActivity.homeViewModel.getCategoria(1).observe(owner){
-        Categoria = it.toView()
-    }
     BackHandler(enabled = enable) {
         onDismiss()
     }
@@ -208,7 +210,7 @@ fun DropUpNewRegister (enable:Boolean,Categorias:List<CategoriaViewModel>, onDis
                                     .fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
-                                Text(text = it.Description)
+                                Text(text = it.Name)
                                 Box(modifier = Modifier
                                     .size(24.dp)
                                     .clip(CircleShape)

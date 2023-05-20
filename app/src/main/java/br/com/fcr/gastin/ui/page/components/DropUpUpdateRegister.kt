@@ -39,7 +39,13 @@ import br.com.fcr.gastin.ui.utils.MaskTransformation
 import br.com.fcr.gastin.ui.utils.Tetra
 
 @Composable
-fun DropUpUpdateRegister (enable:Boolean, onDismiss:()->Unit,IdRegeistro: Int,Categorias:List<CategoriaViewModel>,onActionsResult:(RegistroViewModel)->Unit) {
+fun DropUpUpdateRegister (
+    enable:Boolean, onDismiss:()->Unit,
+    IdRegeistro: Int,
+    Categorias:List<CategoriaViewModel>,
+    onActionsResult:(RegistroViewModel)->Unit,
+    onLoadCategoria:(Int,(String)->Unit,(String)->Unit,(CategoriaViewModel)->Unit)->Unit
+) {
     BackHandler(enabled = enable) {
         onDismiss()
     }
@@ -52,16 +58,12 @@ fun DropUpUpdateRegister (enable:Boolean, onDismiss:()->Unit,IdRegeistro: Int,Ca
     val focusDescricao = remember {FocusRequester()}
     val focusManeger = LocalFocusManager.current
     val Density = LocalDensity.current
-    val owner = LocalLifecycleOwner.current
-    HomeActivity.homeViewModel.getRegistro(IdRegeistro).observe(owner){
-        if(it == null)
-            return@observe
-        Valor = it.Value.toString()
-        Descricao = it.Description
-        HomeActivity.homeViewModel.getCategoria(if(it.CategoriaFk == 0) 1 else it.CategoriaFk).observe(owner){
-            Categoria = it.toView()
-        }
-    }
+    onLoadCategoria(
+        IdRegeistro,
+        { Valor = it },
+        { Descricao = it },
+        { Categoria = it }
+    )
     BoxDropUpContent(enable = enable, onDismiss = onDismiss) {
         Column(
             Modifier

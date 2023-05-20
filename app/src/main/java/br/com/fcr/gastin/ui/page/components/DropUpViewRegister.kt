@@ -19,7 +19,12 @@ import br.com.fcr.gastin.R
 import br.com.fcr.gastin.ui.page.viewmodels.RegistroViewModel
 
 @Composable
-fun DropUpViewRegister(IdRegister:Int,enable:Boolean,onDismiss:()->Unit){
+fun DropUpViewRegister(
+    IdRegister:Int,
+    enable:Boolean,
+    onDismiss:()->Unit,
+    onLoadRegister:(Int,(String)->Unit,(String)->Unit,(String,Color)->Unit)->Unit
+){
     BackHandler(enabled = enable) {
         onDismiss()
     }
@@ -28,19 +33,12 @@ fun DropUpViewRegister(IdRegister:Int,enable:Boolean,onDismiss:()->Unit){
     var Descricao by remember{ mutableStateOf(txtCarregando) }
     var CategoriaCor by remember { mutableStateOf(Color(0xFFFF00ff)) }
     var CategoriaNome by remember {mutableStateOf(txtCarregando)}
-    val owner = LocalLifecycleOwner.current
-    HomeActivity.homeViewModel.getRegistro(IdRegister).observe(owner){
-        if(it == null)
-            return@observe
-        Valor = it.Value.toString()
-        Descricao = it.Description
-        if(it.CategoriaFk != 0){
-            HomeActivity.homeViewModel.getCategoria(it.CategoriaFk).observe(owner){
-                CategoriaNome = it.Name
-                CategoriaCor = Color(it.Color)
-            }
-        }
-    }
+    onLoadRegister(
+        IdRegister,
+        { Valor = it },
+        { Descricao = it },
+        { text,color-> CategoriaNome = text; CategoriaCor = color }
+    )
 
     BoxDropUpContent(enable = enable, onDismiss = onDismiss) {
         Column(

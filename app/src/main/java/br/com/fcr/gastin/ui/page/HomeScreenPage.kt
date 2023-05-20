@@ -31,23 +31,14 @@ fun HomeScreenPage(
     onMonthBefore:()->Unit,
     onMonthNext:()->Unit,
     onSwitchTheme:(Boolean)->Unit,
-    onNewRegister:(Tetra<Boolean,Int,String,Int>)->Unit
+    onNewRegister:(Tetra<Boolean,Int,String,Int>)->Unit,
+    valorDespesas:Int,
+    valorReceitas:Int
 ) {
     var openDropDownTop by remember {mutableStateOf(false)}
     var openDropDownDashboard by remember {mutableStateOf(false)}
     var openDropDownEvolucao by remember {mutableStateOf(false)}
     var openDropUpNewRegister by remember { mutableStateOf(false) }
-    var valorDespesas by remember { mutableStateOf(0) }
-    var valorReceitas by remember { mutableStateOf(0) }
-    val owner = LocalLifecycleOwner.current
-
-    HomeActivity.homeViewModel.getDespesas().observe(owner){
-        valorDespesas = it.sumOf { it.Value }
-    }
-    HomeActivity.homeViewModel.getReceitas().observe(owner){
-        valorReceitas = it.sumOf { it.Value }
-    }
-
     val categorias = listOf(
         Triple("tstee",1,Color(0xFF269FB9)),
         Triple("tstee",2,Color(0xFFA6ED0E)),
@@ -111,7 +102,7 @@ fun HomeScreenPage(
             //Informacoes de topo
             item{
                 Spacer(modifier = Modifier.size(16.dp))
-                HomeScreenInformes(100,50,50)
+                HomeScreenInformes(valorReceitas,valorReceitas - valorDespesas,valorReceitas - valorDespesas)
                 Spacer(modifier = Modifier.size(32.dp))
             }
             //Visao geral de informacoes
@@ -203,9 +194,4 @@ fun HomeScreenPage(
         onDismiss = {openDropUpNewRegister = false},
         onActionsResult = onNewRegister
     )
-}
-@Composable
-@Preview(showBackground = true)
-private fun HomeScreenPagePreview(){
-    HomeScreenPage(rememberNavController(),{},{},{},{})
 }

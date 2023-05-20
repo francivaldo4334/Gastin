@@ -36,7 +36,7 @@ import br.com.fcr.gastin.ui.utils.toMonetaryString
 
 private var listIdCheckeds by mutableStateOf(listOf<Int>())
 @Composable
-private fun listOptions(listOptions:List<Triple<String,()->Unit,Boolean>>,onDismiss:()->Unit){
+fun listOptions(listOptions:List<Triple<String,()->Unit,Boolean>>,onDismiss:()->Unit){
     listOptions.forEach {
         Row(modifier = Modifier
             .height(40.dp)
@@ -81,7 +81,12 @@ fun ListValuesScreenPage(
     title:String,
     listItem:List<RegistroViewModel>,
     onNewRegister:(RegistroViewModel)->Unit,
-    Categorias:List<CategoriaViewModel>
+    onDeleteRegister:(List<Int>)->Unit,
+    onActionsResult:(RegistroViewModel)->Unit,
+    onLoadCategoria:(Int,(String)->Unit,(String)->Unit,(CategoriaViewModel)->Unit)->Unit,
+    onLoadRegister:(Int,(String)->Unit,(String)->Unit,(String,Color)->Unit)->Unit,
+    Categorias:List<CategoriaViewModel>,
+    CategoriaDefault:CategoriaViewModel
 ){
     var showAllCheckBox by remember {mutableStateOf(false)}
     var openMoreOptions by remember{ mutableStateOf(false) }
@@ -89,7 +94,6 @@ fun ListValuesScreenPage(
     var openUpdateItem by remember { mutableStateOf(false) }
     var openNewItem by remember { mutableStateOf(false) }
     var IdSelect by remember{ mutableStateOf(0) }
-    val owner = LocalLifecycleOwner.current
     if(listIdCheckeds.isEmpty()){ showAllCheckBox = false }
     BackHandler {
         if(showAllCheckBox) {
@@ -125,7 +129,7 @@ fun ListValuesScreenPage(
                                     listIdCheckeds = emptyList()
                                 }, true),
                                 Triple(stringResource(R.string.txt_excluir), {
-                                    HomeActivity.homeViewModel.deleteRegistros(listIdCheckeds)
+                                    onDeleteRegister(listIdCheckeds)
                                     listIdCheckeds = emptyList()
                                 }, listIdCheckeds.size > 0),
                                 Triple(stringResource(R.string.txt_editar), {
@@ -173,7 +177,10 @@ fun ListValuesScreenPage(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.weight(1f)
+                        ) {
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_dolar),
                                 contentDescription = ""
@@ -184,7 +191,8 @@ fun ListValuesScreenPage(
                                     text = register.Description,
                                     fontSize = 12.sp,
                                     color = MaterialTheme.colors.onBackground.copy(0.5f),
-                                    maxLines = 1
+                                    maxLines = 1,
+                                    modifier = Modifier.fillMaxWidth()
                                 )
                                 Spacer(modifier = Modifier.height(12.dp))
                                 Text(
@@ -224,30 +232,25 @@ fun ListValuesScreenPage(
     DropUpViewRegister(
         IdRegister = IdSelect,
         enable = openViewItem,
-        onDismiss = { openViewItem = false }
+        onDismiss = { openViewItem = false },
+        onLoadRegister = onLoadRegister
     )
     DropUpUpdateRegister(
         enable = openUpdateItem,
         onDismiss = { openUpdateItem = false },
         Categorias = Categorias,
         IdRegeistro = IdSelect,
-        onActionsResult = { view->
-            HomeActivity.homeViewModel.getRegistro(view.Id).observe(owner){
-                if(it == null)
-                    return@observe
-                val registro = it
-                registro.Description = view.Description
-                registro.Value = view.Value
-                registro.CategoriaFk = if(view.CategoriaFk == null||view.CategoriaFk == 0)1 else view.CategoriaFk
-                HomeActivity.homeViewModel.updateRegister(registro)
-                listIdCheckeds = emptyList()
-            }
-        }
+        onActionsResult = {
+            onActionsResult(it)
+            listIdCheckeds = emptyList()
+        },
+        onLoadCategoria = onLoadCategoria
     )
     DropUpNewRegister(
         enable = openNewItem,
         onDismiss = {openNewItem = false},
         onActionsResult = onNewRegister,
-        Categorias = Categorias
+        Categorias = Categorias,
+        CategoriaDefault = CategoriaDefault
     )
 }

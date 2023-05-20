@@ -1,6 +1,5 @@
 package br.com.fcr.gastin.ui.page
 
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.*
 import androidx.compose.foundation.background
@@ -22,21 +21,30 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import br.com.fcr.gastin.HomeActivity
 import br.com.fcr.gastin.R
+import br.com.fcr.gastin.data.model.Categoria
 import br.com.fcr.gastin.ui.page.components.DropDownMoreOptions
 import br.com.fcr.gastin.ui.page.components.DropUpNewCategory
+import br.com.fcr.gastin.ui.page.viewmodels.CategoriaViewModel
 import br.com.fcr.gastin.ui.page.viewmodels.toModel
-import br.com.fcr.gastin.ui.utils.Tetra
+
 private var listIdCheckeds by mutableStateOf(listOf<Int>())
+
 @Composable
-fun ListCategoriasPage (navController: NavController, listItem:List<Tetra<String, String, Long, Int>>){
+fun ListCategoriasPage (
+    navController: NavController,
+    listItem:List<CategoriaViewModel>,
+    onDeleteCategoria:(List<Int>)->Unit,
+    onNewCategoria:(Categoria)->Unit
+){
     var showAllCheckBox by remember { mutableStateOf(false) }
     var openMoreOptions by remember{ mutableStateOf(false) }
         if(listIdCheckeds.isEmpty()){
         showAllCheckBox = false
     }
-    var openDropUpNewCategory by remember{ mutableStateOf(false) }
+    var openUpdateItem by remember { mutableStateOf(false) }
+    var openDropUpNewCategory by remember { mutableStateOf(false) }
+    var IdSelect by remember{ mutableStateOf(0) }
     BackHandler {
         if(showAllCheckBox) {
             showAllCheckBox = false
@@ -58,23 +66,35 @@ fun ListCategoriasPage (navController: NavController, listItem:List<Tetra<String
                 IconButton(onClick = {openMoreOptions = true}) {
                     Icon(painter = painterResource(id = R.drawable.ic_more_options_chorts), contentDescription = "")
                 }
-                DropDownMoreOptions(listOptions = listOf(
-                    Pair(stringResource(R.string.txt_selecionar_tudo)){
-                        showAllCheckBox = true
-                        listIdCheckeds = listItem.map { it.tetra }
+                DropDownMoreOptions(
+                    customItem = {
+                        listOptions(
+                            listOptions = listOf(
+                                Triple(stringResource(R.string.txt_selecionar_tudo), {
+                                    showAllCheckBox = true
+                                    listIdCheckeds = listItem.map { it.Id }
+                                }, true),
+                                Triple(stringResource(R.string.txt_adicionar), {
+                                    openDropUpNewCategory = true
+                                    listIdCheckeds = emptyList()
+                                }, true),
+                                Triple(stringResource(R.string.txt_excluir), {
+                                    onDeleteCategoria(listIdCheckeds)
+                                    listIdCheckeds = emptyList()
+                                }, listIdCheckeds.size > 0),
+                                Triple(stringResource(R.string.txt_editar), {
+                                    IdSelect = listIdCheckeds.first()
+                                    openUpdateItem = true
+                                }, listIdCheckeds.size == 1),
+                            ),
+                            onDismiss = {
+                                openMoreOptions = false
+                            }
+                        )
                     },
-                    Pair(stringResource(R.string.txt_excluir)){
-                        HomeActivity.homeViewModel.deleteCategorias(listIdCheckeds)
-                        listIdCheckeds = emptyList()
-                    },
-                    Pair(stringResource(R.string.txt_adicionar)){
-                        openDropUpNewCategory = true
-                    },
-                    Pair(stringResource(R.string.txt_editar)){
-
-                    },
-                ), enable = openMoreOptions) {
-                    openMoreOptions = false
+                    listOptions = emptyList(),
+                    enable = openMoreOptions) {
+                        openMoreOptions = false
                 }
             }
         }
@@ -85,18 +105,15 @@ fun ListCategoriasPage (navController: NavController, listItem:List<Tetra<String
             item {
                 Spacer(modifier = Modifier.height(32.dp))
             }
-            items(listItem){(titulo,descricao,cor,id)->
+            items(listItem){item->
                 Column {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable {
-
-                            }
                             .pointerInput(Unit) {
                                 detectTapGestures(
                                     onLongPress = {
-                                        listIdCheckeds += id
+                                        listIdCheckeds += item.Id
                                         showAllCheckBox = listIdCheckeds.isNotEmpty()
                                     }
                                 )
@@ -106,22 +123,29 @@ fun ListCategoriasPage (navController: NavController, listItem:List<Tetra<String
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Box(modifier = Modifier.size(32.dp).clip(CircleShape).background(Color(cor)))
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Box(modifier = Modifier.size(32.dp).clip(CircleShape).background(Color(item.Color)))
                             Spacer(modifier = Modifier.width(16.dp))
-                            Column {
+                            Column(
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
                                 Text(
-                                    text = titulo,
+                                    text = item.Name,
                                     fontSize = 14.sp,
                                     color = MaterialTheme.colors.onBackground,
-                                    maxLines = 1
+                                    maxLines = 1,
+                                    modifier = Modifier.fillMaxWidth()
                                 )
                                 Spacer(modifier = Modifier.height(12.dp))
                                 Text(
-                                    text = descricao,
+                                    text = item.Description,
                                     fontSize = 12.sp,
                                     color = MaterialTheme.colors.onBackground.copy(0.5f),
-                                    maxLines = 1
+                                    maxLines = 1,
+                                    modifier = Modifier.fillMaxWidth()
                                 )
                             }
                         }
@@ -132,12 +156,12 @@ fun ListCategoriasPage (navController: NavController, listItem:List<Tetra<String
                         ) {
                             Spacer(modifier = Modifier.width(16.dp))
                             Checkbox(
-                                checked = listIdCheckeds.any { it == id },
+                                checked = listIdCheckeds.any { it == item.Id },
                                 onCheckedChange = {
                                     if(it)
-                                        listIdCheckeds += id
+                                        listIdCheckeds += item.Id
                                     else
-                                        listIdCheckeds -= id
+                                        listIdCheckeds -= item.Id
 
                                 }
                             )
@@ -154,6 +178,6 @@ fun ListCategoriasPage (navController: NavController, listItem:List<Tetra<String
             openDropUpNewCategory = false
         }
     ){
-        HomeActivity.homeViewModel.setCategoria(it.toModel())
+        onNewCategoria(it.toModel())
     }
 }
