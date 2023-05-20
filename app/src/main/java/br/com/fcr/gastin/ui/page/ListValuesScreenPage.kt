@@ -93,7 +93,8 @@ fun ListValuesScreenPage(
     var openViewItem by remember { mutableStateOf(false) }
     var openUpdateItem by remember { mutableStateOf(false) }
     var openNewItem by remember { mutableStateOf(false) }
-    var IdSelect by remember{ mutableStateOf(0) }
+    var IdSelectView by remember{ mutableStateOf(0) }
+    var IdSelectUpdate by remember{ mutableStateOf(0) }
     if(listIdCheckeds.isEmpty()){ showAllCheckBox = false }
     BackHandler {
         if(showAllCheckBox) {
@@ -133,7 +134,7 @@ fun ListValuesScreenPage(
                                     listIdCheckeds = emptyList()
                                 }, listIdCheckeds.size > 0),
                                 Triple(stringResource(R.string.txt_editar), {
-                                    IdSelect = listIdCheckeds.first()
+                                    IdSelectUpdate = listIdCheckeds.first()
                                     openUpdateItem = true
                                 }, listIdCheckeds.size == 1),
                             ),
@@ -166,7 +167,7 @@ fun ListValuesScreenPage(
                                         showAllCheckBox = listIdCheckeds.isNotEmpty()
                                     },
                                     onTap = {
-                                        IdSelect = register.Id
+                                        IdSelectView = register.Id
                                         openViewItem = true
                                     }
                                 )
@@ -230,7 +231,7 @@ fun ListValuesScreenPage(
         }
     }
     DropUpViewRegister(
-        IdRegister = IdSelect,
+        IdRegister = IdSelectView,
         enable = openViewItem,
         onDismiss = { openViewItem = false },
         onLoadRegister = onLoadRegister
@@ -239,7 +240,7 @@ fun ListValuesScreenPage(
         enable = openUpdateItem,
         onDismiss = { openUpdateItem = false },
         Categorias = Categorias,
-        IdRegeistro = IdSelect,
+        IdRegeistro = IdSelectUpdate,
         onActionsResult = {
             onActionsResult(it)
             listIdCheckeds = emptyList()
