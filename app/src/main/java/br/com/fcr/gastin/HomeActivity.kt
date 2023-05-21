@@ -158,7 +158,6 @@ class HomeActivity : ComponentActivity() {
         homeViewModel.getCategorias().observe(this){ listCategoria = it.map { it.toView() } }
         homeViewModel.getDespesas().observe(this){ valorDespesas = it.sumOf { it.Value } }
         homeViewModel.getReceitas().observe(this){ valorReceitas = it.sumOf { it.Value } }
-        homeViewModel.getCategoria(1).observe(this){ CategoriaDefault = it.toView() }
     }
     fun setCategoriaDefault(homeViewModel:HomeViewModel){
         homeViewModel.getCategoria(1).observe(this){

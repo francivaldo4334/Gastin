@@ -8,14 +8,6 @@ import java.util.Date
 
 @Entity(
     tableName = "TB_REGISTRO",
-    foreignKeys = arrayOf(
-        ForeignKey(
-            entity = Categoria::class,
-            parentColumns = arrayOf("ID"),
-            childColumns = arrayOf("CATEGORIA_FK"),
-            onDelete = ForeignKey.CASCADE
-        )
-    )
 )
 class Registro (
     @PrimaryKey(autoGenerate = true)

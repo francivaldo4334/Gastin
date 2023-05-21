@@ -27,7 +27,7 @@ class HomeViewModel constructor(
     fun getReceitas():LiveData<List<Registro>>{
         return registroRepository.getAllReceitas()
     }
-    fun getCategoria(ID:Int):LiveData<Categoria>{
+    fun getCategoria(ID:Int):LiveData<Categoria?>{
         return categoriaRepository.getById(ID)
     }
     fun setCategoria(it:Categoria){
@@ -126,7 +126,8 @@ class HomeViewModel constructor(
             onValue(it.Value.toString())
             onDescripton(it.Description)
             getCategoria(if (it.CategoriaFk == 0) 1 else it.CategoriaFk).observe(owner) {
-                onCategoria(it.toView())
+                if(it != null)
+                    onCategoria(it.toView())
             }
         }
     }
@@ -145,7 +146,8 @@ class HomeViewModel constructor(
             onDescription(it.Description)
             if(it.CategoriaFk != 0){
                 getCategoria(it.CategoriaFk).observe(owner){
-                    onCategoria(it.Name,Color(it.Color))
+                    if(it != null)
+                        onCategoria(it.Name,Color(it.Color))
                 }
             }
         }

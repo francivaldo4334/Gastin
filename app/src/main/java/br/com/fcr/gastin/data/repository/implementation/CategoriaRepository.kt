@@ -12,7 +12,7 @@ class CategoriaRepository constructor(
         return db.getCategoriaDao().getAll()
     }
 
-    override fun getById(ID: Int): LiveData<Categoria> {
+    override fun getById(ID: Int): LiveData<Categoria?> {
         return db.getCategoriaDao().getById(ID)
     }
 
