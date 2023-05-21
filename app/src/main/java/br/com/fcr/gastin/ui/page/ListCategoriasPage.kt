@@ -24,6 +24,7 @@ import br.com.fcr.gastin.R
 import br.com.fcr.gastin.data.model.Categoria
 import br.com.fcr.gastin.ui.page.components.DropDownMoreOptions
 import br.com.fcr.gastin.ui.page.components.DropUpNewCategory
+import br.com.fcr.gastin.ui.page.components.DropUpUpdateCategoria
 import br.com.fcr.gastin.ui.page.components.DropUpViewCategoria
 import br.com.fcr.gastin.ui.page.viewmodels.CategoriaViewModel
 import br.com.fcr.gastin.ui.page.viewmodels.toModel
@@ -38,15 +39,16 @@ fun ListCategoriasPage (
     listItem:List<CategoriaViewModel>,
     onDeleteCategoria:(List<Int>)->Unit,
     onNewCategoria:(Categoria)->Unit,
+    onUpdateCategoria:(CategoriaViewModel)->Unit,
     onLoadCategoria:(Int, (String)->Unit, (String)->Unit, (Color)->Unit)->Unit
 ){
-    var DropUpViewCategoria by remember{ mutableStateOf(false) }
+    var openDropUpUpdateCategoria by remember{ mutableStateOf(false) }
+    var openDropUpViewCategoria by remember{ mutableStateOf(false) }
     var showAllCheckBox by remember { mutableStateOf(false) }
     var openMoreOptions by remember{ mutableStateOf(false) }
         if(listIdCheckeds.isEmpty()){
         showAllCheckBox = false
     }
-    var openUpdateItem by remember { mutableStateOf(false) }
     var openDropUpNewCategory by remember { mutableStateOf(false) }
     BackHandler {
         if(showAllCheckBox) {
@@ -87,7 +89,7 @@ fun ListCategoriasPage (
                                 }, listIdCheckeds.size > 0),
                                 Triple(stringResource(R.string.txt_editar), {
                                     IdUpdateCategoria = listIdCheckeds.first()
-                                    openUpdateItem = true
+                                    openDropUpUpdateCategoria = true
                                 }, listIdCheckeds.size == 1),
                             ),
                             onDismiss = {
@@ -121,7 +123,7 @@ fun ListCategoriasPage (
                                     },
                                     onTap = {
                                         IdViewCategoria = item.Id
-                                        DropUpViewCategoria = true
+                                        openDropUpViewCategoria = true
                                     }
                                 )
                             }
@@ -192,8 +194,15 @@ fun ListCategoriasPage (
     }
     DropUpViewCategoria(
         IdCategoria = IdViewCategoria,
-        enable = DropUpViewCategoria,
-        onDismiss = { DropUpViewCategoria = false },
+        enable = openDropUpViewCategoria,
+        onDismiss = { openDropUpViewCategoria = false },
+        onLoadCategoria = onLoadCategoria
+    )
+    DropUpUpdateCategoria(
+        enable = openDropUpUpdateCategoria,
+        onDismiss = { openDropUpUpdateCategoria = false },
+        IdCategoria = IdUpdateCategoria,
+        onActionsResult = onUpdateCategoria,
         onLoadCategoria = onLoadCategoria
     )
 }

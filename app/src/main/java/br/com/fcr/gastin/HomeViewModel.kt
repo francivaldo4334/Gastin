@@ -11,6 +11,7 @@ import br.com.fcr.gastin.data.repository.ICategoriaRepository
 import br.com.fcr.gastin.data.repository.IRegistroRepository
 import br.com.fcr.gastin.ui.page.viewmodels.CategoriaViewModel
 import br.com.fcr.gastin.ui.page.viewmodels.RegistroViewModel
+import br.com.fcr.gastin.ui.page.viewmodels.toModel
 import br.com.fcr.gastin.ui.page.viewmodels.toView
 import br.com.fcr.gastin.ui.utils.toMonetaryString
 import kotlinx.coroutines.Dispatchers
@@ -169,6 +170,22 @@ class HomeViewModel constructor(
                 onName(it.Name)
                 onDescription(it.Description)
                 onColor(Color(it.Color))
+            }
+        }
+    }
+
+    fun updateCategoria(view: CategoriaViewModel, owner: LifecycleOwner) {
+        getCategoria(view.Id).observe(owner){
+            if(it == null)
+                return@observe
+            val categoria = it
+            categoria.Description = view.Description
+            categoria.Name = view.Name
+            categoria.Color = view.Color
+            viewModelScope.launch (Dispatchers.IO){
+                categoriaRepository.insert(
+                    categoria
+                )
             }
         }
     }

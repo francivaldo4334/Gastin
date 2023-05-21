@@ -30,6 +30,7 @@ import br.com.fcr.gastin.R
 import br.com.fcr.gastin.ui.page.viewmodels.CategoriaViewModel
 import br.com.fcr.gastin.ui.page.viewmodels.RegistroViewModel
 import br.com.fcr.gastin.ui.utils.MaskTransformation
+import br.com.fcr.gastin.ui.utils.colorToLongHex
 
 @Composable
 fun DropUpNewCategory (enable:Boolean,onDismiss:()->Unit,onActionsResult:(CategoriaViewModel)->Unit){
@@ -156,7 +157,4 @@ fun DropUpNewCategory (enable:Boolean,onDismiss:()->Unit,onActionsResult:(Catego
             }
         }
     }
-}
-fun colorToLongHex(color: Color): Long {
-    return color.toArgb().toLong()
 }

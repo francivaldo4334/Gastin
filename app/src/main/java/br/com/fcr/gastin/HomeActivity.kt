@@ -141,6 +141,9 @@ class HomeActivity : ComponentActivity() {
                                 },
                                 onLoadCategoria = {IdCategoria,onName,onDescription,onColor->
                                     homeViewModel.loadCategoria(this@HomeActivity,IdCategoria,onName,onDescription,onColor)
+                                },
+                                onUpdateCategoria = {
+                                    homeViewModel.updateCategoria(it,this@HomeActivity)
                                 }
                             )
                         }
@@ -162,7 +165,7 @@ class HomeActivity : ComponentActivity() {
             if(it == null){
                 homeViewModel.setCategoria(
                     Categoria(
-                        Name = "Default",
+                        Name = getString(R.string.txt_indefinido),
                         Color = 0xFFD4D4D4
                     )
                 )

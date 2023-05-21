@@ -19,6 +19,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
@@ -29,16 +30,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import br.com.fcr.gastin.R
 import br.com.fcr.gastin.ui.page.viewmodels.CategoriaViewModel
-import br.com.fcr.gastin.ui.page.viewmodels.EmptyCategoriaViewModel
-import br.com.fcr.gastin.ui.page.viewmodels.RegistroViewModel
+import br.com.fcr.gastin.ui.utils.colorToLongHex
 
 @Composable
 fun DropUpUpdateCategoria (
     enable:Boolean, onDismiss:()->Unit,
-    IdRegeistro: Int,
-    Categorias:List<CategoriaViewModel>,
-    onActionsResult:(RegistroViewModel)->Unit,
-    onLoadCategoria:(Int,(String)->Unit,(String)->Unit,(CategoriaViewModel)->Unit)->Unit
+    IdCategoria: Int,
+    onActionsResult:(CategoriaViewModel)->Unit,
+    onLoadCategoria:(Int,(String)->Unit,(String)->Unit,(Color)->Unit)->Unit
 ){
     var colorSelect by remember{ mutableStateOf(Color(0xFFD4D4D4)) }
     var openDropDownColorPicker by remember {mutableStateOf(false)}
@@ -48,17 +47,15 @@ fun DropUpUpdateCategoria (
     val txtCarregando = stringResource(R.string.txt_carregando)
     var Nome by remember{ mutableStateOf(txtCarregando) }
     var Descricao by remember{ mutableStateOf(txtCarregando) }
-    var openDropDownCategoria by remember { mutableStateOf(false) }
-    var Categoria by remember{ mutableStateOf(EmptyCategoriaViewModel()) }
 
     val focusDescricao = remember { FocusRequester() }
     val focusManeger = LocalFocusManager.current
     val Density = LocalDensity.current
     onLoadCategoria(
-        IdRegeistro,
+        IdCategoria,
         { Nome = it },
         { Descricao = it },
-        { Categoria = it }
+        { colorSelect = it }
     )
     BoxDropUpContent(enable = enable, onDismiss = onDismiss) {
         Column(
@@ -73,7 +70,7 @@ fun DropUpUpdateCategoria (
             Spacer(modifier = Modifier.height(32.dp))
             OutlinedTextField(
                 label = {
-                    Text(text = stringResource(R.string.txt_valor))
+                    Text(text = stringResource(R.string.txt_nome))
                 },
                 value = Nome,
                 onValueChange = {
@@ -150,12 +147,12 @@ fun DropUpUpdateCategoria (
             Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd){
                 TextButton(onClick = {
                     onActionsResult(
-                        RegistroViewModel(
-                            Id = IdRegeistro,
+                        CategoriaViewModel(
+                            Id = IdCategoria,
+                            Name = Nome,
                             Description = Descricao,
-                            Value = if(Nome.isEmpty()) 0 else Nome.toInt(),
-                            CategoriaFk = Categoria.Id,
-                            Date = ""
+                            Date = "",
+                            Color = colorToLongHex(colorSelect)
                         )
                     )
                     onDismiss()
