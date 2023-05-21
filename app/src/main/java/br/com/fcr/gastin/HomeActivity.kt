@@ -85,6 +85,9 @@ class HomeActivity : ComponentActivity() {
                                     Constants.IsDarkTheme = sharedPreferences.getBoolean(Constants.IS_DARKTHEM,false)
                                 },
                                 onNewRegister = {},
+                                onCategoriaInforms = {
+                                    homeViewModel.getCategoriaInforms(this@HomeActivity,it)
+                                }
                             )
                         }
                         composable(Route.LISTA_DESPESAS){

@@ -46,9 +46,11 @@ fun HomeScreenDashboard(categorias:List<Triple<String,Int, Color>>, onClickMore:
             }
             Spacer(modifier = Modifier.size(16.dp))
             Row(
-                Modifier
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp)) {
+                    .padding(horizontal = 16.dp)
+            ) {
                 PizzaChart(
                     categorias,
                     modifier = Modifier.size(size.dp)
@@ -57,7 +59,10 @@ fun HomeScreenDashboard(categorias:List<Triple<String,Int, Color>>, onClickMore:
                 Column {
                     categorias.forEach {
                         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.weight(1f)
+                            ) {
                                 Box(
                                     modifier = Modifier
                                         .size(24.dp)
@@ -68,14 +73,16 @@ fun HomeScreenDashboard(categorias:List<Triple<String,Int, Color>>, onClickMore:
                                 Text(
                                     text = it.first,
                                     fontWeight = FontWeight.Light,
-                                    fontSize = 14.sp
+                                    fontSize = 14.sp,
+                                    maxLines = 1
                                 )
                             }
                             var valorPorcentagen = (it.second.toFloat()/totalPizzas.toFloat() * 100).toInt()
                             Text(
                                 text = "% ${valorPorcentagen.toString().padStart(3,' ')}",
                                 fontWeight = FontWeight.Light,
-                                fontSize = 14.sp
+                                fontSize = 14.sp,
+                                maxLines = 1
                             )
                         }
                         Spacer(modifier = Modifier.size(16.dp))

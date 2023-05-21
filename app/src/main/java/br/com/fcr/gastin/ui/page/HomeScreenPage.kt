@@ -32,6 +32,7 @@ fun HomeScreenPage(
     onMonthNext:()->Unit,
     onSwitchTheme:(Boolean)->Unit,
     onNewRegister:(Tetra<Boolean,Int,String,Int>)->Unit,
+    onCategoriaInforms:((List<Triple<String,Int,Color>>)->Unit)->Unit,
     valorDespesas:Int,
     valorReceitas:Int
 ) {
@@ -39,11 +40,12 @@ fun HomeScreenPage(
     var openDropDownDashboard by remember {mutableStateOf(false)}
     var openDropDownEvolucao by remember {mutableStateOf(false)}
     var openDropUpNewRegister by remember { mutableStateOf(false) }
-    val categorias = listOf(
-        Triple("tstee",1,Color(0xFF269FB9)),
-        Triple("tstee",2,Color(0xFFA6ED0E)),
-        Triple("tstee",3,Color(0xFF0000Ff))
-    )
+    var categorias:List<Triple<String,Int,Color>> by remember {
+        mutableStateOf(emptyList())
+    }
+    onCategoriaInforms{
+        categorias = it
+    }
     val values = listOf<Int>(
         1900,
         190,

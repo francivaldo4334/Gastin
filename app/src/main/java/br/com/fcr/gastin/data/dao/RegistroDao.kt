@@ -21,4 +21,6 @@ interface RegistroDao {
     fun delete(ID:Int)
     @Query("SELECT * FROM TB_REGISTRO")
     fun getAll(): LiveData<List<Registro>>
+    @Query("SELECT * FROM TB_REGISTRO WHERE CATEGORIA_FK = :id AND IS_DEPESA = 1")
+    fun getRegistrosByCategoriaId(id: Int): List<Registro>
 }

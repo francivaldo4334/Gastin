@@ -2,6 +2,7 @@ package br.com.fcr.gastin.data.repository.implementation
 
 import androidx.lifecycle.LiveData
 import br.com.fcr.gastin.data.MyDatabase
+import br.com.fcr.gastin.data.model.Categoria
 import br.com.fcr.gastin.data.model.Registro
 import br.com.fcr.gastin.data.repository.IRegistroRepository
 
@@ -30,6 +31,10 @@ class RegistroRepository constructor(
 
     override fun getall(): LiveData<List<Registro>> {
         return db.getRegistroDao().getAll()
+    }
+
+    override fun getRegistrosByCategoriaId(id: Int): List<Registro> {
+        return db.getRegistroDao().getRegistrosByCategoriaId(id)
     }
 
 }

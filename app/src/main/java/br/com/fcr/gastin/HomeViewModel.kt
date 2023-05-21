@@ -149,4 +149,17 @@ class HomeViewModel constructor(
             }
         }
     }
+
+    fun getCategoriaInforms(owner: LifecycleOwner,onResponse:(List<Triple<String,Int,Color>>)->Unit) {
+        getCategorias().observe(owner){
+            viewModelScope.launch(Dispatchers.IO) {
+                onResponse(
+                    it.map {
+                        var value = registroRepository.getRegistrosByCategoriaId(it.Id).sumOf { it.Value }
+                        Triple(it.Name,value,Color(it.Color))
+                    }
+                )
+            }
+        }
+    }
 }

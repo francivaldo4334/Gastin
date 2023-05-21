@@ -26,15 +26,4 @@ fun DrawScope.drawPieSlice(
             y = center.y - radius
         )
     )
-    drawArc(
-        color = strokeColor,
-        startAngle,
-        sweepAngle,
-        useCenter = true,
-        topLeft = Offset(
-            x = center.x - radius,
-            y = center.y - radius
-        ),
-        style = Stroke(width = 8f)
-    )
 }
