@@ -35,6 +35,8 @@ import br.com.fcr.gastin.ui.page.viewmodels.RegistroViewModel
 import br.com.fcr.gastin.ui.utils.toMonetaryString
 
 private var listIdCheckeds by mutableStateOf(listOf<Int>())
+var IdSelectView by mutableStateOf(0)
+var IdSelectUpdate by mutableStateOf(0)
 @Composable
 fun listOptions(listOptions:List<Triple<String,()->Unit,Boolean>>,onDismiss:()->Unit){
     listOptions.forEach {
@@ -93,8 +95,6 @@ fun ListValuesScreenPage(
     var openViewItem by remember { mutableStateOf(false) }
     var openUpdateItem by remember { mutableStateOf(false) }
     var openNewItem by remember { mutableStateOf(false) }
-    var IdSelectView by remember{ mutableStateOf(0) }
-    var IdSelectUpdate by remember{ mutableStateOf(0) }
     if(listIdCheckeds.isEmpty()){ showAllCheckBox = false }
     BackHandler {
         if(showAllCheckBox) {
