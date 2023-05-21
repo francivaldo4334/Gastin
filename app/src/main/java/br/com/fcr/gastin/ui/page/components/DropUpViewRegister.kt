@@ -25,14 +25,21 @@ fun DropUpViewRegister(
     onDismiss:()->Unit,
     onLoadRegister:(Int,(String)->Unit,(String)->Unit,(String,Color)->Unit)->Unit
 ){
-    BackHandler(enabled = enable) {
-        onDismiss()
-    }
     val txtCarregando = stringResource(R.string.txt_carregando)
     var Valor by remember{ mutableStateOf(txtCarregando) }
     var Descricao by remember{ mutableStateOf(txtCarregando) }
     var CategoriaCor by remember { mutableStateOf(Color(0xFFFF00ff)) }
     var CategoriaNome by remember {mutableStateOf(txtCarregando)}
+    var cleanValue = {
+        Valor = txtCarregando
+        Descricao = txtCarregando
+        CategoriaCor = Color(0xFFFF00ff)
+        CategoriaNome = txtCarregando
+    }
+    BackHandler(enabled = enable) {
+        cleanValue()
+        onDismiss()
+    }
     onLoadRegister(
         IdRegister,
         { Valor = it },
@@ -40,7 +47,7 @@ fun DropUpViewRegister(
         { text,color-> CategoriaNome = text; CategoriaCor = color }
     )
 
-    BoxDropUpContent(enable = enable, onDismiss = onDismiss) {
+    BoxDropUpContent(enable = enable, onDismiss = { cleanValue();onDismiss() }) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()

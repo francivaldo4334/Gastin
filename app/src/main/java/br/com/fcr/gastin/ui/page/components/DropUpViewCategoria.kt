@@ -22,9 +22,6 @@ fun DropUpViewCategoria (
     onDismiss:()->Unit,
     onLoadCategoria:(Int, (String)->Unit, (String)->Unit, (Color)->Unit)->Unit
 ){
-    BackHandler(enabled = enable) {
-        onDismiss()
-    }
     val txtCarregando = stringResource(R.string.txt_carregando)
     var Nome by remember{ mutableStateOf(txtCarregando) }
     var Descricao by remember{ mutableStateOf(txtCarregando) }
@@ -35,8 +32,16 @@ fun DropUpViewCategoria (
         { Descricao = it },
         { CategoriaCor = it }
     )
-
-    BoxDropUpContent(enable = enable, onDismiss = onDismiss) {
+    var clearValues = {
+        Nome = txtCarregando
+        Descricao = txtCarregando
+        CategoriaCor = Color(0xFFFF00ff)
+    }
+    BackHandler(enabled = enable) {
+        clearValues()
+        onDismiss()
+    }
+    BoxDropUpContent(enable = enable, onDismiss = { clearValues();onDismiss() }) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
