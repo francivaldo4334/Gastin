@@ -16,21 +16,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import br.com.fcr.gastin.HomeActivity
 import br.com.fcr.gastin.R
 import br.com.fcr.gastin.ui.page.components.DropDownMoreOptions
 import br.com.fcr.gastin.ui.page.components.DropUpNewRegister
 import br.com.fcr.gastin.ui.page.components.DropUpUpdateRegister
 import br.com.fcr.gastin.ui.page.components.DropUpViewRegister
 import br.com.fcr.gastin.ui.page.viewmodels.CategoriaViewModel
-import br.com.fcr.gastin.ui.page.viewmodels.EmptyCategoriaViewModel
-import br.com.fcr.gastin.ui.page.viewmodels.EmptyRegistroViewModel
 import br.com.fcr.gastin.ui.page.viewmodels.RegistroViewModel
 import br.com.fcr.gastin.ui.utils.toMonetaryString
 
@@ -85,7 +81,7 @@ fun ListValuesScreenPage(
     onNewRegister:(RegistroViewModel)->Unit,
     onDeleteRegister:(List<Int>)->Unit,
     onActionsResult:(RegistroViewModel)->Unit,
-    onLoadCategoria:(Int,(String)->Unit,(String)->Unit,(CategoriaViewModel)->Unit)->Unit,
+    onLoadRegisterView:(Int, (String)->Unit, (String)->Unit, (CategoriaViewModel)->Unit)->Unit,
     onLoadRegister:(Int,(String)->Unit,(String)->Unit,(String,Color)->Unit)->Unit,
     Categorias:List<CategoriaViewModel>,
     CategoriaDefault:CategoriaViewModel
@@ -245,7 +241,7 @@ fun ListValuesScreenPage(
             onActionsResult(it)
             listIdCheckeds = emptyList()
         },
-        onLoadCategoria = onLoadCategoria
+        onLoadCategoria = onLoadRegisterView
     )
     DropUpNewRegister(
         enable = openNewItem,

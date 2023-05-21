@@ -12,7 +12,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -90,10 +89,10 @@ class HomeActivity : ComponentActivity() {
                                 Categorias = listCategoria,
                                 CategoriaDefault = CategoriaDefault,
                                 onLoadRegister = { IdRegister,onValue,onDescription,onCategoria->
-                                    homeViewModel.loadListRegister(this@HomeActivity,IdRegister,onValue,onDescription,onCategoria)
+                                    homeViewModel.loadRegister(this@HomeActivity,IdRegister,onValue,onDescription,onCategoria)
                                 },
-                                onLoadCategoria = { IdRegeistro,onValue,onDescripton,onCategoria->
-                                    homeViewModel.loadListCategoria(this@HomeActivity,IdRegeistro,onValue,onDescripton,onCategoria)
+                                onLoadRegisterView = { IdRegeistro, onValue, onDescripton, onCategoria->
+                                    homeViewModel.LoadRegisterView(this@HomeActivity,IdRegeistro,onValue,onDescripton,onCategoria)
                                 },
                                 onNewRegister = {
                                     homeViewModel.setDespesa(it)
@@ -114,10 +113,10 @@ class HomeActivity : ComponentActivity() {
                                 Categorias = listCategoria,
                                 CategoriaDefault = CategoriaDefault,
                                 onLoadRegister = { IdRegister,onValue,onDescription,onCategoria->
-                                    homeViewModel.loadListRegister(this@HomeActivity,IdRegister,onValue,onDescription,onCategoria)
+                                    homeViewModel.loadRegister(this@HomeActivity,IdRegister,onValue,onDescription,onCategoria)
                                 },
-                                onLoadCategoria = { IdRegeistro,onValue,onDescripton,onCategoria->
-                                    homeViewModel.loadListCategoria(this@HomeActivity,IdRegeistro,onValue,onDescripton,onCategoria)
+                                onLoadRegisterView = { IdRegeistro, onValue, onDescripton, onCategoria->
+                                    homeViewModel.LoadRegisterView(this@HomeActivity,IdRegeistro,onValue,onDescripton,onCategoria)
                                 },
                                 onNewRegister = {
                                     homeViewModel.setReceita(it)
@@ -139,6 +138,9 @@ class HomeActivity : ComponentActivity() {
                                 },
                                 onNewCategoria = {
                                     homeViewModel.setCategoria(it)
+                                },
+                                onLoadCategoria = {IdCategoria,onName,onDescription,onColor->
+                                    homeViewModel.loadCategoria(this@HomeActivity,IdCategoria,onName,onDescription,onColor)
                                 }
                             )
                         }

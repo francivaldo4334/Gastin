@@ -3,7 +3,6 @@ package br.com.fcr.gastin.ui.page
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.*
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -25,18 +24,23 @@ import br.com.fcr.gastin.R
 import br.com.fcr.gastin.data.model.Categoria
 import br.com.fcr.gastin.ui.page.components.DropDownMoreOptions
 import br.com.fcr.gastin.ui.page.components.DropUpNewCategory
+import br.com.fcr.gastin.ui.page.components.DropUpViewCategoria
 import br.com.fcr.gastin.ui.page.viewmodels.CategoriaViewModel
 import br.com.fcr.gastin.ui.page.viewmodels.toModel
 
 private var listIdCheckeds by mutableStateOf(listOf<Int>())
 
+var IdViewCategoria by mutableStateOf(0)
+var IdUpdateCategoria by mutableStateOf(0)
 @Composable
 fun ListCategoriasPage (
     navController: NavController,
     listItem:List<CategoriaViewModel>,
     onDeleteCategoria:(List<Int>)->Unit,
-    onNewCategoria:(Categoria)->Unit
+    onNewCategoria:(Categoria)->Unit,
+    onLoadCategoria:(Int, (String)->Unit, (String)->Unit, (Color)->Unit)->Unit
 ){
+    var DropUpViewCategoria by remember{ mutableStateOf(false) }
     var showAllCheckBox by remember { mutableStateOf(false) }
     var openMoreOptions by remember{ mutableStateOf(false) }
         if(listIdCheckeds.isEmpty()){
@@ -44,7 +48,6 @@ fun ListCategoriasPage (
     }
     var openUpdateItem by remember { mutableStateOf(false) }
     var openDropUpNewCategory by remember { mutableStateOf(false) }
-    var IdSelect by remember{ mutableStateOf(0) }
     BackHandler {
         if(showAllCheckBox) {
             showAllCheckBox = false
@@ -83,7 +86,7 @@ fun ListCategoriasPage (
                                     listIdCheckeds = emptyList()
                                 }, listIdCheckeds.size > 0),
                                 Triple(stringResource(R.string.txt_editar), {
-                                    IdSelect = listIdCheckeds.first()
+                                    IdUpdateCategoria = listIdCheckeds.first()
                                     openUpdateItem = true
                                 }, listIdCheckeds.size == 1),
                             ),
@@ -115,6 +118,10 @@ fun ListCategoriasPage (
                                     onLongPress = {
                                         listIdCheckeds += item.Id
                                         showAllCheckBox = listIdCheckeds.isNotEmpty()
+                                    },
+                                    onTap = {
+                                        IdViewCategoria = item.Id
+                                        DropUpViewCategoria = true
                                     }
                                 )
                             }
@@ -127,7 +134,10 @@ fun ListCategoriasPage (
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.weight(1f)
                         ) {
-                            Box(modifier = Modifier.size(32.dp).clip(CircleShape).background(Color(item.Color)))
+                            Box(modifier = Modifier
+                                .size(32.dp)
+                                .clip(CircleShape)
+                                .background(Color(item.Color)))
                             Spacer(modifier = Modifier.width(16.dp))
                             Column(
                                 modifier = Modifier.fillMaxWidth()
@@ -180,4 +190,10 @@ fun ListCategoriasPage (
     ){
         onNewCategoria(it.toModel())
     }
+    DropUpViewCategoria(
+        IdCategoria = IdViewCategoria,
+        enable = DropUpViewCategoria,
+        onDismiss = { DropUpViewCategoria = false },
+        onLoadCategoria = onLoadCategoria
+    )
 }

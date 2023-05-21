@@ -112,7 +112,7 @@ class HomeViewModel constructor(
             }
         }
     }
-    fun loadListCategoria(
+    fun LoadRegisterView(
         owner: LifecycleOwner,
         IdRegeistro: Int,
         onValue: (String) -> Unit,
@@ -130,7 +130,7 @@ class HomeViewModel constructor(
         }
     }
 
-    fun loadListRegister(
+    fun loadRegister(
         owner: LifecycleOwner,
         IdRegister: Int,
         onValue: (String) -> Unit,
@@ -159,6 +159,16 @@ class HomeViewModel constructor(
                         Triple(it.Name,value,Color(it.Color))
                     }
                 )
+            }
+        }
+    }
+
+    fun loadCategoria(owner: LifecycleOwner, IdCategoria: Int, onName: (String)->Unit, onDescription: (String) -> Unit, onColor: (Color)->Unit) {
+        getCategoria(IdCategoria).observe(owner){
+            if(it != null){
+                onName(it.Name)
+                onDescription(it.Description)
+                onColor(Color(it.Color))
             }
         }
     }
