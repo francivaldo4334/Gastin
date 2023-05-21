@@ -33,6 +33,10 @@ private var listIdCheckeds by mutableStateOf(listOf<Int>())
 
 var IdViewCategoria by mutableStateOf(0)
 var IdUpdateCategoria by mutableStateOf(0)
+var openDropUpUpdateCategoria by mutableStateOf(false)
+var openDropUpViewCategoria by mutableStateOf(false)
+var openDropUpNewCategory by mutableStateOf(false)
+var showAllCheckBox by mutableStateOf(false)
 @Composable
 fun ListCategoriasPage (
     navController: NavController,
@@ -42,22 +46,6 @@ fun ListCategoriasPage (
     onUpdateCategoria:(CategoriaViewModel)->Unit,
     onLoadCategoria:(Int, (String)->Unit, (String)->Unit, (Color)->Unit)->Unit
 ){
-    var openDropUpUpdateCategoria by remember{ mutableStateOf(false) }
-    var openDropUpViewCategoria by remember{ mutableStateOf(false) }
-    var showAllCheckBox by remember { mutableStateOf(false) }
-    var openMoreOptions by remember{ mutableStateOf(false) }
-        if(listIdCheckeds.isEmpty()){
-        showAllCheckBox = false
-    }
-    var openDropUpNewCategory by remember { mutableStateOf(false) }
-    BackHandler {
-        if(showAllCheckBox) {
-            showAllCheckBox = false
-            listIdCheckeds = emptyList()
-        }
-        else
-            navController.popBackStack()
-    }
     Column(Modifier.fillMaxSize()){
         Row(
             modifier = Modifier
@@ -66,6 +54,7 @@ fun ListCategoriasPage (
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
+            var openMoreOptions by remember{ mutableStateOf(false) }
             Text(text = stringResource(R.string.txt_categorias), fontSize = 24.sp, modifier = Modifier.padding(start = 16.dp))
             Column {
                 IconButton(onClick = {openMoreOptions = true}) {
@@ -205,4 +194,15 @@ fun ListCategoriasPage (
         onActionsResult = onUpdateCategoria,
         onLoadCategoria = onLoadCategoria
     )
+    if(listIdCheckeds.isEmpty()){
+        showAllCheckBox = false
+    }
+    BackHandler {
+        if(showAllCheckBox) {
+            showAllCheckBox = false
+            listIdCheckeds = emptyList()
+        }
+        else
+            navController.popBackStack()
+    }
 }

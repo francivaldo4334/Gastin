@@ -3,6 +3,7 @@ package br.com.fcr.gastin
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.fcr.gastin.data.model.Categoria
@@ -27,13 +28,16 @@ class HomeViewModel constructor(
     fun getReceitas():LiveData<List<Registro>>{
         return registroRepository.getAllReceitas()
     }
-    fun getCategoria(ID:Int):LiveData<Categoria?>{
-        return categoriaRepository.getById(ID)
+    fun getCategoria(ID:Int,onREsponse:(Categoria?)->Unit){
+        viewModelScope.launch(Dispatchers.IO) {
+            onREsponse(categoriaRepository.getById(ID))
+        }
     }
     fun setCategoria(it:Categoria){
         viewModelScope.launch(Dispatchers.IO) {
             categoriaRepository.insert(it)
         }
+        HomeActivity.loadNewInformations()
     }
     fun setDespesa(it:RegistroViewModel){
         viewModelScope.launch(Dispatchers.IO){
@@ -46,6 +50,7 @@ class HomeViewModel constructor(
                 )
             )
         }
+        HomeActivity.loadNewInformations()
     }
     fun setReceita(it:RegistroViewModel){
         viewModelScope.launch(Dispatchers.IO){
@@ -58,44 +63,36 @@ class HomeViewModel constructor(
                 )
             )
         }
+        HomeActivity.loadNewInformations()
     }
-    fun setRegister(isDespesa:Boolean,it:RegistroViewModel){
-        viewModelScope.launch(Dispatchers.IO){
-            registroRepository.insert(
-                Registro(
-                    IsDespesa = isDespesa,
-                    Description = it.Description,
-                    Value = it.Value,
-                    CategoriaFk = if(it.CategoriaFk==null || it.CategoriaFk == 0) 1 else it.CategoriaFk!!
-                )
-            )
-        }
-    }
-    fun updateRegister(view:RegistroViewModel,owner: LifecycleOwner){
-        getRegistro(view.Id).observe(owner){
+    fun updateRegister(view:RegistroViewModel){
+        getRegistro(view.Id){
             if(it == null)
-                return@observe
+                return@getRegistro
             val registro = it
             registro.Description = view.Description
             registro.Value = view.Value
             registro.CategoriaFk = if(view.CategoriaFk == null||view.CategoriaFk == 0)1 else view.CategoriaFk
-            viewModelScope.launch (Dispatchers.IO){
-                registroRepository.insert(
-                    registro
-                )
-            }
+            registroRepository.insert(
+                registro
+            )
         }
+        HomeActivity.loadNewInformations()
     }
 
-    fun getCategorias():LiveData<List<Categoria>>{
-        return categoriaRepository.getAll()
+    fun getCategorias(onREsponse: (List<Categoria>) -> Unit){
+        viewModelScope.launch(Dispatchers.IO){
+            onREsponse(categoriaRepository.getAll())
+        }
     }
 
     fun getRegistros(): LiveData<List<Registro>>{
         return registroRepository.getall()
     }
-    fun getRegistro(ID: Int): LiveData<Registro>{
-        return registroRepository.getById(ID)
+    fun getRegistro(ID: Int,onREsponse: (Registro?) -> Unit){
+        viewModelScope.launch(Dispatchers.IO){
+            onREsponse(registroRepository.getById(ID))
+        }
     }
 
     fun deleteRegistros(IDs: List<Int>) {
@@ -104,6 +101,7 @@ class HomeViewModel constructor(
                 registroRepository.delete(it)
             }
         }
+        HomeActivity.loadNewInformations()
     }
 
     fun deleteCategorias(IDs: List<Int>) {
@@ -112,20 +110,20 @@ class HomeViewModel constructor(
                 categoriaRepository.delete(it)
             }
         }
+        HomeActivity.loadNewInformations()
     }
     fun LoadRegisterView(
-        owner: LifecycleOwner,
         IdRegeistro: Int,
         onValue: (String) -> Unit,
         onDescripton: (String) -> Unit,
         onCategoria: (CategoriaViewModel) -> Unit
     ){
-        getRegistro(IdRegeistro).observe(owner) {
+        getRegistro(IdRegeistro){
             if (it == null)
-                return@observe
+                return@getRegistro
             onValue(it.Value.toString())
             onDescripton(it.Description)
-            getCategoria(if (it.CategoriaFk == 0) 1 else it.CategoriaFk).observe(owner) {
+            getCategoria(if (it.CategoriaFk == 0) 1 else it.CategoriaFk){
                 if(it != null)
                     onCategoria(it.toView())
             }
@@ -133,19 +131,18 @@ class HomeViewModel constructor(
     }
 
     fun loadRegister(
-        owner: LifecycleOwner,
         IdRegister: Int,
         onValue: (String) -> Unit,
         onDescription: (String) -> Unit,
         onCategoria: (String, Color) -> Unit
     ) {
-        getRegistro(IdRegister).observe(owner){
+        getRegistro(IdRegister){
             if(it == null)
-                return@observe
+                return@getRegistro
             onValue(it.Value.toMonetaryString())
             onDescription(it.Description)
             if(it.CategoriaFk != 0){
-                getCategoria(it.CategoriaFk).observe(owner){
+                getCategoria(it.CategoriaFk){
                     if(it != null)
                         onCategoria(it.Name,Color(it.Color))
                 }
@@ -153,21 +150,20 @@ class HomeViewModel constructor(
         }
     }
 
-    fun getCategoriaInforms(owner: LifecycleOwner,onResponse:(List<Triple<String,Int,Color>>)->Unit) {
-        getCategorias().observe(owner){
-            viewModelScope.launch(Dispatchers.IO) {
-                onResponse(
-                    it.map {
-                        var value = registroRepository.getRegistrosByCategoriaId(it.Id).sumOf { it.Value }
-                        Triple(it.Name,value,Color(it.Color))
-                    }
-                )
+    fun getCategoriaInforms(onResponse:(List<Triple<String,Int,Color>>)->Unit) {
+        viewModelScope.launch(Dispatchers.IO){
+            var categorias = categoriaRepository.getAll()
+            var listResponse:List<Triple<String,Int,Color>> = mutableListOf()
+            for ( it in categorias){
+                var value = registroRepository.getRegistrosByCategoriaId(it.Id)
+                listResponse += Triple(it.Name,value,Color(it.Color))
             }
+            onResponse( listResponse )
         }
     }
 
-    fun loadCategoria(owner: LifecycleOwner, IdCategoria: Int, onName: (String)->Unit, onDescription: (String) -> Unit, onColor: (Color)->Unit) {
-        getCategoria(IdCategoria).observe(owner){
+    fun loadCategoria(IdCategoria: Int, onName: (String)->Unit, onDescription: (String) -> Unit, onColor: (Color)->Unit) {
+        getCategoria(IdCategoria){
             if(it != null){
                 onName(it.Name)
                 onDescription(it.Description)
@@ -176,19 +172,22 @@ class HomeViewModel constructor(
         }
     }
 
-    fun updateCategoria(view: CategoriaViewModel, owner: LifecycleOwner) {
-        getCategoria(view.Id).observe(owner){
-            if(it == null)
-                return@observe
-            val categoria = it
-            categoria.Description = view.Description
-            categoria.Name = view.Name
-            categoria.Color = view.Color
-            viewModelScope.launch (Dispatchers.IO){
-                categoriaRepository.insert(
-                    categoria
-                )
+    fun updateCategoria(view: CategoriaViewModel) {
+        viewModelScope.launch(Dispatchers.IO) {
+            categoriaRepository.getById(view.Id).apply {
+                if (this == null)
+                    return@apply
+                val categoria = this
+                categoria.Description = view.Description
+                categoria.Name = view.Name
+                categoria.Color = view.Color
+                viewModelScope.launch(Dispatchers.IO) {
+                    categoriaRepository.insert(
+                        categoria
+                    )
+                }
             }
         }
+        HomeActivity.loadNewInformations()
     }
 }

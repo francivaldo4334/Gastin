@@ -17,7 +17,7 @@ class RegistroRepository constructor(
         return db.getRegistroDao().getAllReceitas()
     }
 
-    override fun getById(ID: Int): LiveData<Registro> {
+    override fun getById(ID: Int): Registro {
         return db.getRegistroDao().getById(ID)
     }
 
@@ -33,7 +33,7 @@ class RegistroRepository constructor(
         return db.getRegistroDao().getAll()
     }
 
-    override fun getRegistrosByCategoriaId(id: Int): List<Registro> {
+    override fun getRegistrosByCategoriaId(id: Int): Int {
         return db.getRegistroDao().getRegistrosByCategoriaId(id)
     }
 

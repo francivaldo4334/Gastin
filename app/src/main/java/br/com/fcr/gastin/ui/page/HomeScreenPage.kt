@@ -32,7 +32,7 @@ fun HomeScreenPage(
     onSwitchTheme:(Boolean)->Unit,
     onNewRegister:(Boolean,RegistroViewModel)->Unit,
     onNewCategoria:(Categoria)->Unit,
-    onCategoriaInforms:((List<Triple<String,Int,Color>>)->Unit)->Unit,
+    categoriasInforms:List<Triple<String,Int,Color>>,
     valorDespesas:Int,
     valorReceitas:Int,
     Categorias:List<CategoriaViewModel>,
@@ -44,12 +44,6 @@ fun HomeScreenPage(
     var openDropDownDashboard by remember {mutableStateOf(false)}
     var openDropDownEvolucao by remember {mutableStateOf(false)}
     var openDropUpNewRegister by remember { mutableStateOf(false) }
-    var categoriasInforms:List<Triple<String,Int,Color>> by remember {
-        mutableStateOf(emptyList())
-    }
-    onCategoriaInforms{
-        categoriasInforms = it
-    }
     val values = listOf<Int>(
         1900,
         190,

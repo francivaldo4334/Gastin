@@ -22,31 +22,29 @@ fun DropUpViewCategoria (
     onDismiss:()->Unit,
     onLoadCategoria:(Int, (String)->Unit, (String)->Unit, (Color)->Unit)->Unit
 ){
-    val txtCarregando = stringResource(R.string.txt_carregando)
-    var Nome by remember{ mutableStateOf(txtCarregando) }
-    var Descricao by remember{ mutableStateOf(txtCarregando) }
-    var CategoriaCor by remember { mutableStateOf(Color(0xFFFF00ff)) }
-    onLoadCategoria(
-        IdCategoria,
-        { Nome = it },
-        { Descricao = it },
-        { CategoriaCor = it }
-    )
-    var clearValues = {
-        Nome = txtCarregando
-        Descricao = txtCarregando
-        CategoriaCor = Color(0xFFFF00ff)
-    }
-    BackHandler(enabled = enable) {
-        clearValues()
-        onDismiss()
-    }
-    BoxDropUpContent(enable = enable, onDismiss = { clearValues();onDismiss() }) {
+//    var clearValues = {
+//        Nome = txtCarregando
+//        Descricao = txtCarregando
+//        CategoriaCor = Color(0xFFFF00ff)
+//    }
+    BoxDropUpContent(enable = enable, onDismiss = { /*clearValues();*/onDismiss() }) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
+            val txtCarregando = stringResource(R.string.txt_carregando)
+            var Nome by remember{ mutableStateOf(txtCarregando) }
+            var Descricao by remember{ mutableStateOf(txtCarregando) }
+            var CategoriaCor by remember { mutableStateOf(Color(0xFFFF00ff)) }
+            LaunchedEffect(Unit){
+                onLoadCategoria(
+                    IdCategoria,
+                    { Nome = it },
+                    { Descricao = it },
+                    { CategoriaCor = it }
+                )
+            }
             Text(text = stringResource(id = R.string.txt_nome)+":")
             Text(text = Nome, fontWeight = FontWeight.Bold)
             Spacer(modifier = Modifier.height(16.dp))
@@ -63,5 +61,9 @@ fun DropUpViewCategoria (
             }
             Spacer(modifier = Modifier.height(56.dp))
         }
+    }
+    BackHandler(enabled = enable) {
+//        clearValues()
+        onDismiss()
     }
 }

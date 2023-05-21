@@ -8,11 +8,11 @@ import br.com.fcr.gastin.data.repository.ICategoriaRepository
 class CategoriaRepository constructor(
     private val db:MyDatabase
 ): ICategoriaRepository{
-    override fun getAll(): LiveData<List<Categoria>> {
+    override fun getAll(): List<Categoria> {
         return db.getCategoriaDao().getAll()
     }
 
-    override fun getById(ID: Int): LiveData<Categoria?> {
+    override fun getById(ID: Int): Categoria? {
         return db.getCategoriaDao().getById(ID)
     }
 

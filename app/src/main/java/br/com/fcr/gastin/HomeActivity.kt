@@ -12,7 +12,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
+import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -29,26 +31,43 @@ import br.com.fcr.gastin.ui.theme.GastinTheme
 import br.com.fcr.gastin.ui.utils.Route
 
 class HomeActivity : ComponentActivity() {
+    companion object{
+        //TODO: listas
+        private var listDespesas:List<RegistroViewModel> by mutableStateOf(emptyList())
+        private var listReceita:List<RegistroViewModel> by mutableStateOf(emptyList())
+        private var listRegistro:List<RegistroViewModel> by mutableStateOf(emptyList())
+        private var listCategoria:List<CategoriaViewModel> by mutableStateOf(emptyList())
+        private var categoriasInforms:List<Triple<String,Int, Color>> by mutableStateOf(emptyList())
+        //TODO: variaveis
+        private var valorDespesas:Int by mutableStateOf(0)
+        private var valorReceitas:Int by mutableStateOf(0)
+        private var CategoriaDefault:CategoriaViewModel = EmptyCategoriaViewModel()
+        private lateinit var owner:LifecycleOwner
+        private lateinit var homeViewModel:HomeViewModel
+        fun loadNewInformations(){
+            //TODO: viewModel
+            homeViewModel.getDespesas().observe(owner){ listDespesas = it.map { it.toView() } }
+            homeViewModel.getReceitas().observe(owner){ listReceita = it.map { it.toView() } }
+            homeViewModel.getRegistros().observe(owner){ listRegistro = it.map { it.toView() } }
+            homeViewModel.getCategorias(){ listCategoria = it.map { it.toView() } }
+            homeViewModel.getDespesas().observe(owner){ valorDespesas = it.sumOf { it.Value } }
+            homeViewModel.getReceitas().observe(owner){ valorReceitas = it.sumOf { it.Value } }
+            homeViewModel.getCategoriaInforms{ categoriasInforms = it }
+        }
+    }
     @SuppressLint("InternalInsetResource")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val sharedPreferences = getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE)
         val editor = sharedPreferences.edit()
-        Constants.IsDarkTheme = sharedPreferences.getBoolean(Constants.IS_DARKTHEM,false)
-        val homeViewModel = HomeViewModel(
+        owner = this
+        homeViewModel = HomeViewModel(
             (applicationContext as MyApplication).categoriaRepository,
             (applicationContext as MyApplication).registroRepository
         )
+        Constants.IsDarkTheme = sharedPreferences.getBoolean(Constants.IS_DARKTHEM,false)
         setCategoriaDefault(homeViewModel)
-        //TODO: listas
-        var listDespesas:List<RegistroViewModel> by mutableStateOf(emptyList())
-        var listReceita:List<RegistroViewModel> by mutableStateOf(emptyList())
-        var listRegistro:List<RegistroViewModel> by mutableStateOf(emptyList())
-        var listCategoria:List<CategoriaViewModel> by mutableStateOf(emptyList())
-        //TODO: variaveis
-        var valorDespesas:Int by mutableStateOf(0)
-        var valorReceitas:Int by mutableStateOf(0)
-        var CategoriaDefault:CategoriaViewModel = EmptyCategoriaViewModel()
+        loadNewInformations()
         setContent {
             GastinTheme(Constants.IsDarkTheme) {//Gestao de gasto
                 val statusBarHeigth = with(LocalDensity.current){
@@ -84,9 +103,7 @@ class HomeActivity : ComponentActivity() {
                                 onNewCategoria = {
                                     homeViewModel.setCategoria(it)
                                 },
-                                onCategoriaInforms = {
-                                    homeViewModel.getCategoriaInforms(this@HomeActivity,it)
-                                },
+                                categoriasInforms = categoriasInforms,
                                 Categorias = listCategoria,
                                 CategoriaDefault = CategoriaDefault
                             )
@@ -99,10 +116,10 @@ class HomeActivity : ComponentActivity() {
                                 Categorias = listCategoria,
                                 CategoriaDefault = CategoriaDefault,
                                 onLoadRegister = { IdRegister,onValue,onDescription,onCategoria->
-                                    homeViewModel.loadRegister(this@HomeActivity,IdRegister,onValue,onDescription,onCategoria)
+                                    homeViewModel.loadRegister(IdRegister,onValue,onDescription,onCategoria)
                                 },
                                 onLoadRegisterView = { IdRegeistro, onValue, onDescripton, onCategoria->
-                                    homeViewModel.LoadRegisterView(this@HomeActivity,IdRegeistro,onValue,onDescripton,onCategoria)
+                                    homeViewModel.LoadRegisterView(IdRegeistro,onValue,onDescripton,onCategoria)
                                 },
                                 onNewRegister = {
                                     homeViewModel.setDespesa(it)
@@ -111,7 +128,7 @@ class HomeActivity : ComponentActivity() {
                                     homeViewModel.deleteRegistros(it)
                                 },
                                 onActionsResult = {
-                                    homeViewModel.updateRegister(it,this@HomeActivity)
+                                    homeViewModel.updateRegister(it)
                                 }
                             )
                         }
@@ -123,10 +140,10 @@ class HomeActivity : ComponentActivity() {
                                 Categorias = listCategoria,
                                 CategoriaDefault = CategoriaDefault,
                                 onLoadRegister = { IdRegister,onValue,onDescription,onCategoria->
-                                    homeViewModel.loadRegister(this@HomeActivity,IdRegister,onValue,onDescription,onCategoria)
+                                    homeViewModel.loadRegister(IdRegister,onValue,onDescription,onCategoria)
                                 },
                                 onLoadRegisterView = { IdRegeistro, onValue, onDescripton, onCategoria->
-                                    homeViewModel.LoadRegisterView(this@HomeActivity,IdRegeistro,onValue,onDescripton,onCategoria)
+                                    homeViewModel.LoadRegisterView(IdRegeistro,onValue,onDescripton,onCategoria)
                                 },
                                 onNewRegister = {
                                     homeViewModel.setReceita(it)
@@ -135,7 +152,7 @@ class HomeActivity : ComponentActivity() {
                                     homeViewModel.deleteRegistros(it)
                                 },
                                 onActionsResult = {
-                                    homeViewModel.updateRegister(it,this@HomeActivity)
+                                    homeViewModel.updateRegister(it)
                                 }
                             )
                         }
@@ -150,10 +167,10 @@ class HomeActivity : ComponentActivity() {
                                     homeViewModel.setCategoria(it)
                                 },
                                 onLoadCategoria = {IdCategoria,onName,onDescription,onColor->
-                                    homeViewModel.loadCategoria(this@HomeActivity,IdCategoria,onName,onDescription,onColor)
+                                    homeViewModel.loadCategoria(IdCategoria,onName,onDescription,onColor)
                                 },
                                 onUpdateCategoria = {
-                                    homeViewModel.updateCategoria(it,this@HomeActivity)
+                                    homeViewModel.updateCategoria(it)
                                 }
                             )
                         }
@@ -161,16 +178,9 @@ class HomeActivity : ComponentActivity() {
                 }
             }
         }
-        //TODO: viewModel
-        homeViewModel.getDespesas().observe(this){ listDespesas = it.map { it.toView() } }
-        homeViewModel.getReceitas().observe(this){ listReceita = it.map { it.toView() } }
-        homeViewModel.getRegistros().observe(this){ listRegistro = it.map { it.toView() } }
-        homeViewModel.getCategorias().observe(this){ listCategoria = it.map { it.toView() } }
-        homeViewModel.getDespesas().observe(this){ valorDespesas = it.sumOf { it.Value } }
-        homeViewModel.getReceitas().observe(this){ valorReceitas = it.sumOf { it.Value } }
     }
     fun setCategoriaDefault(homeViewModel:HomeViewModel){
-        homeViewModel.getCategoria(1).observe(this){
+        homeViewModel.getCategoria(1){
             if(it == null){
                 homeViewModel.setCategoria(
                     Categoria(
