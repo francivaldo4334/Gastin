@@ -50,14 +50,6 @@ class HomeActivity : ComponentActivity() {
         var valorDespesas:Int by mutableStateOf(0)
         var valorReceitas:Int by mutableStateOf(0)
         var CategoriaDefault:CategoriaViewModel = EmptyCategoriaViewModel()
-        //TODO: viewModel
-        homeViewModel.getDespesas().observe(this){ listDespesas = it.map { it.toView() } }
-        homeViewModel.getReceitas().observe(this){ listReceita = it.map { it.toView() } }
-        homeViewModel.getRegistros().observe(this){ listRegistro = it.map { it.toView() } }
-        homeViewModel.getCategorias().observe(this){ listCategoria = it.map { it.toView() } }
-        homeViewModel.getDespesas().observe(this){ valorDespesas = it.sumOf { it.Value } }
-        homeViewModel.getReceitas().observe(this){ valorReceitas = it.sumOf { it.Value } }
-        homeViewModel.getCategoria(1).observe(this){ CategoriaDefault = it.toView() }
         setContent {
             GastinTheme(Constants.IsDarkTheme) {//Gestao de gasto
                 val statusBarHeigth = with(LocalDensity.current){
@@ -154,6 +146,14 @@ class HomeActivity : ComponentActivity() {
                 }
             }
         }
+        //TODO: viewModel
+        homeViewModel.getDespesas().observe(this){ listDespesas = it.map { it.toView() } }
+        homeViewModel.getReceitas().observe(this){ listReceita = it.map { it.toView() } }
+        homeViewModel.getRegistros().observe(this){ listRegistro = it.map { it.toView() } }
+        homeViewModel.getCategorias().observe(this){ listCategoria = it.map { it.toView() } }
+        homeViewModel.getDespesas().observe(this){ valorDespesas = it.sumOf { it.Value } }
+        homeViewModel.getReceitas().observe(this){ valorReceitas = it.sumOf { it.Value } }
+        homeViewModel.getCategoria(1).observe(this){ CategoriaDefault = it.toView() }
     }
     fun setCategoriaDefault(homeViewModel:HomeViewModel){
         homeViewModel.getCategoria(1).observe(this){
