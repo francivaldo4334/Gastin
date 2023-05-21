@@ -75,10 +75,20 @@ class HomeActivity : ComponentActivity() {
                                     editor.apply()
                                     Constants.IsDarkTheme = sharedPreferences.getBoolean(Constants.IS_DARKTHEM,false)
                                 },
-                                onNewRegister = {},
+                                onNewRegister = {isDespesa,item->
+                                    if(isDespesa)
+                                        homeViewModel.setDespesa(item)
+                                    else
+                                        homeViewModel.setReceita(item)
+                                },
+                                onNewCategoria = {
+                                    homeViewModel.setCategoria(it)
+                                },
                                 onCategoriaInforms = {
                                     homeViewModel.getCategoriaInforms(this@HomeActivity,it)
-                                }
+                                },
+                                Categorias = listCategoria,
+                                CategoriaDefault = CategoriaDefault
                             )
                         }
                         composable(Route.LISTA_DESPESAS){

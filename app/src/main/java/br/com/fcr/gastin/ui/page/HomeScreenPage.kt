@@ -10,20 +10,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import br.com.fcr.gastin.HomeActivity
 import br.com.fcr.gastin.R
+import br.com.fcr.gastin.data.model.Categoria
 import br.com.fcr.gastin.ui.common.Constants
 import br.com.fcr.gastin.ui.utils.Route
 import br.com.fcr.gastin.ui.page.components.*
-import br.com.fcr.gastin.ui.utils.Tetra
+import br.com.fcr.gastin.ui.page.viewmodels.CategoriaViewModel
+import br.com.fcr.gastin.ui.page.viewmodels.RegistroViewModel
+import br.com.fcr.gastin.ui.page.viewmodels.toModel
 
 @Composable
 fun HomeScreenPage(
@@ -31,20 +30,25 @@ fun HomeScreenPage(
     onMonthBefore:()->Unit,
     onMonthNext:()->Unit,
     onSwitchTheme:(Boolean)->Unit,
-    onNewRegister:(Tetra<Boolean,Int,String,Int>)->Unit,
+    onNewRegister:(Boolean,RegistroViewModel)->Unit,
+    onNewCategoria:(Categoria)->Unit,
     onCategoriaInforms:((List<Triple<String,Int,Color>>)->Unit)->Unit,
     valorDespesas:Int,
-    valorReceitas:Int
+    valorReceitas:Int,
+    Categorias:List<CategoriaViewModel>,
+    CategoriaDefault: CategoriaViewModel
 ) {
+    var IsDespesa:Boolean? by remember {mutableStateOf(null)}
+    var openDropUpNewCategory by remember{ mutableStateOf(false) }
     var openDropDownTop by remember {mutableStateOf(false)}
     var openDropDownDashboard by remember {mutableStateOf(false)}
     var openDropDownEvolucao by remember {mutableStateOf(false)}
     var openDropUpNewRegister by remember { mutableStateOf(false) }
-    var categorias:List<Triple<String,Int,Color>> by remember {
+    var categoriasInforms:List<Triple<String,Int,Color>> by remember {
         mutableStateOf(emptyList())
     }
     onCategoriaInforms{
-        categorias = it
+        categoriasInforms = it
     }
     val values = listOf<Int>(
         1900,
@@ -87,12 +91,9 @@ fun HomeScreenPage(
                     }
                 },
                 listOptions = listOf(
-                    Pair(stringResource(R.string.txt_adicionar_categoria),{}),
-                    Pair(stringResource(R.string.txt_adicionar_despesa),{}),
-                    Pair(stringResource(R.string.txt_adicionar_receita),{}),
-                    Pair(stringResource(R.string.txt_remover_categoria),{}),
-                    Pair(stringResource(R.string.txt_remover_despesa),{}),
-                    Pair(stringResource(R.string.txt_remover_receita),{}),
+                    Pair(stringResource(R.string.txt_adicionar_categoria),{openDropUpNewCategory = true}),
+                    Pair(stringResource(R.string.txt_adicionar_despesa),{IsDespesa= true;openDropUpNewRegister = true}),
+                    Pair(stringResource(R.string.txt_adicionar_receita),{IsDespesa= false;openDropUpNewRegister = true}),
                     Pair(stringResource(R.string.txt_como_funciona),{}),
                 ),
                 enable = openDropDownTop,
@@ -122,7 +123,7 @@ fun HomeScreenPage(
             }
             //Dashboard
             item{
-                HomeScreenDashboard(categorias,{
+                HomeScreenDashboard(categoriasInforms,{
                     openDropDownDashboard = true
                 }){
                     DropDownMoreOptions(
@@ -130,8 +131,7 @@ fun HomeScreenPage(
                             Pair(stringResource(R.string.txt_ver_categorias)) {
                                 navController.navigate(Route.LISTA_CATEGORIAS)
                             },
-                            Pair(stringResource(R.string.txt_adicionar_categoria),{}),
-                            Pair(stringResource(R.string.txt_remover_categoria),{})
+                            Pair(stringResource(R.string.txt_adicionar_categoria),{openDropUpNewCategory = true})
                         ),
                         enable = openDropDownDashboard,
                         onDismiss = {
@@ -184,7 +184,7 @@ fun HomeScreenPage(
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_add),
-                contentDescription = "",
+                contentDescription = "icone adicioanr",
                 modifier = Modifier
                     .size(24.dp),
                 tint = MaterialTheme.colors.onBackground
@@ -193,7 +193,19 @@ fun HomeScreenPage(
     }
     HomeScreenDropUpNewRegister(
         enable = openDropUpNewRegister,
+        IsDespesa = IsDespesa,
+        setIsDespesa = {IsDespesa = it},
         onDismiss = {openDropUpNewRegister = false},
-        onActionsResult = onNewRegister
+        onActionsResult = onNewRegister,
+        Categorias = Categorias,
+        CategoriaDefault = CategoriaDefault
     )
+    DropUpNewCategory(
+        enable = openDropUpNewCategory,
+        onDismiss = {
+            openDropUpNewCategory = false
+        }
+    ){
+        onNewCategoria(it.toModel())
+    }
 }
