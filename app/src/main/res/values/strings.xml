@@ -4,7 +4,7 @@
     <string name="txt_receitas">Receitas</string>
     <string name="txt_modo_escuro">Modo escuro</string>
     <string name="txt_adicionar_categoria">+Adicionar categoria</string>
-    <string name="txt_adicionar_despesa">+Adicionar despesa</string>
+    <string name="txt_adicionar_despesa">-Adicionar despesa</string>
     <string name="txt_adicionar_receita">+Adicionar receita</string>
     <string name="txt_remover_categoria">-Remover categoria</string>
     <string name="txt_remover_despesa">-Remover despesa</string>

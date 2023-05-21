@@ -92,8 +92,8 @@ fun HomeScreenPage(
                 },
                 listOptions = listOf(
                     Pair(stringResource(R.string.txt_adicionar_categoria),{openDropUpNewCategory = true}),
-                    Pair(stringResource(R.string.txt_adicionar_despesa),{IsDespesa= true;openDropUpNewRegister = true}),
                     Pair(stringResource(R.string.txt_adicionar_receita),{IsDespesa= false;openDropUpNewRegister = true}),
+                    Pair(stringResource(R.string.txt_adicionar_despesa),{IsDespesa= true;openDropUpNewRegister = true}),
                     Pair(stringResource(R.string.txt_como_funciona),{}),
                 ),
                 enable = openDropDownTop,
