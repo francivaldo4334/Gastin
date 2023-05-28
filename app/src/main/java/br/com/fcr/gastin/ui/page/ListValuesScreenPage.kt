@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -21,18 +22,19 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import br.com.fcr.gastin.HomeActivity
 import br.com.fcr.gastin.R
 import br.com.fcr.gastin.ui.page.components.DropDownMoreOptions
 import br.com.fcr.gastin.ui.page.components.DropUpNewRegister
 import br.com.fcr.gastin.ui.page.components.DropUpUpdateRegister
 import br.com.fcr.gastin.ui.page.components.DropUpViewRegister
 import br.com.fcr.gastin.ui.page.viewmodels.CategoriaViewModel
+import br.com.fcr.gastin.ui.page.viewmodels.EmptyCategoriaViewModel
+import br.com.fcr.gastin.ui.page.viewmodels.EmptyRegistroViewModel
 import br.com.fcr.gastin.ui.page.viewmodels.RegistroViewModel
 import br.com.fcr.gastin.ui.utils.toMonetaryString
 
 private var listIdCheckeds by mutableStateOf(listOf<Int>())
-var IdSelectView by mutableStateOf(0)
-var IdSelectUpdate by mutableStateOf(0)
 @Composable
 fun listOptions(listOptions:List<Triple<String,()->Unit,Boolean>>,onDismiss:()->Unit){
     listOptions.forEach {
@@ -72,7 +74,8 @@ fun listOptions(listOptions:List<Triple<String,()->Unit,Boolean>>,onDismiss:()->
         }
     }
 }
-
+var openUpdateItem by mutableStateOf(false)
+var openNewItem by mutableStateOf(false)
 @Composable
 fun ListValuesScreenPage(
     navController: NavController,
@@ -80,17 +83,20 @@ fun ListValuesScreenPage(
     listItem:List<RegistroViewModel>,
     onNewRegister:(RegistroViewModel)->Unit,
     onDeleteRegister:(List<Int>)->Unit,
-    onActionsResult:(RegistroViewModel)->Unit,
-    onLoadRegisterView:(Int, (String)->Unit, (String)->Unit, (CategoriaViewModel)->Unit)->Unit,
-    onLoadRegister:(Int,(String)->Unit,(String)->Unit,(String,Color)->Unit)->Unit,
+    onUpdateRegister:(RegistroViewModel)->Unit,
+    onLoadRegister:(Int,(RegistroViewModel)->Unit)->Unit,
     Categorias:List<CategoriaViewModel>,
     CategoriaDefault:CategoriaViewModel
 ){
     var showAllCheckBox by remember {mutableStateOf(false)}
     var openMoreOptions by remember{ mutableStateOf(false) }
     var openViewItem by remember { mutableStateOf(false) }
-    var openUpdateItem by remember { mutableStateOf(false) }
-    var openNewItem by remember { mutableStateOf(false) }
+    var registerId by remember{ mutableStateOf(0) }
+    var CategoriaId by remember{ mutableStateOf(0) }
+    var Valor by remember{ mutableStateOf("") }
+    var Descricao by remember{ mutableStateOf("") }
+    var CategoriaCor by remember { mutableStateOf(Color(HomeActivity.CategoriaDefault.Color)) }
+    var CategoriaNome by remember { mutableStateOf(HomeActivity.CategoriaDefault.Name)}
     if(listIdCheckeds.isEmpty()){ showAllCheckBox = false }
     BackHandler {
         if(showAllCheckBox) {
@@ -130,7 +136,12 @@ fun ListValuesScreenPage(
                                     listIdCheckeds = emptyList()
                                 }, listIdCheckeds.size > 0),
                                 Triple(stringResource(R.string.txt_editar), {
-                                    IdSelectUpdate = listIdCheckeds.first()
+                                    onLoadRegister(listIdCheckeds.first()){
+                                        registerId = it.Id
+                                        CategoriaId = it.CategoriaFk?:1
+                                        Valor = it.Value.toString()
+                                        Descricao = it.Description
+                                    }
                                     openUpdateItem = true
                                 }, listIdCheckeds.size == 1),
                             ),
@@ -163,8 +174,11 @@ fun ListValuesScreenPage(
                                         showAllCheckBox = listIdCheckeds.isNotEmpty()
                                     },
                                     onTap = {
-                                        IdSelectView = register.Id
-                                        openViewItem = true
+                                        onLoadRegister(register.Id) {
+                                            Valor = it.Value.toString()
+                                            Descricao = it.Description
+                                            openViewItem = true
+                                        }
                                     }
                                 )
                             }
@@ -227,21 +241,39 @@ fun ListValuesScreenPage(
         }
     }
     DropUpViewRegister(
-        IdRegister = IdSelectView,
         enable = openViewItem,
         onDismiss = { openViewItem = false },
-        onLoadRegister = onLoadRegister
+        Valor = Valor,
+        Descricao = Descricao,
+        CategoriaCor = CategoriaCor,
+        CategoriaNome = CategoriaNome
     )
     DropUpUpdateRegister(
         enable = openUpdateItem,
         onDismiss = { openUpdateItem = false },
         Categorias = Categorias,
-        IdRegeistro = IdSelectUpdate,
-        onActionsResult = {
-            onActionsResult(it)
-            listIdCheckeds = emptyList()
+        registerId = registerId,
+        CategoriaId = CategoriaId,
+        Valor = Valor,
+        Descricao = Descricao,
+        CategoriaCor = CategoriaCor,
+        CategoriaNome = CategoriaNome,
+        onValor = {
+            Valor = it
         },
-        onLoadCategoria = onLoadRegisterView
+        onDescricao = {
+            Descricao = it
+        },
+        onCategoriaCor = {
+            CategoriaCor = it
+        },
+        onCategoriaNome = {
+            CategoriaNome = it
+        },
+        onActionsResult = {
+            onUpdateRegister(it)
+            listIdCheckeds = emptyList()
+        }
     )
     DropUpNewRegister(
         enable = openNewItem,

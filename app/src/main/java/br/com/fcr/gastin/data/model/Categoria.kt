@@ -2,6 +2,7 @@ package br.com.fcr.gastin.data.model
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import java.util.*
 
@@ -17,5 +18,7 @@ class Categoria (
     @ColumnInfo(name = "COLOR")
     var Color:Long = 0,
     @ColumnInfo(name = "CREATE_AT")
-    var CreateAT: Date = Date()
+    var CreateAT: Date = Date(),
+    @ColumnInfo(name = "TOTAL")
+    var total:Int = 0
 )

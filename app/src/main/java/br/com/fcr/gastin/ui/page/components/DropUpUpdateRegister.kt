@@ -40,30 +40,28 @@ import br.com.fcr.gastin.ui.utils.Tetra
 
 @Composable
 fun DropUpUpdateRegister (
-    enable:Boolean, onDismiss:()->Unit,
-    IdRegeistro: Int,
+    enable:Boolean,
+    onDismiss:()->Unit,
     Categorias:List<CategoriaViewModel>,
-    onActionsResult:(RegistroViewModel)->Unit,
-    onLoadCategoria:(Int,(String)->Unit,(String)->Unit,(CategoriaViewModel)->Unit)->Unit
+    registerId:Int,
+    CategoriaId:Int,
+    Valor:String,
+    Descricao:String,
+    CategoriaCor:Color,
+    CategoriaNome:String,
+    onValor:(String)->Unit,
+    onDescricao:(String)->Unit,
+    onCategoriaCor:(Color)->Unit,
+    onCategoriaNome:(String)->Unit,
+    onActionsResult:(RegistroViewModel)->Unit
 ) {
     BackHandler(enabled = enable) {
         onDismiss()
     }
-    val txtCarregando = stringResource(R.string.txt_carregando)
-    var Valor by remember{ mutableStateOf(txtCarregando) }
-    var Descricao by remember{ mutableStateOf(txtCarregando) }
     var openDropDownCategoria by remember { mutableStateOf(false) }
-    var Categoria by remember{ mutableStateOf(EmptyCategoriaViewModel())}
-
     val focusDescricao = remember {FocusRequester()}
     val focusManeger = LocalFocusManager.current
     val Density = LocalDensity.current
-    onLoadCategoria(
-        IdRegeistro,
-        { Valor = it },
-        { Descricao = it },
-        { Categoria = it }
-    )
     BoxDropUpContent(enable = enable, onDismiss = onDismiss) {
         Column(
             Modifier
@@ -81,7 +79,7 @@ fun DropUpUpdateRegister (
                 },
                 value = Valor,
                 onValueChange = {
-                    Valor = Regex("[^0-9]").replace(it,"")
+                    onValor(Regex("[^0-9]").replace(it,""))
                 },
                 modifier = Modifier
                     .fillMaxWidth(),
@@ -97,7 +95,7 @@ fun DropUpUpdateRegister (
                 },
                 value = Descricao,
                 onValueChange = {
-                    Descricao = it
+                    onDescricao(it)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -120,10 +118,10 @@ fun DropUpUpdateRegister (
                         }
                         .clip(RoundedCornerShape(16.dp))
                         .clickable { openDropDownCategoria = true }
-                        .border(4.dp, Color(Categoria.Color), RoundedCornerShape(16.dp))
+                        .border(4.dp, CategoriaCor, RoundedCornerShape(16.dp))
                 ) {
                     Text(
-                        text = Categoria.Name,
+                        text = CategoriaNome,
                         fontSize = 14.sp,
                         modifier = Modifier.padding(start = 32.dp)
                     )
@@ -152,7 +150,8 @@ fun DropUpUpdateRegister (
                         Row(
                             modifier = Modifier
                                 .clickable {
-                                    Categoria = it
+                                    onCategoriaCor(Color(it.Color))
+                                    onCategoriaNome(it.Name)
                                     openDropDownCategoria = false
                                 }
                                 .padding(16.dp)
@@ -173,10 +172,10 @@ fun DropUpUpdateRegister (
                 TextButton(onClick = {
                     onActionsResult(
                         RegistroViewModel(
-                            Id = IdRegeistro,
+                            Id = registerId,
                             Description = Descricao,
                             Value = if(Valor.isEmpty()) 0 else Valor.toInt(),
-                            CategoriaFk = Categoria.Id,
+                            CategoriaFk = CategoriaId,
                             Date = ""
                         )
                     )

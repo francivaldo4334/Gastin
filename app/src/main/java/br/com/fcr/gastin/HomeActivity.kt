@@ -8,67 +8,52 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
-import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import br.com.fcr.gastin.data.model.Categoria
+import br.com.fcr.gastin.data.model.Registro
 import br.com.fcr.gastin.ui.common.Constants
 import br.com.fcr.gastin.ui.page.HomeScreenPage
 import br.com.fcr.gastin.ui.page.ListCategoriasPage
 import br.com.fcr.gastin.ui.page.ListValuesScreenPage
 import br.com.fcr.gastin.ui.page.viewmodels.CategoriaViewModel
 import br.com.fcr.gastin.ui.page.viewmodels.EmptyCategoriaViewModel
+import br.com.fcr.gastin.ui.page.viewmodels.EmptyRegistroViewModel
 import br.com.fcr.gastin.ui.page.viewmodels.RegistroViewModel
+import br.com.fcr.gastin.ui.page.viewmodels.toModel
 import br.com.fcr.gastin.ui.page.viewmodels.toView
 import br.com.fcr.gastin.ui.theme.GastinTheme
 import br.com.fcr.gastin.ui.utils.Route
 
 class HomeActivity : ComponentActivity() {
     companion object{
-        //TODO: listas
-        private var listDespesas:List<RegistroViewModel> by mutableStateOf(emptyList())
-        private var listReceita:List<RegistroViewModel> by mutableStateOf(emptyList())
-        private var listRegistro:List<RegistroViewModel> by mutableStateOf(emptyList())
-        private var listCategoria:List<CategoriaViewModel> by mutableStateOf(emptyList())
-        private var categoriasInforms:List<Triple<String,Int, Color>> by mutableStateOf(emptyList())
-        //TODO: variaveis
-        private var valorDespesas:Int by mutableStateOf(0)
-        private var valorReceitas:Int by mutableStateOf(0)
-        private var CategoriaDefault:CategoriaViewModel = EmptyCategoriaViewModel()
-        private lateinit var owner:LifecycleOwner
-        private lateinit var homeViewModel:HomeViewModel
-        fun loadNewInformations(){
-            //TODO: viewModel
-            homeViewModel.getDespesas().observe(owner){ listDespesas = it.map { it.toView() } }
-            homeViewModel.getReceitas().observe(owner){ listReceita = it.map { it.toView() } }
-            homeViewModel.getRegistros().observe(owner){ listRegistro = it.map { it.toView() } }
-            homeViewModel.getCategorias(){ listCategoria = it.map { it.toView() } }
-            homeViewModel.getDespesas().observe(owner){ valorDespesas = it.sumOf { it.Value } }
-            homeViewModel.getReceitas().observe(owner){ valorReceitas = it.sumOf { it.Value } }
-            homeViewModel.getCategoriaInforms{ categoriasInforms = it }
-        }
+        var CategoriaDefault:CategoriaViewModel = EmptyCategoriaViewModel()
     }
     @SuppressLint("InternalInsetResource")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val sharedPreferences = getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE)
         val editor = sharedPreferences.edit()
-        owner = this
-        homeViewModel = HomeViewModel(
+        val homeViewModel = HomeViewModel(
             (applicationContext as MyApplication).categoriaRepository,
             (applicationContext as MyApplication).registroRepository
         )
         Constants.IsDarkTheme = sharedPreferences.getBoolean(Constants.IS_DARKTHEM,false)
         setCategoriaDefault(homeViewModel)
-        loadNewInformations()
         setContent {
+            //TODO: listas
+            val listDespesas by homeViewModel.despesas.collectAsState()
+            val listReceita by homeViewModel.receitas.collectAsState()
+            val listCategoria by homeViewModel.categorias.collectAsState()
+            val categoriasInforms by homeViewModel.categoriasInforms.collectAsState()
+            //TODO: variaveis
+            val valorDespesas by homeViewModel.valorDespesas.collectAsState()
+            val valorReceitas by homeViewModel.valorReceitas.collectAsState()
             GastinTheme(Constants.IsDarkTheme) {//Gestao de gasto
                 val statusBarHeigth = with(LocalDensity.current){
                     val resourceId = resources.getIdentifier("status_bar_height","dimen","android")
@@ -85,8 +70,8 @@ class HomeActivity : ComponentActivity() {
                         composable(Route.HOME){
                             HomeScreenPage(
                                 navController = navController,
-                                valorDespesas = valorDespesas,
-                                valorReceitas = valorReceitas,
+                                valorDespesas = valorDespesas?:0,
+                                valorReceitas = valorReceitas?:0,
                                 onMonthBefore = { /*TODO*/ },
                                 onMonthNext = {/*TODO*/},
                                 onSwitchTheme = {
@@ -95,13 +80,10 @@ class HomeActivity : ComponentActivity() {
                                     Constants.IsDarkTheme = sharedPreferences.getBoolean(Constants.IS_DARKTHEM,false)
                                 },
                                 onNewRegister = {isDespesa,item->
-                                    if(isDespesa)
-                                        homeViewModel.setDespesa(item)
-                                    else
-                                        homeViewModel.setReceita(item)
+                                    homeViewModel.onEvent(RegisterEvent.update(isDespesa,item.toModel()))
                                 },
                                 onNewCategoria = {
-                                    homeViewModel.setCategoria(it)
+
                                 },
                                 categoriasInforms = categoriasInforms,
                                 Categorias = listCategoria,
@@ -112,23 +94,22 @@ class HomeActivity : ComponentActivity() {
                             ListValuesScreenPage(
                                 navController = navController,
                                 title = getString(R.string.txt_despesas),
-                                listItem = listDespesas,
+                                listItem = listDespesas.map { it.toView() },
                                 Categorias = listCategoria,
                                 CategoriaDefault = CategoriaDefault,
-                                onLoadRegister = { IdRegister,onValue,onDescription,onCategoria->
-                                    homeViewModel.loadRegister(IdRegister,onValue,onDescription,onCategoria)
-                                },
-                                onLoadRegisterView = { IdRegeistro, onValue, onDescripton, onCategoria->
-                                    homeViewModel.LoadRegisterView(IdRegeistro,onValue,onDescripton,onCategoria)
+                                onLoadRegister = { IdRegeistro,onResult->
+                                     homeViewModel.onEvent(RegisterEvent.get(IdRegeistro){
+                                        onResult(it.toView())
+                                    })
                                 },
                                 onNewRegister = {
-                                    homeViewModel.setDespesa(it)
+                                    homeViewModel.onEvent(RegisterEvent.insert(it.toModel()))
                                 },
                                 onDeleteRegister = {
-                                    homeViewModel.deleteRegistros(it)
+                                    homeViewModel.onEvent(RegisterEvent.deleteAll(it))
                                 },
-                                onActionsResult = {
-                                    homeViewModel.updateRegister(it)
+                                onUpdateRegister = {
+                                    homeViewModel.onEvent(RegisterEvent.update(true,it.toModel()))
                                 }
                             )
                         }
@@ -139,38 +120,39 @@ class HomeActivity : ComponentActivity() {
                                 listItem = listReceita,
                                 Categorias = listCategoria,
                                 CategoriaDefault = CategoriaDefault,
-                                onLoadRegister = { IdRegister,onValue,onDescription,onCategoria->
-                                    homeViewModel.loadRegister(IdRegister,onValue,onDescription,onCategoria)
-                                },
-                                onLoadRegisterView = { IdRegeistro, onValue, onDescripton, onCategoria->
-                                    homeViewModel.LoadRegisterView(IdRegeistro,onValue,onDescripton,onCategoria)
+                                onLoadRegister = { IdRegeistro,onResult->
+                                    homeViewModel.onEvent(RegisterEvent.get(IdRegeistro){
+                                        onResult(it.toView())
+                                    })
                                 },
                                 onNewRegister = {
-                                    homeViewModel.setReceita(it)
+                                    homeViewModel.onEvent(RegisterEvent.insert(it.toModel(false)))
                                 },
                                 onDeleteRegister = {
-                                    homeViewModel.deleteRegistros(it)
+                                    homeViewModel.onEvent(RegisterEvent.deleteAll(it))
                                 },
-                                onActionsResult = {
-                                    homeViewModel.updateRegister(it)
+                                onUpdateRegister = {
+                                    homeViewModel.onEvent(RegisterEvent.update(false,it.toModel()))
                                 }
                             )
                         }
                         composable(Route.LISTA_CATEGORIAS){
                             ListCategoriasPage(
                                 navController = navController,
-                                listItem = listCategoria.filter { it.Id != 1 },
+                                listItem = listCategoria,
                                 onDeleteCategoria = {
-                                    homeViewModel.deleteCategorias(it)
+                                    homeViewModel.onEvent(CategoriaEvent.deleteAll(it))
                                 },
                                 onNewCategoria = {
-                                    homeViewModel.setCategoria(it)
+                                    homeViewModel.onEvent(CategoriaEvent.insert(it))
                                 },
-                                onLoadCategoria = {IdCategoria,onName,onDescription,onColor->
-                                    homeViewModel.loadCategoria(IdCategoria,onName,onDescription,onColor)
+                                onLoadCategoria = {IdRegeistro,onResult->
+                                    homeViewModel.onEvent(CategoriaEvent.get(IdRegeistro){
+                                        it?.let { it1 -> onResult(it1.toView()) }
+                                    })
                                 },
                                 onUpdateCategoria = {
-                                    homeViewModel.updateCategoria(it)
+                                    homeViewModel.onEvent(CategoriaEvent.update(it.toModel()))
                                 }
                             )
                         }
@@ -180,15 +162,15 @@ class HomeActivity : ComponentActivity() {
         }
     }
     fun setCategoriaDefault(homeViewModel:HomeViewModel){
-        homeViewModel.getCategoria(1){
+        homeViewModel.onEvent(CategoriaEvent.get(1){
             if(it == null){
-                homeViewModel.setCategoria(
+                homeViewModel.onEvent(CategoriaEvent.insert(
                     Categoria(
                         Name = getString(R.string.txt_indefinido),
                         Color = 0xFFD4D4D4
                     )
-                )
+                ))
             }
-        }
+        })
     }
 }

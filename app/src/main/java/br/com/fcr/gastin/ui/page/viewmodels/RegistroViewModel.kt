@@ -21,8 +21,9 @@ fun Registro.toView():RegistroViewModel{
         Id = this.Id
     )
 }
-fun RegistroViewModel.toModel():Registro{
+fun RegistroViewModel.toModel(isDespesa:Boolean = true):Registro{
     return Registro(
+        IsDespesa = isDespesa,
         Id = this.Id,
         Description = this.Description,
         Value = this.Value,

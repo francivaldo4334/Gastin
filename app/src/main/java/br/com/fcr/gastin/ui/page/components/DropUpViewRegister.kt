@@ -14,40 +14,29 @@ import androidx.compose.ui.platform.*
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import br.com.fcr.gastin.HomeActivity
+import br.com.fcr.gastin.HomeViewModel
+import br.com.fcr.gastin.MyApplication
 import br.com.fcr.gastin.R
+import br.com.fcr.gastin.RegisterEvent
+import br.com.fcr.gastin.ui.page.viewmodels.EmptyRegistroViewModel
 import br.com.fcr.gastin.ui.page.viewmodels.RegistroViewModel
 
 @Composable
 fun DropUpViewRegister(
-    IdRegister:Int,
     enable:Boolean,
     onDismiss:()->Unit,
-    onLoadRegister:(Int,(String)->Unit,(String)->Unit,(String,Color)->Unit)->Unit
+    Valor:String,
+    Descricao:String,
+    CategoriaCor:Color,
+    CategoriaNome:String
 ){
-    val txtCarregando = stringResource(R.string.txt_carregando)
-    var Valor by remember{ mutableStateOf(txtCarregando) }
-    var Descricao by remember{ mutableStateOf(txtCarregando) }
-    var CategoriaCor by remember { mutableStateOf(Color(0xFFFF00ff)) }
-    var CategoriaNome by remember {mutableStateOf(txtCarregando)}
-    var cleanValue = {
-        Valor = txtCarregando
-        Descricao = txtCarregando
-        CategoriaCor = Color(0xFFFF00ff)
-        CategoriaNome = txtCarregando
-    }
     BackHandler(enabled = enable) {
-        cleanValue()
         onDismiss()
     }
-    onLoadRegister(
-        IdRegister,
-        { Valor = it },
-        { Descricao = it },
-        { text,color-> CategoriaNome = text; CategoriaCor = color }
-    )
 
-    BoxDropUpContent(enable = enable, onDismiss = { cleanValue();onDismiss() }) {
+    BoxDropUpContent(enable = enable, onDismiss = { onDismiss() }) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()

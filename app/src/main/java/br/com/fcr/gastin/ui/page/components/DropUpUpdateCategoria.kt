@@ -37,26 +37,21 @@ fun DropUpUpdateCategoria (
     enable:Boolean, onDismiss:()->Unit,
     IdCategoria: Int,
     onActionsResult:(CategoriaViewModel)->Unit,
-    onLoadCategoria:(Int,(String)->Unit,(String)->Unit,(Color)->Unit)->Unit
+    colorSelect:Color,
+    Nome:String,
+    Descricao:String,
+    oncolorSelect:(Color)->Unit,
+    onNome:(String)->Unit,
+    onDescricao:(String)->Unit,
 ){
-    var colorSelect by remember{ mutableStateOf(Color(0xFFD4D4D4)) }
     var openDropDownColorPicker by remember {mutableStateOf(false)}
     BackHandler(enabled = enable) {
         onDismiss()
     }
-    val txtCarregando = stringResource(R.string.txt_carregando)
-    var Nome by remember{ mutableStateOf(txtCarregando) }
-    var Descricao by remember{ mutableStateOf(txtCarregando) }
 
     val focusDescricao = remember { FocusRequester() }
     val focusManeger = LocalFocusManager.current
     val Density = LocalDensity.current
-    onLoadCategoria(
-        IdCategoria,
-        { Nome = it },
-        { Descricao = it },
-        { colorSelect = it }
-    )
     BoxDropUpContent(enable = enable, onDismiss = onDismiss) {
         Column(
             Modifier
@@ -74,7 +69,7 @@ fun DropUpUpdateCategoria (
                 },
                 value = Nome,
                 onValueChange = {
-                    Nome = it
+                    onNome(it)
                 },
                 modifier = Modifier
                     .fillMaxWidth(),
@@ -89,7 +84,7 @@ fun DropUpUpdateCategoria (
                 },
                 value = Descricao,
                 onValueChange = {
-                    Descricao = it
+                    onDescricao(it)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -138,7 +133,7 @@ fun DropUpUpdateCategoria (
                     ColorPicker(
                         width = width,
                         onColorSelected = {
-                            colorSelect = it
+                            oncolorSelect(it)
                         }
                     )
                 }

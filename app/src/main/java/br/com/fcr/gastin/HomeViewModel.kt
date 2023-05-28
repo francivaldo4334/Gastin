@@ -1,193 +1,124 @@
 package br.com.fcr.gastin
 
+import android.util.Log
 import androidx.compose.ui.graphics.Color
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.fcr.gastin.data.model.Categoria
 import br.com.fcr.gastin.data.model.Registro
 import br.com.fcr.gastin.data.repository.ICategoriaRepository
 import br.com.fcr.gastin.data.repository.IRegistroRepository
-import br.com.fcr.gastin.ui.page.viewmodels.CategoriaViewModel
-import br.com.fcr.gastin.ui.page.viewmodels.RegistroViewModel
-import br.com.fcr.gastin.ui.page.viewmodels.toModel
 import br.com.fcr.gastin.ui.page.viewmodels.toView
-import br.com.fcr.gastin.ui.utils.toMonetaryString
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
+sealed interface CategoriaEvent{
+    data class delete(val id:Int):CategoriaEvent
+    data class deleteAll(val ids:List<Int>):CategoriaEvent
+    data class update(val categoria: Categoria):CategoriaEvent
+    data class get(val id:Int,val onResult:(Categoria?)->Unit):CategoriaEvent
+    data class insert(val categoira:Categoria):CategoriaEvent
+}
+sealed interface RegisterEvent{
+    data class delete(val id:Int):RegisterEvent
+    data class deleteAll(val ids:List<Int>):RegisterEvent
+    data class update(val isDespesa:Boolean,val register: Registro):RegisterEvent
+    data class get(val id:Int,val onResult:(Registro)->Unit):RegisterEvent
+    data class insert(val registro:Registro):RegisterEvent
+}
 class HomeViewModel constructor(
     private val categoriaRepository: ICategoriaRepository,
     private val registroRepository: IRegistroRepository
 ) : ViewModel(){
-    fun getDespesas():LiveData<List<Registro>>{
-        return registroRepository.getAllDespesas()
-    }
-    fun getReceitas():LiveData<List<Registro>>{
-        return registroRepository.getAllReceitas()
-    }
-    fun getCategoria(ID:Int,onREsponse:(Categoria?)->Unit){
-        viewModelScope.launch(Dispatchers.IO) {
-            onREsponse(categoriaRepository.getById(ID))
-        }
-    }
-    fun setCategoria(it:Categoria){
-        viewModelScope.launch(Dispatchers.IO) {
-            categoriaRepository.insert(it)
-        }
-        HomeActivity.loadNewInformations()
-    }
-    fun setDespesa(it:RegistroViewModel){
-        viewModelScope.launch(Dispatchers.IO){
-            registroRepository.insert(
-                Registro(
-                    IsDespesa = true,
-                    Description = it.Description,
-                    Value = it.Value,
-                    CategoriaFk = if(it.CategoriaFk==null || it.CategoriaFk == 0) 1 else it.CategoriaFk!!
-                )
+    //TODO: listas
+    val despesas = registroRepository.getAllDespesas().stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
+    val receitas = registroRepository.getAllReceitas().flatMapLatest {MutableStateFlow(it.map {it.toView()})}.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
+    val categorias = categoriaRepository.getAll().flatMapLatest {MutableStateFlow(it.map {it.toView()})}.stateIn(viewModelScope, SharingStarted.WhileSubscribed(),emptyList())
+    val categoriasInforms = categoriaRepository.getAllWithTotal().flatMapLatest {
+        Log.d("TESTE_INFORMS",it.first().total.toString())
+        var list = it.map {
+            Triple(
+                it.Name,
+                it.total,
+                Color(it.Color)
             )
         }
-        HomeActivity.loadNewInformations()
-    }
-    fun setReceita(it:RegistroViewModel){
-        viewModelScope.launch(Dispatchers.IO){
-            registroRepository.insert(
-                Registro(
-                    IsDespesa = false,
-                    Description = it.Description,
-                    Value = it.Value,
-                    CategoriaFk = if(it.CategoriaFk==null || it.CategoriaFk == 0) 1 else it.CategoriaFk!!
-                )
-            )
-        }
-        HomeActivity.loadNewInformations()
-    }
-    fun updateRegister(view:RegistroViewModel){
-        getRegistro(view.Id){
-            if(it == null)
-                return@getRegistro
-            val registro = it
-            registro.Description = view.Description
-            registro.Value = view.Value
-            registro.CategoriaFk = if(view.CategoriaFk == null||view.CategoriaFk == 0)1 else view.CategoriaFk
-            registroRepository.insert(
-                registro
-            )
-        }
-        HomeActivity.loadNewInformations()
-    }
+        MutableStateFlow(list)
+    }.stateIn(viewModelScope,SharingStarted.WhileSubscribed(),emptyList())
+    private var buscaRegister = MutableStateFlow<Int>(0)
+    var valorDespesas = registroRepository.getAllDespesasValor().stateIn(viewModelScope, SharingStarted.WhileSubscribed(),0)
+    var valorReceitas = registroRepository.getAllReceitasValor().stateIn(viewModelScope, SharingStarted.WhileSubscribed(),0)
+    val registro = buscaRegister.flatMapLatest{
+        registroRepository.getById(it)
+    } .stateIn(viewModelScope, SharingStarted.WhileSubscribed(),Registro())
+    fun onEvent(event:RegisterEvent){
+        when(event){
 
-    fun getCategorias(onREsponse: (List<Categoria>) -> Unit){
-        viewModelScope.launch(Dispatchers.IO){
-            onREsponse(categoriaRepository.getAll())
-        }
-    }
-
-    fun getRegistros(): LiveData<List<Registro>>{
-        return registroRepository.getall()
-    }
-    fun getRegistro(ID: Int,onREsponse: (Registro?) -> Unit){
-        viewModelScope.launch(Dispatchers.IO){
-            onREsponse(registroRepository.getById(ID))
-        }
-    }
-
-    fun deleteRegistros(IDs: List<Int>) {
-        viewModelScope.launch(Dispatchers.IO) {
-            IDs.forEach {
-                registroRepository.delete(it)
-            }
-        }
-        HomeActivity.loadNewInformations()
-    }
-
-    fun deleteCategorias(IDs: List<Int>) {
-        viewModelScope.launch(Dispatchers.IO) {
-            IDs.forEach {
-                categoriaRepository.delete(it)
-            }
-        }
-        HomeActivity.loadNewInformations()
-    }
-    fun LoadRegisterView(
-        IdRegeistro: Int,
-        onValue: (String) -> Unit,
-        onDescripton: (String) -> Unit,
-        onCategoria: (CategoriaViewModel) -> Unit
-    ){
-        getRegistro(IdRegeistro){
-            if (it == null)
-                return@getRegistro
-            onValue(it.Value.toString())
-            onDescripton(it.Description)
-            getCategoria(if (it.CategoriaFk == 0) 1 else it.CategoriaFk){
-                if(it != null)
-                    onCategoria(it.toView())
-            }
-        }
-    }
-
-    fun loadRegister(
-        IdRegister: Int,
-        onValue: (String) -> Unit,
-        onDescription: (String) -> Unit,
-        onCategoria: (String, Color) -> Unit
-    ) {
-        getRegistro(IdRegister){
-            if(it == null)
-                return@getRegistro
-            onValue(it.Value.toMonetaryString())
-            onDescription(it.Description)
-            if(it.CategoriaFk != 0){
-                getCategoria(it.CategoriaFk){
-                    if(it != null)
-                        onCategoria(it.Name,Color(it.Color))
-                }
-            }
-        }
-    }
-
-    fun getCategoriaInforms(onResponse:(List<Triple<String,Int,Color>>)->Unit) {
-        viewModelScope.launch(Dispatchers.IO){
-            var categorias = categoriaRepository.getAll()
-            var listResponse:List<Triple<String,Int,Color>> = mutableListOf()
-            for ( it in categorias){
-                var value = registroRepository.getRegistrosByCategoriaId(it.Id)
-                listResponse += Triple(it.Name,value,Color(it.Color))
-            }
-            onResponse( listResponse )
-        }
-    }
-
-    fun loadCategoria(IdCategoria: Int, onName: (String)->Unit, onDescription: (String) -> Unit, onColor: (Color)->Unit) {
-        getCategoria(IdCategoria){
-            if(it != null){
-                onName(it.Name)
-                onDescription(it.Description)
-                onColor(Color(it.Color))
-            }
-        }
-    }
-
-    fun updateCategoria(view: CategoriaViewModel) {
-        viewModelScope.launch(Dispatchers.IO) {
-            categoriaRepository.getById(view.Id).apply {
-                if (this == null)
-                    return@apply
-                val categoria = this
-                categoria.Description = view.Description
-                categoria.Name = view.Name
-                categoria.Color = view.Color
+            is RegisterEvent.delete -> {
                 viewModelScope.launch(Dispatchers.IO) {
-                    categoriaRepository.insert(
-                        categoria
-                    )
+                    registroRepository.delete(event.id)
+                }
+            }
+            is RegisterEvent.deleteAll -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    event.ids.forEach{
+                        registroRepository.delete(it)
+                    }
+                }
+            }
+            is RegisterEvent.get -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    registroRepository.getById(event.id).collectLatest {
+                        event.onResult(it)
+                    }
+                }
+            }
+            is RegisterEvent.update -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    val resgister = event.register
+                    resgister.IsDespesa = event.isDespesa
+                    registroRepository.update(resgister)
+                }
+            }
+            is RegisterEvent.insert ->{
+                viewModelScope.launch(Dispatchers.IO) {
+                    registroRepository.insert(event.registro)
                 }
             }
         }
-        HomeActivity.loadNewInformations()
     }
+    fun onEvent(event:CategoriaEvent){
+        when(event){
+            is CategoriaEvent.get->{
+                viewModelScope.launch(Dispatchers.IO) {
+                    categoriaRepository.getById(event.id).collectLatest {
+                        event.onResult(it)
+                    }
+                }
+            }
+            is CategoriaEvent.insert -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    categoriaRepository.insert(event.categoira)
+                }
+            }
+            is CategoriaEvent.deleteAll->{
+                viewModelScope.launch(Dispatchers.IO){
+                    event.ids.forEach{
+                        categoriaRepository.delete(it)
+                    }
+                }
+            }
+            is CategoriaEvent.update->{
+                viewModelScope.launch(Dispatchers.IO){
+                    categoriaRepository.update(event.categoria)
+                }
+            }
+        }
+    }
+
 }

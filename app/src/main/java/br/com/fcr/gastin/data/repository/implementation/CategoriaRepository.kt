@@ -1,18 +1,18 @@
 package br.com.fcr.gastin.data.repository.implementation
 
-import androidx.lifecycle.LiveData
 import br.com.fcr.gastin.data.MyDatabase
 import br.com.fcr.gastin.data.model.Categoria
 import br.com.fcr.gastin.data.repository.ICategoriaRepository
+import kotlinx.coroutines.flow.Flow
 
 class CategoriaRepository constructor(
     private val db:MyDatabase
 ): ICategoriaRepository{
-    override fun getAll(): List<Categoria> {
+    override fun getAll(): Flow<List<Categoria>> {
         return db.getCategoriaDao().getAll()
     }
 
-    override fun getById(ID: Int): Categoria? {
+    override fun getById(ID: Int): Flow<Categoria?> {
         return db.getCategoriaDao().getById(ID)
     }
 
@@ -20,8 +20,16 @@ class CategoriaRepository constructor(
         db.getCategoriaDao().insert(it)
     }
 
+    override fun update(it: Categoria) {
+        db.getCategoriaDao().update(it)
+    }
+
     override fun delete(ID: Int) {
         db.getCategoriaDao().delete(ID)
+    }
+    override fun getAllWithTotal():Flow<List<Categoria>>{
+//        return MutableStateFlow(CategoriaTotal(0,"","","","",0.0))
+        return db.getCategoriaDao().getAllWithTotal()
     }
 
 }

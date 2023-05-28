@@ -42,52 +42,6 @@ import br.com.fcr.gastin.ui.utils.MaskTransformation
 import br.com.fcr.gastin.ui.utils.Tetra
 
 @Composable
-private fun Item(isDespesas:Boolean,onClick:()->Unit){
-    Column(
-        modifier = Modifier
-            .height(56.dp)
-            .clickable { onClick() }
-            .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.Bottom
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-        ){
-            Box(modifier = Modifier
-                .size(24.dp)
-                .clip(CircleShape)
-                .background(
-                    if (isDespesas)
-                        Color.Red.copy(0.5f)
-                    else
-                        Color.Green.copy(0.5f)
-                ), contentAlignment = Alignment.Center){
-                Icon(
-                    painter = painterResource(id = if (isDespesas)
-                        R.drawable.ic_minus
-                    else
-                        R.drawable.ic_add),
-                    contentDescription = "",
-                    tint = MaterialTheme.colors.background
-                )
-            }
-            Spacer(modifier = Modifier.size(16.dp))
-            Text(
-                text =
-                if(isDespesas)
-                    stringResource(id = R.string.txt_despesas)
-                else
-                    stringResource(id = R.string.txt_receitas),
-                fontSize = 14.sp
-            )
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        Divider()
-    }
-}
-@Composable
 fun DropUpNewRegister (
     enable:Boolean,
     Categorias:List<CategoriaViewModel>,

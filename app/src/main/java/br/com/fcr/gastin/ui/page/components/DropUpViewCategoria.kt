@@ -17,34 +17,18 @@ import br.com.fcr.gastin.R
 
 @Composable
 fun DropUpViewCategoria (
-    IdCategoria:Int,
     enable:Boolean,
     onDismiss:()->Unit,
-    onLoadCategoria:(Int, (String)->Unit, (String)->Unit, (Color)->Unit)->Unit
+    Nome:String,
+    Descricao:String,
+    CategoriaCor:Color,
 ){
-//    var clearValues = {
-//        Nome = txtCarregando
-//        Descricao = txtCarregando
-//        CategoriaCor = Color(0xFFFF00ff)
-//    }
     BoxDropUpContent(enable = enable, onDismiss = { /*clearValues();*/onDismiss() }) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            val txtCarregando = stringResource(R.string.txt_carregando)
-            var Nome by remember{ mutableStateOf(txtCarregando) }
-            var Descricao by remember{ mutableStateOf(txtCarregando) }
-            var CategoriaCor by remember { mutableStateOf(Color(0xFFFF00ff)) }
-            LaunchedEffect(Unit){
-                onLoadCategoria(
-                    IdCategoria,
-                    { Nome = it },
-                    { Descricao = it },
-                    { CategoriaCor = it }
-                )
-            }
             Text(text = stringResource(id = R.string.txt_nome)+":")
             Text(text = Nome, fontWeight = FontWeight.Bold)
             Spacer(modifier = Modifier.height(16.dp))

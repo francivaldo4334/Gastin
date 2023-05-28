@@ -44,8 +44,11 @@ fun ListCategoriasPage (
     onDeleteCategoria:(List<Int>)->Unit,
     onNewCategoria:(Categoria)->Unit,
     onUpdateCategoria:(CategoriaViewModel)->Unit,
-    onLoadCategoria:(Int, (String)->Unit, (String)->Unit, (Color)->Unit)->Unit
+    onLoadCategoria:(Int,(CategoriaViewModel)->Unit)->Unit
 ){
+    var Nome by remember{ mutableStateOf("") }
+    var Descricao by remember{ mutableStateOf("") }
+    var CategoriaCor by remember{ mutableStateOf(Color.White) }
     Column(Modifier.fillMaxSize()){
         Row(
             modifier = Modifier
@@ -78,6 +81,11 @@ fun ListCategoriasPage (
                                 }, listIdCheckeds.size > 0),
                                 Triple(stringResource(R.string.txt_editar), {
                                     IdUpdateCategoria = listIdCheckeds.first()
+                                    onLoadCategoria(IdUpdateCategoria){
+                                        CategoriaCor = Color(it.Color)
+                                        Nome = it.Name
+                                        Descricao = it.Description
+                                    }
                                     openDropUpUpdateCategoria = true
                                 }, listIdCheckeds.size == 1),
                             ),
@@ -112,6 +120,11 @@ fun ListCategoriasPage (
                                     },
                                     onTap = {
                                         IdViewCategoria = item.Id
+                                        onLoadCategoria(item.Id){
+                                            Nome = it.Name
+                                            Descricao = it.Description
+                                            CategoriaCor = Color(it.Color)
+                                        }
                                         openDropUpViewCategoria = true
                                     }
                                 )
@@ -182,17 +195,23 @@ fun ListCategoriasPage (
         onNewCategoria(it.toModel())
     }
     DropUpViewCategoria(
-        IdCategoria = IdViewCategoria,
         enable = openDropUpViewCategoria,
         onDismiss = { openDropUpViewCategoria = false },
-        onLoadCategoria = onLoadCategoria
+        Nome = Nome,
+        Descricao = Descricao,
+        CategoriaCor = CategoriaCor,
     )
     DropUpUpdateCategoria(
         enable = openDropUpUpdateCategoria,
         onDismiss = { openDropUpUpdateCategoria = false },
         IdCategoria = IdUpdateCategoria,
         onActionsResult = onUpdateCategoria,
-        onLoadCategoria = onLoadCategoria
+        colorSelect = CategoriaCor,
+        Nome = Nome,
+        Descricao = Descricao,
+        oncolorSelect = {CategoriaCor = it},
+        onNome = {Nome = it},
+        onDescricao = {Descricao = it},
     )
     if(listIdCheckeds.isEmpty()){
         showAllCheckBox = false

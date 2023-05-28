@@ -5,22 +5,30 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import br.com.fcr.gastin.data.model.Registro
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface RegistroDao {
     @Query("SELECT * FROM TB_REGISTRO WHERE ID = :ID")
-    fun getById(ID:Int): Registro
+    fun getById(ID:Int): Flow<Registro>
     @Query("SELECT * FROM TB_REGISTRO WHERE IS_DEPESA = 1")
-    fun getAllDespesas(): LiveData<List<Registro>>
+    fun getAllDespesas(): Flow<List<Registro>>
     @Query("SELECT * FROM TB_REGISTRO WHERE IS_DEPESA = 0")
-    fun getAllReceitas(): LiveData<List<Registro>>
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun getAllReceitas(): Flow<List<Registro>>
+    @Insert
     fun insert(Categoria: Registro):Long
     @Query("DELETE FROM TB_REGISTRO WHERE ID = :ID")
     fun delete(ID:Int)
     @Query("SELECT * FROM TB_REGISTRO")
     fun getAll(): LiveData<List<Registro>>
     @Query("SELECT SUM(VALUE) FROM TB_REGISTRO WHERE CATEGORIA_FK = :id AND IS_DEPESA = 1;")
-    fun getRegistrosByCategoriaId(id: Int): Int
+    fun getRegistrosByCategoriaId(id: Int): Flow<Int>
+    @Query("SELECT SUM(VALUE) FROM TB_REGISTRO WHERE IS_DEPESA = 1;")
+    fun getAllDespesasValor(): Flow<Int?>
+    @Query("SELECT SUM(VALUE) FROM TB_REGISTRO WHERE IS_DEPESA = 0;")
+    fun getAllReceitasValor(): Flow<Int?>
+    @Update
+    fun update(resgister: Registro)
 }
