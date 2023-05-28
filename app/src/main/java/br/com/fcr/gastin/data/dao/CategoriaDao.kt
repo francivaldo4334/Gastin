@@ -14,7 +14,11 @@ interface CategoriaDao {
     fun insert(Categoria:Categoria):Long
     @Query("DELETE FROM TB_CATEGORIA WHERE ID = :ID")
     fun delete(ID:Int)
-    @Query("SELECT TB_CATEGORIA.ID,TB_CATEGORIA.NAME,TB_CATEGORIA.DESCRIPTION,TB_CATEGORIA.COLOR,TB_CATEGORIA.CREATE_AT,SUM(TB_REGISTRO.VALUE) AS TOTAL FROM TB_REGISTRO JOIN TB_CATEGORIA ON TB_CATEGORIA.ID = TB_REGISTRO.CATEGORIA_FK GROUP BY TB_REGISTRO.ID")
+    @Query("SELECT TB_CATEGORIA.*,SUM(TB_REGISTRO.VALUE) AS TOTAL " +
+            "FROM TB_CATEGORIA " +
+            "JOIN TB_REGISTRO " +
+            "ON  TB_REGISTRO.CATEGORIA_FK = TB_CATEGORIA.ID " +
+            "GROUP BY TB_CATEGORIA.ID")
     fun getAllWithTotal():Flow<List<Categoria>>
     @Update
     fun update(it: Categoria)

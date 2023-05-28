@@ -27,7 +27,7 @@ sealed interface RegisterEvent{
     data class delete(val id:Int):RegisterEvent
     data class deleteAll(val ids:List<Int>):RegisterEvent
     data class update(val isDespesa:Boolean,val register: Registro):RegisterEvent
-    data class get(val id:Int,val onResult:(Registro)->Unit):RegisterEvent
+    data class get(val id:Int,val onResult:(Registro?)->Unit):RegisterEvent
     data class insert(val registro:Registro):RegisterEvent
 }
 class HomeViewModel constructor(

@@ -45,6 +45,11 @@ class HomeActivity : ComponentActivity() {
         )
         Constants.IsDarkTheme = sharedPreferences.getBoolean(Constants.IS_DARKTHEM,false)
         setCategoriaDefault(homeViewModel)
+        homeViewModel.onEvent(CategoriaEvent.get(1){
+            it?.let {
+                CategoriaDefault = it.toView()
+            }
+        })
         setContent {
             //TODO: listas
             val listDespesas by homeViewModel.despesas.collectAsState()
@@ -80,10 +85,10 @@ class HomeActivity : ComponentActivity() {
                                     Constants.IsDarkTheme = sharedPreferences.getBoolean(Constants.IS_DARKTHEM,false)
                                 },
                                 onNewRegister = {isDespesa,item->
-                                    homeViewModel.onEvent(RegisterEvent.update(isDespesa,item.toModel()))
+                                    homeViewModel.onEvent(RegisterEvent.insert(item.toModel(isDespesa)))
                                 },
                                 onNewCategoria = {
-
+                                    homeViewModel.onEvent(CategoriaEvent.insert(it))
                                 },
                                 categoriasInforms = categoriasInforms,
                                 Categorias = listCategoria,
@@ -99,7 +104,9 @@ class HomeActivity : ComponentActivity() {
                                 CategoriaDefault = CategoriaDefault,
                                 onLoadRegister = { IdRegeistro,onResult->
                                      homeViewModel.onEvent(RegisterEvent.get(IdRegeistro){
-                                        onResult(it.toView())
+                                         it?.let {
+                                             onResult(it.toView())
+                                         }
                                     })
                                 },
                                 onNewRegister = {
@@ -122,7 +129,9 @@ class HomeActivity : ComponentActivity() {
                                 CategoriaDefault = CategoriaDefault,
                                 onLoadRegister = { IdRegeistro,onResult->
                                     homeViewModel.onEvent(RegisterEvent.get(IdRegeistro){
-                                        onResult(it.toView())
+                                        it?.let {
+                                            onResult(it.toView())
+                                        }
                                     })
                                 },
                                 onNewRegister = {
@@ -148,7 +157,9 @@ class HomeActivity : ComponentActivity() {
                                 },
                                 onLoadCategoria = {IdRegeistro,onResult->
                                     homeViewModel.onEvent(CategoriaEvent.get(IdRegeistro){
-                                        it?.let { it1 -> onResult(it1.toView()) }
+                                        it?.let {
+                                            onResult(it.toView())
+                                        }
                                     })
                                 },
                                 onUpdateCategoria = {
