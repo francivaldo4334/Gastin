@@ -169,7 +169,7 @@ class HomeActivity : ComponentActivity() {
                         composable(Route.LISTA_CATEGORIAS){
                             ListCategoriasPage(
                                 navController = navController,
-                                listItem = listCategoria,
+                                listItem = listCategoria.filter { it.Id != 1 },
                                 onDeleteCategoria = {
                                     homeViewModel.onEvent(CategoriaEvent.deleteAll(it))
                                 },

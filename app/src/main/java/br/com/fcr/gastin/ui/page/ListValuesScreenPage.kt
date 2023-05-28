@@ -161,94 +161,102 @@ fun ListValuesScreenPage(
                 }
             }
         }
-        LazyColumn(modifier = Modifier
-            .fillMaxWidth()
-        ){
-            item { 
-                Spacer(modifier = Modifier.height(32.dp))
+        if(listItem.isEmpty())
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ){
+                Text(text = stringResource(R.string.txt_sem_registros))
             }
-            items(listItem){ register->
-                Column {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .pointerInput(Unit) {
-                                detectTapGestures(
-                                    onLongPress = {
-                                        listIdCheckeds += register.Id
-                                        showAllCheckBox = listIdCheckeds.isNotEmpty()
-                                    },
-                                    onTap = {
-                                        onLoadRegister(register.Id) {
-                                            Valor = it.Value.toMonetaryString()
-                                            Descricao = it.Description
-                                            CategoriaId = it.CategoriaFk?:1
-                                            onLoadCategory(CategoriaId){
-                                                CategoriaCor = Color(it.Color)
-                                                CategoriaNome = it.Name
-                                            }
-                                        }
-                                        openViewItem = true
-                                    }
-                                )
-                            }
-                            .height(64.dp)
-                            .padding(top = 12.dp, bottom = 8.dp)
-                            .padding(horizontal = 16.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
+        else
+            LazyColumn(modifier = Modifier
+                .fillMaxSize()
+            ){
+                item {
+                    Spacer(modifier = Modifier.height(32.dp))
+                }
+                items(listItem){ register->
+                    Column {
                         Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_dolar),
-                                contentDescription = ""
-                            )
-                            Spacer(modifier = Modifier.width(16.dp))
-                            Column {
-                                Text(
-                                    text = register.Description,
-                                    fontSize = 12.sp,
-                                    color = MaterialTheme.colors.onBackground.copy(0.5f),
-                                    maxLines = 1,
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                                Spacer(modifier = Modifier.height(12.dp))
-                                Text(
-                                    text = register.Date,
-                                    fontSize = 12.sp,
-                                    color = MaterialTheme.colors.onBackground.copy(0.5f),
-                                    maxLines = 1
-                                )
-                            }
-                        }
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(text = register.Value.toMonetaryString(), fontSize = 12.sp)
-                            AnimatedVisibility(
-                                visible = showAllCheckBox,
-                                enter = expandHorizontally() + slideInHorizontally(),
-                                exit = shrinkHorizontally() + slideOutHorizontally()
-                            ) {
-                                Spacer(modifier = Modifier.width(16.dp))
-                                Checkbox(
-                                    checked = listIdCheckeds.any { it == register.Id },
-                                    onCheckedChange = {
-                                        if(it)
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .pointerInput(Unit) {
+                                    detectTapGestures(
+                                        onLongPress = {
                                             listIdCheckeds += register.Id
-                                        else
-                                            listIdCheckeds -= register.Id
-
-                                    }
+                                            showAllCheckBox = listIdCheckeds.isNotEmpty()
+                                        },
+                                        onTap = {
+                                            onLoadRegister(register.Id) {
+                                                Valor = it.Value.toMonetaryString()
+                                                Descricao = it.Description
+                                                CategoriaId = it.CategoriaFk ?: 1
+                                                onLoadCategory(CategoriaId) {
+                                                    CategoriaCor = Color(it.Color)
+                                                    CategoriaNome = it.Name
+                                                }
+                                            }
+                                            openViewItem = true
+                                        }
+                                    )
+                                }
+                                .height(64.dp)
+                                .padding(top = 12.dp, bottom = 8.dp)
+                                .padding(horizontal = 16.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.ic_dolar),
+                                    contentDescription = ""
                                 )
+                                Spacer(modifier = Modifier.width(16.dp))
+                                Column {
+                                    Text(
+                                        text = register.Description,
+                                        fontSize = 12.sp,
+                                        color = MaterialTheme.colors.onBackground.copy(0.5f),
+                                        maxLines = 1,
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                    Spacer(modifier = Modifier.height(12.dp))
+                                    Text(
+                                        text = register.Date,
+                                        fontSize = 12.sp,
+                                        color = MaterialTheme.colors.onBackground.copy(0.5f),
+                                        maxLines = 1
+                                    )
+                                }
+                            }
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(text = register.Value.toMonetaryString(), fontSize = 12.sp)
+                                AnimatedVisibility(
+                                    visible = showAllCheckBox,
+                                    enter = expandHorizontally() + slideInHorizontally(),
+                                    exit = shrinkHorizontally() + slideOutHorizontally()
+                                ) {
+                                    Spacer(modifier = Modifier.width(16.dp))
+                                    Checkbox(
+                                        checked = listIdCheckeds.any { it == register.Id },
+                                        onCheckedChange = {
+                                            if(it)
+                                                listIdCheckeds += register.Id
+                                            else
+                                                listIdCheckeds -= register.Id
+
+                                        }
+                                    )
+                                }
                             }
                         }
+                        Divider()
                     }
-                    Divider()
                 }
             }
-        }
     }
     DropUpViewRegister(
         enable = openViewItem,
@@ -258,36 +266,7 @@ fun ListValuesScreenPage(
         CategoriaCor = CategoriaCor,
         CategoriaNome = CategoriaNome
     )
-    DropUpUpdateRegister(
-        enable = openUpdateItem,
-        onDismiss = { openUpdateItem = false },
-        Categorias = Categorias,
-        registerId = registerId,
-        CategoriaId = CategoriaId,
-        Valor = Valor,
-        Descricao = Descricao,
-        CategoriaCor = CategoriaCor,
-        CategoriaNome = CategoriaNome,
-        onCategoriaId = {
-            CategoriaId = it
-        },
-        onValor = {
-            Valor = it
-        },
-        onDescricao = {
-            Descricao = it
-        },
-        onCategoriaCor = {
-            CategoriaCor = it
-        },
-        onCategoriaNome = {
-            CategoriaNome = it
-        },
-        onActionsResult = {
-            onUpdateRegister(it)
-            listIdCheckeds = emptyList()
-        }
-    )
+    DropUpUpdateRegister(enable = openUpdateItem, onDismiss = { openUpdateItem = false }, Categorias = Categorias, registerId = registerId, CategoriaId = CategoriaId, Valor = Valor, Descricao = Descricao, CategoriaCor = CategoriaCor, CategoriaNome = CategoriaNome, onCategoriaId = { CategoriaId = it }, onValor = { Valor = it }, onDescricao = { Descricao = it }, onCategoriaCor = { CategoriaCor = it }, onCategoriaNome = { CategoriaNome = it }, onActionsResult = { onUpdateRegister(it); listIdCheckeds = emptyList() })
     DropUpNewRegister(
         enable = openNewItem,
         onDismiss = {openNewItem = false},

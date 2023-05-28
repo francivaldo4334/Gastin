@@ -142,4 +142,5 @@
     </string>
     <string name="txt_mostrar_por_mes">Mostrar por mes</string>
     <string name="txt_mostrar_periodo_completo">Mostrar periodo completo</string>
+    <string name="txt_sem_registros">Sem registros!</string>
 </resources>

@@ -57,6 +57,10 @@ fun HomeScreenDashboard(categorias:List<Triple<String,Int, Color>>, onClickMore:
                 )
                 Spacer(modifier = Modifier.size(16.dp))
                 Column {
+                    if(categorias.isEmpty())
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+                            Text(text = stringResource(id = R.string.txt_sem_registros), fontSize = 14.sp)
+                        }
                     categorias.forEach {
                         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                             Row(
