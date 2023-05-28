@@ -78,7 +78,7 @@ class HomeActivity : ComponentActivity() {
                                 valorDespesas = valorDespesas?:0,
                                 valorReceitas = valorReceitas?:0,
                                 onMonthBefore = { /*TODO*/ },
-                                onMonthNext = {/*TODO*/},
+                                onMonthNext = { /*TODO*/ },
                                 onSwitchTheme = {
                                     editor.putBoolean(Constants.IS_DARKTHEM, it)
                                     editor.apply()

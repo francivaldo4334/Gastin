@@ -1,5 +1,7 @@
 package br.com.fcr.gastin
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -15,7 +17,8 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-
+import java.time.LocalDateTime
+import java.util.Date
 sealed interface CategoriaEvent{
     data class delete(val id:Int):CategoriaEvent
     data class deleteAll(val ids:List<Int>):CategoriaEvent
@@ -33,13 +36,22 @@ sealed interface RegisterEvent{
 class HomeViewModel constructor(
     private val categoriaRepository: ICategoriaRepository,
     private val registroRepository: IRegistroRepository
-) : ViewModel(){
+) : ViewModel() {
     //TODO: listas
-    val despesas = registroRepository.getAllDespesas().stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
-    val receitas = registroRepository.getAllReceitas().flatMapLatest {MutableStateFlow(it.map {it.toView()})}.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
-    val categorias = categoriaRepository.getAll().flatMapLatest {MutableStateFlow(it.map {it.toView()})}.stateIn(viewModelScope, SharingStarted.WhileSubscribed(),emptyList())
-    var valorDespesas = registroRepository.getAllDespesasValor().stateIn(viewModelScope, SharingStarted.WhileSubscribed(),0)
-    var valorReceitas = registroRepository.getAllReceitasValor().stateIn(viewModelScope, SharingStarted.WhileSubscribed(),0)
+    val despesas = registroRepository.getAllDespesas()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
+    val receitas = registroRepository.getAllReceitas()
+        .flatMapLatest { MutableStateFlow(it.map { it.toView() }) }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
+    val categorias =
+        categoriaRepository.getAll().flatMapLatest { MutableStateFlow(it.map { it.toView() }) }
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
+    var valorDespesas = registroRepository
+        .getAllDespesasValor()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0)
+    var valorReceitas = registroRepository
+        .getAllReceitasValor()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0)
     val categoriasInforms = categoriaRepository.getAllWithTotal().flatMapLatest {
         val list = it.map {
             Triple(

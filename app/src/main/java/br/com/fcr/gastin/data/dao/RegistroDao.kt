@@ -27,9 +27,9 @@ interface RegistroDao {
     fun getAll(): LiveData<List<Registro>>
     @Query("SELECT SUM(VALUE) FROM TB_REGISTRO WHERE CATEGORIA_FK = :id AND IS_DEPESA = 1;")
     fun getRegistrosByCategoriaId(id: Int): Flow<Int>
-    @Query("SELECT SUM(VALUE) FROM TB_REGISTRO WHERE IS_DEPESA = 1;")
+    @Query("SELECT SUM(VALUE) FROM TB_REGISTRO WHERE IS_DEPESA = 1")
     fun getAllDespesasValor(): Flow<Int?>
-    @Query("SELECT SUM(VALUE) FROM TB_REGISTRO WHERE IS_DEPESA = 0;")
+    @Query("SELECT SUM(VALUE) FROM TB_REGISTRO WHERE IS_DEPESA = 0")
     fun getAllReceitasValor(): Flow<Int?>
     @Update
     fun update(resgister: Registro)
