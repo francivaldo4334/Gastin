@@ -45,6 +45,7 @@ fun DropUpUpdateRegister (
     Categorias:List<CategoriaViewModel>,
     registerId:Int,
     CategoriaId:Int,
+    onCategoriaId:(Int)->Unit,
     Valor:String,
     Descricao:String,
     CategoriaCor:Color,
@@ -150,6 +151,7 @@ fun DropUpUpdateRegister (
                         Row(
                             modifier = Modifier
                                 .clickable {
+                                    onCategoriaId(it.Id)
                                     onCategoriaCor(Color(it.Color))
                                     onCategoriaNome(it.Name)
                                     openDropDownCategoria = false

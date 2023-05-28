@@ -86,7 +86,8 @@ fun ListValuesScreenPage(
     onUpdateRegister:(RegistroViewModel)->Unit,
     onLoadRegister:(Int,(RegistroViewModel)->Unit)->Unit,
     Categorias:List<CategoriaViewModel>,
-    CategoriaDefault:CategoriaViewModel
+    CategoriaDefault:CategoriaViewModel,
+    onLoadCategory:(Int,(CategoriaViewModel)->Unit)->Unit
 ){
     var showAllCheckBox by remember {mutableStateOf(false)}
     var openMoreOptions by remember{ mutableStateOf(false) }
@@ -141,6 +142,10 @@ fun ListValuesScreenPage(
                                         CategoriaId = it.CategoriaFk?:1
                                         Valor = it.Value.toString()
                                         Descricao = it.Description
+                                        onLoadCategory(CategoriaId){
+                                            CategoriaCor = Color(it.Color)
+                                            CategoriaNome = it.Name
+                                        }
                                     }
                                     openUpdateItem = true
                                 }, listIdCheckeds.size == 1),
@@ -175,10 +180,15 @@ fun ListValuesScreenPage(
                                     },
                                     onTap = {
                                         onLoadRegister(register.Id) {
-                                            Valor = it.Value.toString()
+                                            Valor = it.Value.toMonetaryString()
                                             Descricao = it.Description
-                                            openViewItem = true
+                                            CategoriaId = it.CategoriaFk?:1
+                                            onLoadCategory(CategoriaId){
+                                                CategoriaCor = Color(it.Color)
+                                                CategoriaNome = it.Name
+                                            }
                                         }
+                                        openViewItem = true
                                     }
                                 )
                             }
@@ -258,6 +268,9 @@ fun ListValuesScreenPage(
         Descricao = Descricao,
         CategoriaCor = CategoriaCor,
         CategoriaNome = CategoriaNome,
+        onCategoriaId = {
+            CategoriaId = it
+        },
         onValor = {
             Valor = it
         },

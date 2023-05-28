@@ -10,6 +10,7 @@ import br.com.fcr.gastin.data.repository.ICategoriaRepository
 import br.com.fcr.gastin.data.repository.IRegistroRepository
 import br.com.fcr.gastin.ui.page.viewmodels.toView
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
@@ -23,6 +24,7 @@ sealed interface CategoriaEvent{
     data class update(val categoria: Categoria):CategoriaEvent
     data class get(val id:Int,val onResult:(Categoria?)->Unit):CategoriaEvent
     data class insert(val categoira:Categoria):CategoriaEvent
+    data class setInformsTotal(val it:Boolean):CategoriaEvent
 }
 sealed interface RegisterEvent{
     data class delete(val id:Int):RegisterEvent
@@ -60,15 +62,25 @@ class HomeViewModel constructor(
     var valorReceitasBusca =  buscaMesAno.flatMapLatest {
         registroRepository.getAllReceitasValorMesAno(it.first,it.second)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0)
-    val categoriasInforms = categoriaRepository.getAllWithTotal().flatMapLatest {
-        val list = it.map {
-            Triple(
-                it.Name,
-                it.total,
-                Color(it.Color)
-            )
+    private val isCategoriasInformsTotal = MutableStateFlow(false)
+    val categoriasInforms = isCategoriasInformsTotal.flatMapLatest {
+        val listCatgoria: Flow<List<Categoria>>
+        if(it)
+            listCatgoria = categoriaRepository.getAllWithTotal()
+        else
+            listCatgoria = buscaMesAno.flatMapLatest {
+                categoriaRepository.getAllWithMesAno(it.first,it.second)
+            }
+        listCatgoria.flatMapLatest {
+            val list = it.map {
+                Triple(
+                    it.Name,
+                    it.total,
+                    Color(it.Color)
+                )
+            }
+            MutableStateFlow(list)
         }
-        MutableStateFlow(list)
     }.stateIn(viewModelScope,SharingStarted.WhileSubscribed(),emptyList())
     val stringMonthResourceId = buscaMesAno.flatMapLatest {
         val resp = when(it.first){
@@ -172,6 +184,9 @@ class HomeViewModel constructor(
                 viewModelScope.launch(Dispatchers.IO){
                     categoriaRepository.update(event.categoria)
                 }
+            }
+            is CategoriaEvent.setInformsTotal ->{
+                isCategoriasInformsTotal.value = event.it
             }
         }
     }

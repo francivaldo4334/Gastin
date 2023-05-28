@@ -40,7 +40,8 @@ fun HomeScreenPage(
     valorDespesasBusca:Int,
     valorReceitasBusca:Int,
     Categorias:List<CategoriaViewModel>,
-    CategoriaDefault: CategoriaViewModel
+    CategoriaDefault: CategoriaViewModel,
+    onInformsTotal:(Boolean)->Unit
 ) {
     var IsDespesa:Boolean? by remember {mutableStateOf(null)}
     var openDropUpNewCategory by remember{ mutableStateOf(false) }
@@ -129,6 +130,8 @@ fun HomeScreenPage(
                             Pair(stringResource(R.string.txt_ver_categorias)) {
                                 navController.navigate(Route.LISTA_CATEGORIAS)
                             },
+                            Pair(stringResource(R.string.txt_mostrar_por_mes),{ onInformsTotal(false) }),
+                            Pair(stringResource(R.string.txt_mostrar_periodo_completo),{ onInformsTotal(true) }),
                             Pair(stringResource(R.string.txt_adicionar_categoria),{openDropUpNewCategory = true})
                         ),
                         enable = openDropDownDashboard,

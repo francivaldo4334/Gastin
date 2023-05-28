@@ -1,9 +1,16 @@
 package br.com.fcr.gastin.ui.page.viewmodels
 
+import androidx.compose.ui.graphics.Color
 import br.com.fcr.gastin.data.model.Registro
 import java.text.SimpleDateFormat
 
-data class RegistroViewModel(val Id:Int,val Description:String,val Date:String,val Value:Int,val CategoriaFk:Int? = null)
+data class RegistroViewModel(
+    val Id: Int,
+    val Description: String,
+    val Date: String,
+    val Value: Int,
+    val CategoriaFk: Int? = null
+)
 fun EmptyRegistroViewModel():RegistroViewModel{
     return RegistroViewModel(0,"","",0,0)
 }

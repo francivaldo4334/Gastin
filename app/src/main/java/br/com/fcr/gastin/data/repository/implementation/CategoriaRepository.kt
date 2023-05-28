@@ -34,5 +34,8 @@ class CategoriaRepository constructor(
     override fun getAllWithTotal():Flow<List<Categoria>>{
         return db.getCategoriaDao().getAllWithTotal()
     }
+    override fun getAllWithMesAno(mes:Int,ano:Int):Flow<List<Categoria>>{
+        return db.getCategoriaDao().getAllWithMesAno(mes,ano)
+    }
 
 }

@@ -98,7 +98,8 @@ class HomeActivity : ComponentActivity() {
                                 },
                                 categoriasInforms = categoriasInforms,
                                 Categorias = listCategoria,
-                                CategoriaDefault = CategoriaDefault
+                                CategoriaDefault = CategoriaDefault,
+                                onInformsTotal = { homeViewModel.onEvent(CategoriaEvent.setInformsTotal(it))}
                             )
                         }
                         composable(Route.LISTA_DESPESAS){
@@ -123,6 +124,13 @@ class HomeActivity : ComponentActivity() {
                                 },
                                 onUpdateRegister = {
                                     homeViewModel.onEvent(RegisterEvent.update(true,it.toModel()))
+                                },
+                                onLoadCategory = {id,onResult ->
+                                    homeViewModel.onEvent(CategoriaEvent.get(id){
+                                        it?.let {
+                                            onResult(it.toView())
+                                        }
+                                    })
                                 }
                             )
                         }
@@ -148,6 +156,13 @@ class HomeActivity : ComponentActivity() {
                                 },
                                 onUpdateRegister = {
                                     homeViewModel.onEvent(RegisterEvent.update(false,it.toModel()))
+                                },
+                                onLoadCategory = {id,onResult ->
+                                    homeViewModel.onEvent(CategoriaEvent.get(id){
+                                        it?.let {
+                                            onResult(it.toView())
+                                        }
+                                    })
                                 }
                             )
                         }
