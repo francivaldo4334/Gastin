@@ -1,5 +1,6 @@
 package br.com.fcr.gastin.ui.page.components
 
+import android.widget.Space
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -9,8 +10,7 @@ import androidx.compose.ui.unit.*
 import br.com.fcr.gastin.R
 
 @Composable
-fun HomeScreentop(onMonthBefore:()->Unit, onMonthNext:()->Unit, onOptions:()->Unit, content:@Composable ()->Unit){
-    var textMes by remember{ mutableStateOf("Janeiro") }
+fun HomeScreentop(textMes:String,stringYear:String,onMonthBefore:()->Unit, onMonthNext:()->Unit, onOptions:()->Unit, content:@Composable ()->Unit){
     Column() {
         Box(
             Modifier
@@ -27,7 +27,15 @@ fun HomeScreentop(onMonthBefore:()->Unit, onMonthNext:()->Unit, onOptions:()->Un
                 IconButton(onClick = onMonthBefore) {
                     Icon(painter = painterResource(id = R.drawable.ic_left), contentDescription = "")
                 }
-                Text(text = textMes, fontSize = 18.sp, modifier = Modifier.padding(horizontal = 16.dp))
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.width(132.dp)
+                ) {
+                    Text(text = textMes, fontSize = 18.sp, modifier = Modifier.padding(horizontal = 16.dp))
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(text = stringYear, fontSize = 12.sp, modifier = Modifier.padding(horizontal = 16.dp))
+                }
+
                 IconButton(onClick = onMonthNext) {
                     Icon(painter = painterResource(id = R.drawable.ic_right), contentDescription = "")
                 }

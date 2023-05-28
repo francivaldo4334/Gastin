@@ -16,15 +16,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import br.com.fcr.gastin.data.model.Categoria
-import br.com.fcr.gastin.data.model.Registro
 import br.com.fcr.gastin.ui.common.Constants
 import br.com.fcr.gastin.ui.page.HomeScreenPage
 import br.com.fcr.gastin.ui.page.ListCategoriasPage
 import br.com.fcr.gastin.ui.page.ListValuesScreenPage
 import br.com.fcr.gastin.ui.page.viewmodels.CategoriaViewModel
 import br.com.fcr.gastin.ui.page.viewmodels.EmptyCategoriaViewModel
-import br.com.fcr.gastin.ui.page.viewmodels.EmptyRegistroViewModel
-import br.com.fcr.gastin.ui.page.viewmodels.RegistroViewModel
 import br.com.fcr.gastin.ui.page.viewmodels.toModel
 import br.com.fcr.gastin.ui.page.viewmodels.toView
 import br.com.fcr.gastin.ui.theme.GastinTheme
@@ -41,7 +38,8 @@ class HomeActivity : ComponentActivity() {
         val editor = sharedPreferences.edit()
         val homeViewModel = HomeViewModel(
             (applicationContext as MyApplication).categoriaRepository,
-            (applicationContext as MyApplication).registroRepository
+            (applicationContext as MyApplication).registroRepository,
+            this
         )
         Constants.IsDarkTheme = sharedPreferences.getBoolean(Constants.IS_DARKTHEM,false)
         setCategoriaDefault(homeViewModel)
@@ -57,8 +55,12 @@ class HomeActivity : ComponentActivity() {
             val listCategoria by homeViewModel.categorias.collectAsState()
             val categoriasInforms by homeViewModel.categoriasInforms.collectAsState()
             //TODO: variaveis
-            val valorDespesas by homeViewModel.valorDespesasBusca.collectAsState()
-            val valorReceitas by homeViewModel.valorReceitasBusca.collectAsState()
+            val valorDespesas by homeViewModel.valorDespesas.collectAsState()
+            val valorReceitas by homeViewModel.valorReceitas.collectAsState()
+            val valorDespesasBusca by homeViewModel.valorDespesasBusca.collectAsState()
+            val valorReceitasBusca by homeViewModel.valorReceitasBusca.collectAsState()
+            val stringMonth by homeViewModel.stringMonthResourceId.collectAsState()
+            val stringYear by homeViewModel.stringYear.collectAsState()
             GastinTheme(Constants.IsDarkTheme) {//Gestao de gasto
                 val statusBarHeigth = with(LocalDensity.current){
                     val resourceId = resources.getIdentifier("status_bar_height","dimen","android")
@@ -77,8 +79,12 @@ class HomeActivity : ComponentActivity() {
                                 navController = navController,
                                 valorDespesas = valorDespesas?:0,
                                 valorReceitas = valorReceitas?:0,
-                                onMonthBefore = { /*TODO*/ },
-                                onMonthNext = { /*TODO*/ },
+                                valorDespesasBusca = valorDespesasBusca?:0,
+                                valorReceitasBusca = valorReceitasBusca?:0,
+                                textMes = stringMonth,
+                                stringYear = stringYear.toString(),
+                                onMonthBefore = { homeViewModel.onEvent(RegisterEvent.before(1)) },
+                                onMonthNext = { homeViewModel.onEvent(RegisterEvent.next(1)) },
                                 onSwitchTheme = {
                                     editor.putBoolean(Constants.IS_DARKTHEM, it)
                                     editor.apply()

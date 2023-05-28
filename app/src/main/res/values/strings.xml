@@ -1,37 +1,143 @@
 <resources>
-    <string name="app_name">Gastin</string>
-    <string name="txt_despesas">Despesas</string>
-    <string name="txt_receitas">Receitas</string>
-    <string name="txt_modo_escuro">Modo escuro</string>
-    <string name="txt_adicionar_categoria">+Adicionar categoria</string>
-    <string name="txt_adicionar_despesa">-Adicionar despesa</string>
-    <string name="txt_adicionar_receita">+Adicionar receita</string>
-    <string name="txt_remover_categoria">-Remover categoria</string>
-    <string name="txt_remover_despesa">-Remover despesa</string>
-    <string name="txt_remover_receita">-Remover receita</string>
-    <string name="txt_como_funciona">Como funciona?</string>
-    <string name="txt_ver_categorias">Ver categorias</string>
-    <string name="txt_visualizar_por_mes">Visualizar por mes</string>
-    <string name="txt_visualizar_por_quinzena">Visualizar por quinzena</string>
-    <string name="txt_visualizar_por_semana">Visualizar por semana</string>
-    <string name="txt_evolucao_das_despesas">Evolucao das despesas</string>
-    <string name="txt_recebido">Recebido</string>
-    <string name="txt_saldo">Saldo</string>
-    <string name="txt_previsto">Previsto</string>
-    <string name="txt_visao_geral">Visao geral</string>
-    <string name="txt_selecionar_tudo">Selecionar tudo</string>
-    <string name="txt_excluir">-Excluir</string>
-    <string name="txt_adicionar">+Adicionar</string>
-    <string name="txt_editar">Editar</string>
-    <string name="txt_inserir_dados">Inserir dados</string>
-    <string name="txt_valor">Valor</string>
-    <string name="txt_descricao">Descricao</string>
-    <string name="txt_salvar">Salvar</string>
-    <string name="txt_categorias">Categorias</string>
-    <string name="txt_categoria">Categoria</string>
-    <string name="txt_carregando">Carregando...</string>
-    <string name="txt_nome">Nome</string>
-    <string name="txt_definir_cor">Definir cor</string>
-    <string name="txt_cor">Cor</string>
-    <string name="txt_indefinido">Indefinite</string>
+    <string name="app_name">
+        Gastin
+    </string>
+    <string name="txt_despesas">
+        Despesas
+    </string>
+    <string name="txt_receitas">
+        Receitas
+    </string>
+    <string name="txt_modo_escuro">
+        Modo escuro
+    </string>
+    <string name="txt_adicionar_categoria">
+        +Adicionar categoria
+    </string>
+    <string name="txt_adicionar_despesa">
+        -Adicionar despesa
+    </string>
+    <string name="txt_adicionar_receita">
+        +Adicionar receita
+    </string>
+    <string name="txt_remover_categoria">
+        -Remover categoria
+    </string>
+    <string name="txt_remover_despesa">
+        -Remover despesa
+    </string>
+    <string name="txt_remover_receita">
+        -Remover receita
+    </string>
+    <string name="txt_como_funciona">
+        Como funciona?
+    </string>
+    <string name="txt_ver_categorias">
+        Ver categorias
+    </string>
+    <string name="txt_visualizar_por_mes">
+        Visualizar por mes
+    </string>
+    <string name="txt_visualizar_por_quinzena">
+        Visualizar por quinzena
+    </string>
+    <string name="txt_visualizar_por_semana">
+        Visualizar por semana
+    </string>
+    <string name="txt_evolucao_das_despesas">
+        Evolucao das despesas
+    </string>
+    <string name="txt_recebido">
+        Recebido
+    </string>
+    <string name="txt_saldo">
+        Saldo
+    </string>
+    <string name="txt_previsto">
+        Previsto
+    </string>
+    <string name="txt_visao_geral">
+        Visao geral
+    </string>
+    <string name="txt_selecionar_tudo">
+        Selecionar tudo
+    </string>
+    <string name="txt_excluir">
+        -Excluir
+    </string>
+    <string name="txt_adicionar">
+        +Adicionar
+    </string>
+    <string name="txt_editar">
+        Editar
+    </string>
+    <string name="txt_inserir_dados">
+        Inserir dados
+    </string>
+    <string name="txt_valor">
+        Valor
+    </string>
+    <string name="txt_descricao">
+        Descricao
+    </string>
+    <string name="txt_salvar">
+        Salvar
+    </string>
+    <string name="txt_categorias">
+        Categorias
+    </string>
+    <string name="txt_categoria">
+        Categoria
+    </string>
+    <string name="txt_carregando">
+        Carregando...
+    </string>
+    <string name="txt_nome">
+        Nome
+    </string>
+    <string name="txt_definir_cor">
+        Definir cor
+    </string>
+    <string name="txt_cor">
+        Cor
+    </string>
+    <string name="txt_indefinido">
+        Indefinite
+    </string>
+    <string name="txt_january">
+        Janeiro
+    </string>
+    <string name="txt_february">
+        Fevereiro
+    </string>
+    <string name="txt_march">
+        Março
+    </string>
+    <string name="txt_april">
+        Abril
+    </string>
+    <string name="txt_may">
+        Maio
+    </string>
+    <string name="txt_june">
+        Junho
+    </string>
+    <string name="txt_july">
+        Julho
+    </string>
+    <string name="txt_august">
+        Agosto
+    </string>
+    <string name="txt_september">
+        Setembro
+    </string>
+    <string name="txt_october">
+        Outubro
+    </string>
+    <string name="txt_november">
+        Novembro
+    </string>
+    <string name="txt_december">
+        Dezembro
+    </string>
 </resources>

@@ -1,7 +1,6 @@
 package br.com.fcr.gastin
 
-import android.os.Build
-import androidx.annotation.RequiresApi
+import android.content.Context
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -17,8 +16,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import java.time.LocalDateTime
-import java.util.Date
+
 sealed interface CategoriaEvent{
     data class delete(val id:Int):CategoriaEvent
     data class deleteAll(val ids:List<Int>):CategoriaEvent
@@ -32,10 +30,13 @@ sealed interface RegisterEvent{
     data class update(val isDespesa:Boolean,val register: Registro):RegisterEvent
     data class get(val id:Int,val onResult:(Registro?)->Unit):RegisterEvent
     data class insert(val registro:Registro):RegisterEvent
+    data class next(val it:Int):RegisterEvent
+    data class before(val it:Int):RegisterEvent
 }
 class HomeViewModel constructor(
     private val categoriaRepository: ICategoriaRepository,
-    private val registroRepository: IRegistroRepository
+    private val registroRepository: IRegistroRepository,
+    private val context:Context
 ) : ViewModel() {
     //TODO: listas
     val despesas = registroRepository.getAllDespesas()
@@ -45,7 +46,7 @@ class HomeViewModel constructor(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
     val categorias =
         categoriaRepository.getAll().flatMapLatest { MutableStateFlow(it.map { it.toView() }) }
-            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
     var valorDespesas = registroRepository
         .getAllDespesasValor()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0)
@@ -69,6 +70,27 @@ class HomeViewModel constructor(
         }
         MutableStateFlow(list)
     }.stateIn(viewModelScope,SharingStarted.WhileSubscribed(),emptyList())
+    val stringMonthResourceId = buscaMesAno.flatMapLatest {
+        val resp = when(it.first){
+            1 -> context.getString(R.string.txt_january)
+            2 -> context.getString(R.string.txt_february)
+            3 -> context.getString(R.string.txt_march)
+            4 -> context.getString(R.string.txt_april)
+            5 -> context.getString(R.string.txt_may)
+            6 -> context.getString(R.string.txt_june)
+            7 -> context.getString(R.string.txt_july)
+            8 -> context.getString(R.string.txt_august)
+            9 -> context.getString(R.string.txt_september)
+            10 -> context.getString(R.string.txt_october)
+            11 -> context.getString(R.string.txt_november)
+            12 -> context.getString(R.string.txt_december)
+            else -> ""
+        }
+        MutableStateFlow(resp)
+    }.stateIn(viewModelScope,SharingStarted.WhileSubscribed(), "")
+    val stringYear = buscaMesAno.flatMapLatest {
+        MutableStateFlow(it.second)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(),0)
     fun onEvent(event:RegisterEvent){
         when(event){
 
@@ -101,6 +123,30 @@ class HomeViewModel constructor(
                     registroRepository.insert(event.registro)
                 }
             }
+            is RegisterEvent.next->{
+                var newMes = buscaMesAno.value.first + event.it
+                var newAno = buscaMesAno.value.second
+                if(newMes > 12){
+                    newMes = 1
+                    newAno += event.it
+                }
+                buscaMesAno.value = Pair(
+                    newMes,
+                    newAno
+                )
+            }
+            is RegisterEvent.before->{
+                var newMes = buscaMesAno.value.first - event.it
+                var newAno = buscaMesAno.value.second
+                if(newMes < 1){
+                    newMes = 12
+                    newAno -= event.it
+                }
+                buscaMesAno.value = Pair(
+                    newMes,
+                    newAno
+                )
+            }
         }
     }
     fun onEvent(event:CategoriaEvent){
@@ -129,5 +175,6 @@ class HomeViewModel constructor(
             }
         }
     }
+
 
 }

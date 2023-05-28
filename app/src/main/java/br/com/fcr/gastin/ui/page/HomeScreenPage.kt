@@ -27,6 +27,8 @@ import br.com.fcr.gastin.ui.page.viewmodels.toModel
 @Composable
 fun HomeScreenPage(
     navController: NavController,
+    textMes:String,
+    stringYear:String,
     onMonthBefore:()->Unit,
     onMonthNext:()->Unit,
     onSwitchTheme:(Boolean)->Unit,
@@ -35,6 +37,8 @@ fun HomeScreenPage(
     categoriasInforms:List<Triple<String,Int,Color>>,
     valorDespesas:Int,
     valorReceitas:Int,
+    valorDespesasBusca:Int,
+    valorReceitasBusca:Int,
     Categorias:List<CategoriaViewModel>,
     CategoriaDefault: CategoriaViewModel
 ) {
@@ -68,7 +72,7 @@ fun HomeScreenPage(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        HomeScreentop(onMonthBefore,onMonthNext, onOptions = {openDropDownTop = ! openDropDownTop}){
+        HomeScreentop(textMes,stringYear,onMonthBefore,onMonthNext, onOptions = {openDropDownTop = ! openDropDownTop}){
             DropDownMoreOptions(
                 customItem = {
                     Row(modifier = Modifier
@@ -99,7 +103,7 @@ fun HomeScreenPage(
             //Informacoes de topo
             item{
                 Spacer(modifier = Modifier.size(16.dp))
-                HomeScreenInformes(valorReceitas,valorReceitas - valorDespesas,valorReceitas - valorDespesas)
+                HomeScreenInformes(valorReceitasBusca,valorReceitasBusca - valorDespesasBusca,valorReceitasBusca - valorDespesasBusca)
                 Spacer(modifier = Modifier.size(32.dp))
             }
             //Visao geral de informacoes
