@@ -52,4 +52,12 @@ class RegistroRepository constructor(
         return db.getRegistroDao().getAllReceitasValor()
     }
 
+    override fun getAllDespesasValorMesAno(mes: Int, ano: Int): Flow<Int?> {
+        return return db.getRegistroDao().getAllDespesasValorMesAno(mes,ano)
+    }
+
+    override fun getAllReceitasValorMesAno(mes: Int, ano: Int): Flow<Int?> {
+        return return db.getRegistroDao().getAllReceitasValorMesAno(mes,ano)
+    }
+
 }

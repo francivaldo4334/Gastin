@@ -3,7 +3,6 @@ package br.com.fcr.gastin.data.dao
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import br.com.fcr.gastin.data.model.Registro
@@ -31,6 +30,14 @@ interface RegistroDao {
     fun getAllDespesasValor(): Flow<Int?>
     @Query("SELECT SUM(VALUE) FROM TB_REGISTRO WHERE IS_DEPESA = 0")
     fun getAllReceitasValor(): Flow<Int?>
+    @Query("SELECT SUM(VALUE) FROM TB_REGISTRO WHERE IS_DEPESA = 1 " +
+            "AND CAST(strftime('%m', datetime(CREATE_AT/1000, 'unixepoch')) AS int) = :mes " +
+            "AND CAST(strftime('%Y', datetime(CREATE_AT/1000, 'unixepoch')) AS int) = :ano")
+    fun getAllDespesasValorMesAno(mes:Int, ano:Int): Flow<Int?>
+    @Query("SELECT SUM(VALUE) FROM TB_REGISTRO WHERE IS_DEPESA = 0 " +
+            "AND CAST(strftime('%m', datetime(CREATE_AT/1000, 'unixepoch')) AS int) = :mes " +
+            "AND CAST(strftime('%Y', datetime(CREATE_AT/1000, 'unixepoch')) AS int) = :ano")
+    fun getAllReceitasValorMesAno(mes:Int, ano:Int): Flow<Int?>
     @Update
     fun update(resgister: Registro)
 }

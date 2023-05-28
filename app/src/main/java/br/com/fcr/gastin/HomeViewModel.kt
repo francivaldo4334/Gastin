@@ -52,6 +52,13 @@ class HomeViewModel constructor(
     var valorReceitas = registroRepository
         .getAllReceitasValor()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0)
+    private val buscaMesAno = MutableStateFlow(Pair(5,2023))
+    var valorDespesasBusca = buscaMesAno.flatMapLatest {
+        registroRepository.getAllDespesasValorMesAno(it.first,it.second)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0)
+    var valorReceitasBusca =  buscaMesAno.flatMapLatest {
+        registroRepository.getAllReceitasValorMesAno(it.first,it.second)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0)
     val categoriasInforms = categoriaRepository.getAllWithTotal().flatMapLatest {
         val list = it.map {
             Triple(

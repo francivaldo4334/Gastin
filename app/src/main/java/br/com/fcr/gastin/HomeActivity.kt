@@ -57,8 +57,8 @@ class HomeActivity : ComponentActivity() {
             val listCategoria by homeViewModel.categorias.collectAsState()
             val categoriasInforms by homeViewModel.categoriasInforms.collectAsState()
             //TODO: variaveis
-            val valorDespesas by homeViewModel.valorDespesas.collectAsState()
-            val valorReceitas by homeViewModel.valorReceitas.collectAsState()
+            val valorDespesas by homeViewModel.valorDespesasBusca.collectAsState()
+            val valorReceitas by homeViewModel.valorReceitasBusca.collectAsState()
             GastinTheme(Constants.IsDarkTheme) {//Gestao de gasto
                 val statusBarHeigth = with(LocalDensity.current){
                     val resourceId = resources.getIdentifier("status_bar_height","dimen","android")

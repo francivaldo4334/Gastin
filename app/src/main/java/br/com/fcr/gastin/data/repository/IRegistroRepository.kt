@@ -9,6 +9,8 @@ interface IRegistroRepository {
     fun getAllReceitas(): Flow<List<Registro>>
     fun getAllDespesasValor(): Flow<Int?>
     fun getAllReceitasValor(): Flow<Int?>
+    fun getAllDespesasValorMesAno(mes:Int,ano:Int): Flow<Int?>
+    fun getAllReceitasValorMesAno(mes:Int,ano:Int): Flow<Int?>
     fun getById(ID:Int): Flow<Registro>
     fun delete(ID:Int)
     fun insert(it: Registro)
