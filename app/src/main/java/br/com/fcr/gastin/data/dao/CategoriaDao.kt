@@ -18,4 +18,6 @@ interface CategoriaDao {
     fun getAllWithTotal():Flow<List<Categoria>>
     @Update
     fun update(it: Categoria)
+    @Query("DELETE FROM TB_CATEGORIA WHERE ID IN(:it)")
+    fun deleteAll(it: List<Int>)
 }

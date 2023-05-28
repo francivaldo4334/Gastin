@@ -1,6 +1,5 @@
 package br.com.fcr.gastin
 
-import android.util.Log
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -39,9 +38,10 @@ class HomeViewModel constructor(
     val despesas = registroRepository.getAllDespesas().stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
     val receitas = registroRepository.getAllReceitas().flatMapLatest {MutableStateFlow(it.map {it.toView()})}.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
     val categorias = categoriaRepository.getAll().flatMapLatest {MutableStateFlow(it.map {it.toView()})}.stateIn(viewModelScope, SharingStarted.WhileSubscribed(),emptyList())
+    var valorDespesas = registroRepository.getAllDespesasValor().stateIn(viewModelScope, SharingStarted.WhileSubscribed(),0)
+    var valorReceitas = registroRepository.getAllReceitasValor().stateIn(viewModelScope, SharingStarted.WhileSubscribed(),0)
     val categoriasInforms = categoriaRepository.getAllWithTotal().flatMapLatest {
-        Log.d("TESTE_INFORMS",it.first().total.toString())
-        var list = it.map {
+        val list = it.map {
             Triple(
                 it.Name,
                 it.total,
@@ -50,12 +50,6 @@ class HomeViewModel constructor(
         }
         MutableStateFlow(list)
     }.stateIn(viewModelScope,SharingStarted.WhileSubscribed(),emptyList())
-    private var buscaRegister = MutableStateFlow<Int>(0)
-    var valorDespesas = registroRepository.getAllDespesasValor().stateIn(viewModelScope, SharingStarted.WhileSubscribed(),0)
-    var valorReceitas = registroRepository.getAllReceitasValor().stateIn(viewModelScope, SharingStarted.WhileSubscribed(),0)
-    val registro = buscaRegister.flatMapLatest{
-        registroRepository.getById(it)
-    } .stateIn(viewModelScope, SharingStarted.WhileSubscribed(),Registro())
     fun onEvent(event:RegisterEvent){
         when(event){
 
@@ -66,9 +60,7 @@ class HomeViewModel constructor(
             }
             is RegisterEvent.deleteAll -> {
                 viewModelScope.launch(Dispatchers.IO) {
-                    event.ids.forEach{
-                        registroRepository.delete(it)
-                    }
+                    registroRepository.deleteAll(event.ids)
                 }
             }
             is RegisterEvent.get -> {
@@ -108,9 +100,7 @@ class HomeViewModel constructor(
             }
             is CategoriaEvent.deleteAll->{
                 viewModelScope.launch(Dispatchers.IO){
-                    event.ids.forEach{
-                        categoriaRepository.delete(it)
-                    }
+                    categoriaRepository.deleteAll(event.ids)
                 }
             }
             is CategoriaEvent.update->{

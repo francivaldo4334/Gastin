@@ -21,6 +21,8 @@ interface RegistroDao {
     fun insert(Categoria: Registro):Long
     @Query("DELETE FROM TB_REGISTRO WHERE ID = :ID")
     fun delete(ID:Int)
+    @Query("DELETE FROM TB_REGISTRO WHERE ID IN(:it)")
+    fun deleteAll(it: List<Int>)
     @Query("SELECT * FROM TB_REGISTRO")
     fun getAll(): LiveData<List<Registro>>
     @Query("SELECT SUM(VALUE) FROM TB_REGISTRO WHERE CATEGORIA_FK = :id AND IS_DEPESA = 1;")

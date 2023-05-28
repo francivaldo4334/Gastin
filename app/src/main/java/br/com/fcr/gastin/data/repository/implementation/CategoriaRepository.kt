@@ -27,8 +27,11 @@ class CategoriaRepository constructor(
     override fun delete(ID: Int) {
         db.getCategoriaDao().delete(ID)
     }
+
+    override fun deleteAll(it: List<Int>) {
+        db.getCategoriaDao().deleteAll(it)
+    }
     override fun getAllWithTotal():Flow<List<Categoria>>{
-//        return MutableStateFlow(CategoriaTotal(0,"","","","",0.0))
         return db.getCategoriaDao().getAllWithTotal()
     }
 

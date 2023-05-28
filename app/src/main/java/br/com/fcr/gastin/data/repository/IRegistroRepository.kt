@@ -15,4 +15,5 @@ interface IRegistroRepository {
     fun getall(): LiveData<List<Registro>>
     fun getRegistrosByCategoriaId(id: Int): Flow<Int>
     fun update(resgister: Registro)
+    fun deleteAll(ids: List<Int>)
 }

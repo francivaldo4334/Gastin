@@ -10,4 +10,5 @@ interface ICategoriaRepository {
     fun update(it:Categoria)
     fun delete(ID: Int)
     fun getAllWithTotal():Flow<List<Categoria>>
+    fun deleteAll(it: List<Int>)
 }

@@ -41,6 +41,10 @@ class RegistroRepository constructor(
         db.getRegistroDao().update(resgister)
     }
 
+    override fun deleteAll(ids: List<Int>) {
+        db.getRegistroDao().deleteAll(ids)
+    }
+
     override fun getAllDespesasValor(): Flow<Int?>{
         return db.getRegistroDao().getAllDespesasValor()
     }
