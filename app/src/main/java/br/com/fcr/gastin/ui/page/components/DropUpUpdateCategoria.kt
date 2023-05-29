@@ -48,7 +48,7 @@ fun DropUpUpdateCategoria (
     BackHandler(enabled = enable) {
         onDismiss()
     }
-
+    val focusValue = remember{FocusRequester()}
     val focusDescricao = remember { FocusRequester() }
     val focusManeger = LocalFocusManager.current
     val Density = LocalDensity.current

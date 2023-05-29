@@ -18,13 +18,15 @@ interface CategoriaDao {
             "FROM TB_CATEGORIA " +
             "JOIN TB_REGISTRO " +
             "ON  TB_REGISTRO.CATEGORIA_FK = TB_CATEGORIA.ID " +
+            "WHERE TB_REGISTRO.IS_DEPESA = 1 "+
             "GROUP BY TB_CATEGORIA.ID")
     fun getAllWithTotal():Flow<List<Categoria>>
     @Query("SELECT TB_CATEGORIA.*,SUM(TB_REGISTRO.VALUE) AS TOTAL " +
             "FROM TB_CATEGORIA " +
             "JOIN TB_REGISTRO " +
             "ON TB_REGISTRO.CATEGORIA_FK = TB_CATEGORIA.ID " +
-            "WHERE CAST(strftime('%m', datetime(TB_REGISTRO.CREATE_AT/1000, 'unixepoch')) AS int) = :mes " +
+            "WHERE TB_REGISTRO.IS_DEPESA = 1 "+
+            "AND CAST(strftime('%m', datetime(TB_REGISTRO.CREATE_AT/1000, 'unixepoch')) AS int) = :mes " +
             "AND CAST(strftime('%Y', datetime(TB_REGISTRO.CREATE_AT/1000, 'unixepoch')) AS int) = :ano "+
             "GROUP BY TB_CATEGORIA.ID ")
     fun getAllWithMesAno(mes:Int, ano:Int):Flow<List<Categoria>>
