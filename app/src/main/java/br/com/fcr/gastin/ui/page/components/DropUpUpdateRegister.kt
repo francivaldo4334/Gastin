@@ -60,7 +60,6 @@ fun DropUpUpdateRegister (
         onDismiss()
     }
     var openDropDownCategoria by remember { mutableStateOf(false) }
-    val focusDescricao = remember {FocusRequester()}
     val focusManeger = LocalFocusManager.current
     val Density = LocalDensity.current
     BoxDropUpContent(enable = enable, onDismiss = onDismiss) {
@@ -85,7 +84,6 @@ fun DropUpUpdateRegister (
                 modifier = Modifier
                     .fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
-                keyboardActions = KeyboardActions(onNext = {focusDescricao.requestFocus()}),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next,keyboardType = KeyboardType.Number),
                 visualTransformation = if(Valor.isEmpty()) VisualTransformation.None else MaskTransformation()
             )
@@ -99,9 +97,7 @@ fun DropUpUpdateRegister (
                     onDescricao(it)
                 },
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .focusRequester(focusDescricao),
-                keyboardActions = KeyboardActions(onDone = {focusManeger.clearFocus()}),
+                    .fillMaxWidth(),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 shape = RoundedCornerShape(16.dp)
             )

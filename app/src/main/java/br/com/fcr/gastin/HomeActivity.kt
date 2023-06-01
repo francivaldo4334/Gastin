@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
@@ -34,14 +35,12 @@ class HomeActivity : ComponentActivity() {
     @SuppressLint("InternalInsetResource")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val sharedPreferences = getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
         val homeViewModel = HomeViewModel(
             (applicationContext as MyApplication).categoriaRepository,
             (applicationContext as MyApplication).registroRepository,
             this
         )
-        Constants.IsDarkTheme = sharedPreferences.getBoolean(Constants.IS_DARKTHEM,false)
+        Constants.IsDarkTheme = AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES
         setCategoriaDefault(homeViewModel)
         homeViewModel.onEvent(CategoriaEvent.get(1){
             it?.let {
@@ -86,9 +85,11 @@ class HomeActivity : ComponentActivity() {
                                 onMonthBefore = { homeViewModel.onEvent(RegisterEvent.before(1)) },
                                 onMonthNext = { homeViewModel.onEvent(RegisterEvent.next(1)) },
                                 onSwitchTheme = {
-                                    editor.putBoolean(Constants.IS_DARKTHEM, it)
-                                    editor.apply()
-                                    Constants.IsDarkTheme = sharedPreferences.getBoolean(Constants.IS_DARKTHEM,false)
+                                    if(it)
+                                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                                    else
+                                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                                    Constants.IsDarkTheme = it
                                 },
                                 onNewRegister = {isDespesa,item->
                                     homeViewModel.onEvent(RegisterEvent.insert(item.toModel(isDespesa)))

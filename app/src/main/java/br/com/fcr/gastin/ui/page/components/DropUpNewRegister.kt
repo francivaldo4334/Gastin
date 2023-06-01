@@ -17,6 +17,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
@@ -54,16 +55,16 @@ fun DropUpNewRegister (
     Categorias:List<CategoriaViewModel>,
     onDismiss:()->Unit,
     onActionsResult:(RegistroViewModel)->Unit,
-    CategoriaDefault:CategoriaViewModel
+    CategoriaDefault:CategoriaViewModel,
+    focusValue:FocusRequester,
+    focusDescription:FocusRequester,
+    focusManager: FocusManager
 ){
     var Valor by remember{ mutableStateOf("") }
     var Descricao by remember{ mutableStateOf("") }
     var openDropDownCategoria by remember { mutableStateOf(false) }
     var Categoria by remember{ mutableStateOf(CategoriaDefault) }
     val Density = LocalDensity.current
-    val focusDescricao = remember {FocusRequester()}
-    val focusValue = remember{FocusRequester()}
-    val focusManeger = LocalFocusManager.current
     BackHandler(enabled = enable) {
         onDismiss()
     }
@@ -73,9 +74,6 @@ fun DropUpNewRegister (
                 .fillMaxWidth()
                 .padding(vertical = 16.dp)
         ) {
-            LaunchedEffect(key1 = Unit, block = {
-                focusValue.requestFocus()
-            })
             Column(
                 Modifier
                     .fillMaxWidth()
@@ -95,10 +93,8 @@ fun DropUpNewRegister (
                         Valor = Regex("[^0-9]").replace(it,"")
                     },
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .focusRequester(focusValue),
+                        .fillMaxWidth(),
                     shape = RoundedCornerShape(16.dp),
-                    keyboardActions = KeyboardActions(onNext = {focusDescricao.requestFocus()}),
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next,keyboardType = KeyboardType.Number),
                     visualTransformation = if(Valor.isEmpty()) VisualTransformation.None else MaskTransformation()
                 )
@@ -112,9 +108,7 @@ fun DropUpNewRegister (
                         Descricao = it
                     },
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .focusRequester(focusDescricao),
-                    keyboardActions = KeyboardActions(onDone = {focusManeger.clearFocus()}),
+                        .fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                     shape = RoundedCornerShape(16.dp)
                 )

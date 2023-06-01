@@ -48,8 +48,6 @@ fun DropUpUpdateCategoria (
     BackHandler(enabled = enable) {
         onDismiss()
     }
-    val focusValue = remember{FocusRequester()}
-    val focusDescricao = remember { FocusRequester() }
     val focusManeger = LocalFocusManager.current
     val Density = LocalDensity.current
     BoxDropUpContent(enable = enable, onDismiss = onDismiss) {
@@ -74,7 +72,6 @@ fun DropUpUpdateCategoria (
                 modifier = Modifier
                     .fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
-                keyboardActions = KeyboardActions(onNext = {focusDescricao.requestFocus()}),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next,keyboardType = KeyboardType.Number),
             )
             Spacer(modifier = Modifier.height(16.dp))
@@ -87,9 +84,7 @@ fun DropUpUpdateCategoria (
                     onDescricao(it)
                 },
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .focusRequester(focusDescricao),
-                keyboardActions = KeyboardActions(onDone = {focusManeger.clearFocus()}),
+                    .fillMaxWidth(),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 shape = RoundedCornerShape(16.dp)
             )
