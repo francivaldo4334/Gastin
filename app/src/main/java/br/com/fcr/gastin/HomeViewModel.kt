@@ -17,6 +17,8 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.util.Calendar
+import java.util.Date
 
 sealed interface CategoriaEvent{
     data class delete(val id:Int):CategoriaEvent
@@ -55,7 +57,16 @@ class HomeViewModel constructor(
     var valorReceitas = registroRepository
         .getAllReceitasValor()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0)
-    private val buscaMesAno = MutableStateFlow(Pair(5,2023))
+    private var mesAno = Pair(0,0)
+    private val datenow = Date()
+    private val calendar = Calendar.getInstance().apply {
+        time = datenow
+        mesAno = Pair(
+            get(Calendar.MONTH)+1,
+            get(Calendar.YEAR)
+        )
+    }
+    private val buscaMesAno = MutableStateFlow(mesAno)
     var valorDespesasBusca = buscaMesAno.flatMapLatest {
         registroRepository.getAllDespesasValorMesAno(it.first,it.second)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0)
