@@ -2,6 +2,7 @@ package br.com.fcr.gastin
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatDelegate
@@ -27,6 +28,8 @@ import br.com.fcr.gastin.ui.page.viewmodels.toModel
 import br.com.fcr.gastin.ui.page.viewmodels.toView
 import br.com.fcr.gastin.ui.theme.GastinTheme
 import br.com.fcr.gastin.ui.utils.Route
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flatMapConcat
 
 class HomeActivity : ComponentActivity() {
     companion object{
@@ -60,6 +63,7 @@ class HomeActivity : ComponentActivity() {
             val valorReceitasBusca by homeViewModel.valorReceitasBusca.collectAsState()
             val stringMonth by homeViewModel.stringMonthResourceId.collectAsState()
             val stringYear by homeViewModel.stringYear.collectAsState()
+            val graphicInforms by homeViewModel.graphicInforms.collectAsState()
             GastinTheme(Constants.IsDarkTheme) {//Gestao de gasto
                 val statusBarHeigth = with(LocalDensity.current){
                     val resourceId = resources.getIdentifier("status_bar_height","dimen","android")
@@ -80,6 +84,7 @@ class HomeActivity : ComponentActivity() {
                                 valorReceitas = valorReceitas?:0,
                                 valorDespesasBusca = valorDespesasBusca?:0,
                                 valorReceitasBusca = valorReceitasBusca?:0,
+                                graphicInforms = graphicInforms,
                                 textMes = stringMonth,
                                 stringYear = stringYear.toString(),
                                 onMonthBefore = { homeViewModel.onEvent(RegisterEvent.before(1)) },

@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import br.com.fcr.gastin.data.MyDatabase
 import br.com.fcr.gastin.data.model.Registro
 import br.com.fcr.gastin.data.repository.IRegistroRepository
+import br.com.fcr.gastin.data.viewmodel.DashboardWeek
 import kotlinx.coroutines.flow.Flow
 
 class RegistroRepository constructor(
@@ -61,11 +62,18 @@ class RegistroRepository constructor(
     }
 
     override fun getAllDespesasValorMesAno(mes: Int, ano: Int): Flow<Int?> {
-        return return db.getRegistroDao().getAllDespesasValorMesAno(mes,ano)
+        return db.getRegistroDao().getAllDespesasValorMesAno(mes,ano)
     }
 
     override fun getAllReceitasValorMesAno(mes: Int, ano: Int): Flow<Int?> {
-        return return db.getRegistroDao().getAllReceitasValorMesAno(mes,ano)
+        return db.getRegistroDao().getAllReceitasValorMesAno(mes,ano)
+    }
+    override fun getDasboardWeek(week:Int,year:Int):Flow<List<DashboardWeek>>{
+        return db.getRegistroDao().getDasboardWeek(week,year)
+    }
+
+    override fun getDasboardMonth(month: Int, year: Int): Flow<List<DashboardWeek>> {
+        return db.getRegistroDao().getDasboardMonth(month,year)
     }
 
 }

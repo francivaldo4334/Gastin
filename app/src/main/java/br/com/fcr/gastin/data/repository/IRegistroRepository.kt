@@ -2,6 +2,7 @@ package br.com.fcr.gastin.data.repository
 
 import androidx.lifecycle.LiveData
 import br.com.fcr.gastin.data.model.Registro
+import br.com.fcr.gastin.data.viewmodel.DashboardWeek
 import kotlinx.coroutines.flow.Flow
 
 interface IRegistroRepository {
@@ -20,4 +21,6 @@ interface IRegistroRepository {
     fun getRegistrosByCategoriaId(id: Int): Flow<Int>
     fun update(resgister: Registro)
     fun deleteAll(ids: List<Int>)
+    fun getDasboardWeek(week:Int,year:Int):Flow<List<DashboardWeek>>
+    fun getDasboardMonth(month:Int,year:Int):Flow<List<DashboardWeek>>
 }

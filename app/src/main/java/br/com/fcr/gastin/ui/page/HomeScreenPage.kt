@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import br.com.fcr.gastin.R
 import br.com.fcr.gastin.data.model.Categoria
+import br.com.fcr.gastin.data.viewmodel.DashboardWeek
 import br.com.fcr.gastin.ui.common.Constants
 import br.com.fcr.gastin.ui.utils.Route
 import br.com.fcr.gastin.ui.page.components.*
@@ -41,7 +42,8 @@ fun HomeScreenPage(
     valorReceitasBusca:Int,
     Categorias:List<CategoriaViewModel>,
     CategoriaDefault: CategoriaViewModel,
-    onInformsTotal:(Boolean)->Unit
+    onInformsTotal:(Boolean)->Unit,
+    graphicInforms:List<DashboardWeek>
 ) {
     var IsDespesa:Boolean? by remember {mutableStateOf(null)}
     var openDropUpNewCategory by remember{ mutableStateOf(false) }
@@ -49,26 +51,10 @@ fun HomeScreenPage(
     var openDropDownDashboard by remember {mutableStateOf(false)}
     var openDropDownEvolucao by remember {mutableStateOf(false)}
     var openDropUpNewRegister by remember { mutableStateOf(false) }
-    val values = listOf<Int>(
-        1900,
-        190,
-        100,
-        100,
-        100,
-        100,
-        100,
-        19,
-        10,
-    )
-    val days = listOf(
-        Pair(1900,"seg"),
-        Pair(1000,"ter"),
-        Pair(1800,"qua"),
-        Pair(800,"qui"),
-        Pair(400,"sex"),
-        Pair(800,"sab"),
-        Pair(400,"dom"),
-    )//.sortedBy { it.first }.reversed().partitionList()
+    val values = graphicInforms.map { it.valor }
+    val days = graphicInforms.map {
+        Pair(it.valor,it.date.toString())
+    }
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally

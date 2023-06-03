@@ -9,6 +9,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -18,7 +20,8 @@ import br.com.fcr.gastin.ui.utils.toMonetaryString
 
 @Composable
 fun HomeScreenEvolucaoDespesas(listValues:List<Int>, listDays:List<Pair<Int,String>>, onClick:()->Unit, onBefore:()->Unit, onNext:()->Unit, content:@Composable ()->Unit){
-    val valueMax = listValues.sortedBy { it }.last()
+    val valueMax = if(listValues.isNotEmpty()) listValues.sortedBy { it }.last() else 0
+    val Density = LocalDensity.current
     BoxContent(
         enablePadding = false,
         modifier = Modifier
@@ -51,23 +54,62 @@ fun HomeScreenEvolucaoDespesas(listValues:List<Int>, listDays:List<Pair<Int,Stri
             }
             Row(modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp), verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.SpaceBetween) {
-                Column() {
-                    listValues.forEach {
-                        Text(text = it.toMonetaryString(), fontSize = 10.sp)
-                        Spacer(modifier = Modifier.size(8.dp))
+                .padding(16.dp)) {
+                var height by remember{ mutableStateOf(0) }
+                Column(
+                    modifier = Modifier.onGloballyPositioned {
+                        height = it.size.height
                     }
-                    Spacer(modifier = Modifier.size(8.dp))
+                ) {
+                    listValues.forEach {
+                        Text(
+                            modifier = Modifier.width(40.dp),
+                            text = it.toMonetaryString(),
+                            fontSize = 10.sp,
+                            maxLines = 1
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
                 }
-                listDays.forEach{
-                    Column(modifier = Modifier.fillMaxHeight(), horizontalAlignment = Alignment.CenterHorizontally) {
-                        Box(modifier = Modifier
-                            .clip(RoundedCornerShape(16.dp))
-                            .width(16.dp)
-                            .height(((it.first.toFloat() / valueMax.toFloat()) * 180).dp)
-                            .background(color = Color(0xFF269FB9)))
-                        Spacer(modifier = Modifier.size(8.dp))
-                        Text(text = it.second, fontSize = 14.sp)
+                Column(Modifier.fillMaxSize()) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(
+                                with(Density){
+                                    height.toDp()
+                                }
+                            ),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.Bottom
+                    ) {
+                        listDays.forEach {
+                            Box(modifier = Modifier
+                                .clip(RoundedCornerShape(16.dp))
+                                .width(16.dp)
+                                .height(
+                                    with(Density) {
+                                        ((it.first.toFloat() / valueMax.toFloat()) * height).toDp()
+                                    }
+                                )
+                                .background(color = Color(0xFF269FB9))
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        listDays.forEach {
+                            Text(
+                                modifier = Modifier.width(40.dp),
+                                text = it.second,
+                                fontSize = 10.sp,
+                                maxLines = 1
+                            )
+                        }
                     }
                 }
             }

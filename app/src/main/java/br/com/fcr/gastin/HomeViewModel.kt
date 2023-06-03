@@ -1,6 +1,7 @@
 package br.com.fcr.gastin
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.fcr.gastin.data.model.Categoria
@@ -15,12 +16,17 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.util.Calendar
 import java.util.Date
 
+enum class GraphicPeriod{
+    WEEK,
+    MONTH
+}
 sealed interface CategoriaEvent{
     data class delete(val id:Int):CategoriaEvent
     data class deleteAll(val ids:List<Int>):CategoriaEvent
@@ -45,15 +51,21 @@ class HomeViewModel constructor(
 ) : ViewModel() {
     //OBTEM O MES E ANO ATURAIS
     private var mesAno = Pair(0, 0)
+    private var semanaAno = Pair(0,0)
     private val datenow = Date()
     private val calendar = Calendar.getInstance().apply {
         time = datenow
         mesAno = Pair(get(Calendar.MONTH) + 1, get(Calendar.YEAR))
+        semanaAno = Pair(get(Calendar.WEEK_OF_YEAR),get(Calendar.YEAR))
     }
+    //TODO: PERIOD DASHBOARD GRAPHIC
+    private val graphicPeriod = MutableStateFlow(GraphicPeriod.WEEK)
     //TODO: IS TOTAL DASHBOAR
     private val isCategoriasInformsTotal = MutableStateFlow(false)
     //TODO: IS TOTAL REGISTROS
     private val isRegistrosInformsTotal = MutableStateFlow(false)
+    //TODO: BUSCA POR SEMANA E ANO
+    private val buscaSemanaAno = MutableStateFlow(semanaAno)
     //TODO: BUSCA POR MES E ANO
     private val buscaMesAno = MutableStateFlow(mesAno)
     //TODO: lista DESPESAS TOTAL
@@ -88,6 +100,21 @@ class HomeViewModel constructor(
         if(isTotal) listCatgoria = categoriaRepository.getAllWithTotal()
         else        listCatgoria = buscaMesAno.flatMapLatest { categoriaRepository.getAllWithMesAno(it.first,it.second) }
         listCatgoria.flatMapLatest {it.toFlowTriper()}
+    }.stateIn(viewModelScope,SharingStarted.WhileSubscribed(),emptyList())
+    //TODO: INFOR DASHBOARD GRAPHIC
+    val graphicInforms = graphicPeriod.flatMapLatest {
+        when(it){
+            GraphicPeriod.WEEK ->{
+                buscaSemanaAno.flatMapConcat {
+                    registroRepository.getDasboardWeek(it.first,it.second)
+                }
+            }
+            GraphicPeriod.MONTH ->{
+                buscaMesAno.flatMapConcat {
+                    registroRepository.getDasboardMonth(it.first,it.second)
+                }
+            }
+        }
     }.stateIn(viewModelScope,SharingStarted.WhileSubscribed(),emptyList())
     //String month
     val stringMonthResourceId = buscaMesAno.flatMapLatest {it.toFlowMonth(context)}.stateIn(viewModelScope,SharingStarted.WhileSubscribed(), "")
@@ -180,6 +207,4 @@ class HomeViewModel constructor(
             }
         }
     }
-
-
 }

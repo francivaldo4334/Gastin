@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import br.com.fcr.gastin.data.model.Registro
+import br.com.fcr.gastin.data.viewmodel.DashboardWeek
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -48,4 +49,20 @@ interface RegistroDao {
             "AND CAST(strftime('%m', datetime(TB_REGISTRO.CREATE_AT/1000, 'unixepoch')) AS int) = :mes " +
             "AND CAST(strftime('%Y', datetime(TB_REGISTRO.CREATE_AT/1000, 'unixepoch')) AS int) = :ano")
     fun getAllReceitasMesAno(mes: Int, ano: Int): Flow<List<Registro>>
+    @Query("SELECT " +
+            "TB_REGISTRO.VALUE AS valor," +
+            "TB_REGISTRO.CREATE_AT AS date " +
+            "FROM TB_REGISTRO " +
+            "WHERE TB_REGISTRO.IS_DEPESA = 1 " +
+            "AND CAST(strftime('%W', datetime(TB_REGISTRO.CREATE_AT/1000, 'unixepoch')) AS int) = :week "+
+            "AND CAST(strftime('%Y', datetime(TB_REGISTRO.CREATE_AT/1000, 'unixepoch')) AS int) = :year ")
+    fun getDasboardWeek(week:Int,year:Int):Flow<List<DashboardWeek>>
+    @Query("SELECT " +
+            "TB_REGISTRO.VALUE AS valor," +
+            "TB_REGISTRO.CREATE_AT AS date " +
+            "FROM TB_REGISTRO " +
+            "WHERE TB_REGISTRO.IS_DEPESA = 1 " +
+            "AND CAST(strftime('%m', datetime(TB_REGISTRO.CREATE_AT/1000, 'unixepoch')) AS int) = :month "+
+            "AND CAST(strftime('%Y', datetime(TB_REGISTRO.CREATE_AT/1000, 'unixepoch')) AS int) = :year ")
+    fun getDasboardMonth(month: Int, year: Int): Flow<List<DashboardWeek>>
 }
