@@ -1,5 +1,6 @@
 package br.com.fcr.gastin.ui.page
 
+import android.app.Activity
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -50,14 +51,15 @@ fun HomeScreenPage(
     onInformsTotal:(Boolean)->Unit,
     graphicInforms:List<DashboardWeek>
 ) {
+    val context = LocalContext.current as Activity
     val calendar = Calendar.getInstance()
     var IsDespesa:Boolean? by remember {mutableStateOf(null)}
     var openDropUpNewCategory by remember{ mutableStateOf(false) }
     var openDropDownTop by remember {mutableStateOf(false)}
     var openDropDownDashboard by remember {mutableStateOf(false)}
-    var openDropUpNewRegister by remember { mutableStateOf(false) }
+    var openNewRegister = context.intent.extras?.getBoolean(Constants.OPEN_REGISTRO,false)
+    var openDropUpNewRegister by remember { mutableStateOf(openNewRegister?:false)}
     val values = graphicInforms.map { it.valor }
-    val context = LocalContext.current
     val days = graphicInforms.map {
         calendar.time = it.date
         val week = calendar.get(Calendar.DAY_OF_WEEK)

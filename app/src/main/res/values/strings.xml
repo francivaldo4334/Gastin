@@ -166,4 +166,6 @@
     </string>
     <string name="txt_mostrar_periodo_completo">Periodo completo</string>
     <string name="txt_sem_registros">Sem registros!</string>
+    <string name="txt_atualizar_registros">Atualizar Registros</string>
+    <string name="txt_hora_de_anotar_seus_gastos">Hora de anotar seus gastos!</string>
 </resources>
