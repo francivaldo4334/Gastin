@@ -21,14 +21,17 @@ import kotlinx.coroutines.launch
 class SplashScreenActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val sharedPreferences = getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        var IsDarkTheme = sharedPreferences.getBoolean(Constants.IS_DARKTHEM,false)
         setContent {
-            GastinTheme(AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) {//Gestao de gasto
+            GastinTheme(IsDarkTheme) {//Gestao de gasto
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    SplashScreenPage()
+                    SplashScreenPage(IsDarkTheme)
                 }
             }
         }

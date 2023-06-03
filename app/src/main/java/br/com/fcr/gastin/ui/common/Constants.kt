@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 
 object Constants {
     var IsDarkTheme by mutableStateOf(false)
+    var IsTotalPeriod by mutableStateOf(false)
     val PREFERENCES = "PREFERENCES"
     val IS_DARKTHEM = "theme"
 }

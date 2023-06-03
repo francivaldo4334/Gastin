@@ -2,10 +2,8 @@ package br.com.fcr.gastin
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
@@ -28,8 +26,6 @@ import br.com.fcr.gastin.ui.page.viewmodels.toModel
 import br.com.fcr.gastin.ui.page.viewmodels.toView
 import br.com.fcr.gastin.ui.theme.GastinTheme
 import br.com.fcr.gastin.ui.utils.Route
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.flatMapConcat
 
 class HomeActivity : ComponentActivity() {
     companion object{
@@ -43,7 +39,9 @@ class HomeActivity : ComponentActivity() {
             (applicationContext as MyApplication).registroRepository,
             this
         )
-        Constants.IsDarkTheme = AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES
+        val sharedPreferences = getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        Constants.IsDarkTheme = sharedPreferences.getBoolean(Constants.IS_DARKTHEM,false)
         setCategoriaDefault(homeViewModel)
         homeViewModel.onEvent(CategoriaEvent.get(1){
             it?.let {
@@ -89,11 +87,11 @@ class HomeActivity : ComponentActivity() {
                                 stringYear = stringYear.toString(),
                                 onMonthBefore = { homeViewModel.onEvent(RegisterEvent.before(1)) },
                                 onMonthNext = { homeViewModel.onEvent(RegisterEvent.next(1)) },
+                                onWeekBefore = { homeViewModel.onEvent(RegisterEvent.beforeWeek(1)) },
+                                onWeekNext = { homeViewModel.onEvent(RegisterEvent.nextWeek(1)) },
                                 onSwitchTheme = {
-                                    if(it)
-                                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-                                    else
-                                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                                    editor.putBoolean(Constants.IS_DARKTHEM, it)
+                                    editor.apply()
                                     Constants.IsDarkTheme = it
                                 },
                                 onNewRegister = {isDespesa,item->
@@ -105,7 +103,10 @@ class HomeActivity : ComponentActivity() {
                                 categoriasInforms = categoriasInforms,
                                 Categorias = listCategoria,
                                 CategoriaDefault = CategoriaDefault,
-                                onInformsTotal = { homeViewModel.onEvent(CategoriaEvent.setInformsTotal(it))}
+                                onInformsTotal = {
+                                    homeViewModel.onEvent(CategoriaEvent.setInformsTotal(it))
+                                    Constants.IsTotalPeriod = it
+                                }
                             )
                         }
                         composable(Route.LISTA_DESPESAS){

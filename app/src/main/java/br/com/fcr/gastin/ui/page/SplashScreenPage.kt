@@ -12,8 +12,7 @@ import androidx.compose.ui.unit.dp
 import br.com.fcr.gastin.R
 
 @Composable
-fun SplashScreenPage(){
-    var theme = AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES
+fun SplashScreenPage(theme:Boolean){
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
         if(theme)
             Icon(

@@ -14,6 +14,7 @@ import br.com.fcr.gastin.ui.utils.getDatesOfWeek
 import br.com.fcr.gastin.ui.utils.toFlowMonth
 import br.com.fcr.gastin.ui.utils.toFlowTriper
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -44,7 +45,10 @@ sealed interface RegisterEvent{
     data class insert(val registro:Registro):RegisterEvent
     data class next(val it:Int):RegisterEvent
     data class before(val it:Int):RegisterEvent
+    data class nextWeek(val it:Int):RegisterEvent
+    data class beforeWeek(val it:Int):RegisterEvent
 }
+@OptIn(ExperimentalCoroutinesApi::class)
 class HomeViewModel constructor(
     private val categoriaRepository: ICategoriaRepository,
     private val registroRepository: IRegistroRepository,
@@ -106,8 +110,7 @@ class HomeViewModel constructor(
     val graphicInforms = graphicPeriod.flatMapLatest {
         when(it){
             GraphicPeriod.WEEK ->{
-                buscaSemanaAno.flatMapConcat {busca ->
-
+                buscaSemanaAno.flatMapLatest {busca ->
                     registroRepository.getDasboardWeek(busca.first,busca.second).flatMapLatest { listWeek->
                         var resp:MutableList<DashboardWeek> = mutableListOf()
                         getDatesOfWeek(busca.second,busca.first).map {
@@ -168,27 +171,47 @@ class HomeViewModel constructor(
                 }
             }
             is RegisterEvent.next->{
-                var newMes = buscaMesAno.value.first + event.it
-                var newAno = buscaMesAno.value.second
-                if(newMes > 12){
-                    newMes = 1
-                    newAno += event.it
-                }
+                val calendar = Calendar.getInstance()
+                calendar.clear()
+                calendar.set(Calendar.MONTH,buscaMesAno.value.first-1)
+                calendar.set(Calendar.YEAR,buscaMesAno.value.second)
+                calendar.add(Calendar.MONTH,event.it)
                 buscaMesAno.value = Pair(
-                    newMes,
-                    newAno
+                    calendar.get(Calendar.MONTH)+1,
+                    calendar.get(Calendar.YEAR)
                 )
             }
             is RegisterEvent.before->{
-                var newMes = buscaMesAno.value.first - event.it
-                var newAno = buscaMesAno.value.second
-                if(newMes < 1){
-                    newMes = 12
-                    newAno -= event.it
-                }
+                val calendar = Calendar.getInstance()
+                calendar.clear()
+                calendar.set(Calendar.MONTH,buscaMesAno.value.first-1)
+                calendar.set(Calendar.YEAR,buscaMesAno.value.second)
+                calendar.add(Calendar.MONTH,-event.it)
                 buscaMesAno.value = Pair(
-                    newMes,
-                    newAno
+                    calendar.get(Calendar.MONTH)+1,
+                    calendar.get(Calendar.YEAR)
+                )
+            }
+            is RegisterEvent.nextWeek ->{
+                val calendar = Calendar.getInstance()
+                calendar.clear()
+                calendar.set(Calendar.WEEK_OF_YEAR,buscaSemanaAno.value.first)
+                calendar.set(Calendar.YEAR,buscaSemanaAno.value.second)
+                calendar.add(Calendar.WEEK_OF_YEAR,event.it)
+                buscaSemanaAno.value = Pair(
+                    calendar.get(Calendar.WEEK_OF_YEAR),
+                    calendar.get(Calendar.YEAR)
+                )
+            }
+            is RegisterEvent.beforeWeek ->{
+                val calendar = Calendar.getInstance()
+                calendar.clear()
+                calendar.set(Calendar.WEEK_OF_YEAR,buscaSemanaAno.value.first)
+                calendar.set(Calendar.YEAR,buscaSemanaAno.value.second)
+                calendar.add(Calendar.WEEK_OF_YEAR,-event.it)
+                buscaSemanaAno.value = Pair(
+                    calendar.get(Calendar.WEEK_OF_YEAR),
+                    calendar.get(Calendar.YEAR)
                 )
             }
         }

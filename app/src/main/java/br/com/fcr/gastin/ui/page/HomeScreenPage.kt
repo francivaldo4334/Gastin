@@ -35,6 +35,8 @@ fun HomeScreenPage(
     stringYear:String,
     onMonthBefore:()->Unit,
     onMonthNext:()->Unit,
+    onWeekBefore:()->Unit,
+    onWeekNext:()->Unit,
     onSwitchTheme:(Boolean)->Unit,
     onNewRegister:(Boolean,RegistroViewModel)->Unit,
     onNewCategoria:(Categoria)->Unit,
@@ -118,12 +120,24 @@ fun HomeScreenPage(
                     openDropDownDashboard = true
                 }){
                     DropDownMoreOptions(
+                        customItem = {
+                            Row(modifier = Modifier
+                                .height(40.dp)
+                                .padding(horizontal = 16.dp)
+                                .fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(text = stringResource(R.string.txt_mostrar_periodo_completo), fontSize = 14.sp)
+                                Switch(checked = Constants.IsTotalPeriod, onCheckedChange = {
+                                    onInformsTotal(it)
+                                })
+                            }
+                        },
                         listOptions = listOf(
                             Pair(stringResource(R.string.txt_ver_categorias)) {
                                 navController.navigate(Route.LISTA_CATEGORIAS)
                             },
-                            Pair(stringResource(R.string.txt_mostrar_por_mes),{ onInformsTotal(false) }),
-                            Pair(stringResource(R.string.txt_mostrar_periodo_completo),{ onInformsTotal(true) }),
                             Pair(stringResource(R.string.txt_adicionar_categoria),{openDropUpNewCategory = true})
                         ),
                         enable = openDropDownDashboard,
@@ -135,12 +149,8 @@ fun HomeScreenPage(
             //Evolucao de despesas
             item {
                 HomeScreenEvolucaoDespesas(values,days,
-                    onBefore = {
-
-                    },
-                    onNext = {
-
-                    })
+                    onBefore = onWeekBefore,
+                    onNext = onWeekNext)
             }
             item{
                 Spacer(modifier = Modifier.size(100.dp))//TODO

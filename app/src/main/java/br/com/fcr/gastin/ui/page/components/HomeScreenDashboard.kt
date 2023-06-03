@@ -15,6 +15,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import br.com.fcr.gastin.R
+import br.com.fcr.gastin.ui.common.Constants
+
 @Composable
 fun HomeScreenDashboard(categorias:List<Triple<String,Int, Color>>, onClickMore:()->Unit, content:@Composable ()->Unit){
     var size = LocalConfiguration.current.screenWidthDp/2
@@ -31,7 +33,13 @@ fun HomeScreenDashboard(categorias:List<Triple<String,Int, Color>>, onClickMore:
                 Modifier
                     .fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
             ){
-                Text(text = stringResource(id = R.string.txt_despesas), fontSize = 14.sp, modifier = Modifier.padding(top = 16.dp, start = 16.dp))
+                Text(
+                    text =
+                        if(Constants.IsTotalPeriod)stringResource(id = R.string.txt_despesas_totais)
+                        else stringResource(id = R.string.txt_despesas),
+                    fontSize = 14.sp,
+                    modifier = Modifier.padding(top = 16.dp, start = 16.dp)
+                )
                 Column(){
                     IconButton(
                         onClick = onClickMore
