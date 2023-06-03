@@ -50,21 +50,16 @@ interface RegistroDao {
             "AND CAST(strftime('%Y', datetime(TB_REGISTRO.CREATE_AT/1000, 'unixepoch')) AS int) = :ano")
     fun getAllReceitasMesAno(mes: Int, ano: Int): Flow<List<Registro>>
     @Query("SELECT " +
-            "    COALESCE(SUM(TB_REGISTRO.VALUE), 0) AS valor, " +
-            "    COALESCE(TB_REGISTRO.CREATE_AT, strftime('%Y-%m-%d', 'now')) AS date " +
+            "    SUM(TB_REGISTRO.VALUE) AS valor, " +
+            "    TB_REGISTRO.CREATE_AT AS date " +
             "FROM " +
-            "    ( " +
-            "    SELECT 0 AS day_of_week " +
-            "    UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 " +
-            "    UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 " +
-            "    ) AS days " +
-            "LEFT JOIN TB_REGISTRO ON CAST(strftime('%d', datetime(TB_REGISTRO.CREATE_AT/1000, 'unixepoch')) AS int) = days.day_of_week " +
+            "    TB_REGISTRO " +
             "WHERE " +
             "    TB_REGISTRO.IS_DEPESA = 1 " +
             "    AND CAST(strftime('%W', datetime(TB_REGISTRO.CREATE_AT/1000, 'unixepoch')) AS int) = :week " +
             "    AND CAST(strftime('%Y', datetime(TB_REGISTRO.CREATE_AT/1000, 'unixepoch')) AS int) = :year " +
             "GROUP BY " +
-            "    days.day_of_week")
+            "    CAST(strftime('%d', datetime(TB_REGISTRO.CREATE_AT/1000, 'unixepoch')) AS int)")
     fun getDasboardWeek(week:Int,year:Int):Flow<List<DashboardWeek>>
     @Query("SELECT " +
             "TB_REGISTRO.VALUE AS valor," +
