@@ -53,7 +53,6 @@ fun HomeScreenPage(
     var openDropUpNewCategory by remember{ mutableStateOf(false) }
     var openDropDownTop by remember {mutableStateOf(false)}
     var openDropDownDashboard by remember {mutableStateOf(false)}
-    var openDropDownEvolucao by remember {mutableStateOf(false)}
     var openDropUpNewRegister by remember { mutableStateOf(false) }
     val values = graphicInforms.map { it.valor }
     val context = LocalContext.current
@@ -136,26 +135,12 @@ fun HomeScreenPage(
             //Evolucao de despesas
             item {
                 HomeScreenEvolucaoDespesas(values,days,
-                    onClick = {
-                        openDropDownEvolucao = true
-                    },
                     onBefore = {
 
                     },
                     onNext = {
 
-                    }){
-                    DropDownMoreOptions(
-                        listOptions = listOf(
-                            Pair(stringResource(R.string.txt_visualizar_por_mes),{}),
-                            Pair(stringResource(R.string.txt_visualizar_por_quinzena),{}),
-                            Pair(stringResource(R.string.txt_visualizar_por_semana),{})
-                        ),
-                        enable = openDropDownEvolucao,
-                        onDismiss = {
-                            openDropDownEvolucao = false
-                        })
-                }
+                    })
             }
             item{
                 Spacer(modifier = Modifier.size(100.dp))//TODO

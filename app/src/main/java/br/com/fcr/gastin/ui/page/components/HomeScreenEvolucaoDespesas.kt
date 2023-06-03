@@ -19,7 +19,7 @@ import br.com.fcr.gastin.R
 import br.com.fcr.gastin.ui.utils.toMonetaryString
 
 @Composable
-fun HomeScreenEvolucaoDespesas(listValues:List<Int>, listDays:List<Pair<Int,String>>, onClick:()->Unit, onBefore:()->Unit, onNext:()->Unit, content:@Composable ()->Unit){
+fun HomeScreenEvolucaoDespesas(listValues:List<Int>, listDays:List<Pair<Int,String>>, onBefore:()->Unit, onNext:()->Unit){
     val valueMax = if(listValues.isNotEmpty()) listValues.sortedBy { it }.last() else 0
     val Density = LocalDensity.current
     BoxContent(
@@ -39,17 +39,6 @@ fun HomeScreenEvolucaoDespesas(listValues:List<Int>, listDays:List<Pair<Int,Stri
                     IconButton(onClick = onNext) {
                         Icon(painter = painterResource(id = R.drawable.ic_right), contentDescription = "")
                     }
-                    Column{
-                        IconButton(
-                            onClick = onClick,
-                        ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_more_options_chorts),
-                                contentDescription = ""
-                            )
-                        }
-                        content()
-                    }
                 }
             }
             Row(modifier = Modifier
@@ -61,7 +50,7 @@ fun HomeScreenEvolucaoDespesas(listValues:List<Int>, listDays:List<Pair<Int,Stri
                         height = it.size.height
                     }
                 ) {
-                    listValues.forEach {
+                    listValues.sortedBy { it }.reversed().forEach {
                         Text(
                             modifier = Modifier.width(40.dp),
                             text = it.toMonetaryString(),
