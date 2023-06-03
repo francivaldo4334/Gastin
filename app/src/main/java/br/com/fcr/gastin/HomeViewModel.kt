@@ -4,11 +4,11 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import br.com.fcr.gastin.data.model.Categoria
-import br.com.fcr.gastin.data.model.Registro
-import br.com.fcr.gastin.data.repository.ICategoriaRepository
-import br.com.fcr.gastin.data.repository.IRegistroRepository
-import br.com.fcr.gastin.data.viewmodel.DashboardWeek
+import br.com.fcr.gastin.data.database.model.Categoria
+import br.com.fcr.gastin.data.database.model.Registro
+import br.com.fcr.gastin.data.database.repository.ICategoriaRepository
+import br.com.fcr.gastin.data.database.repository.IRegistroRepository
+import br.com.fcr.gastin.data.database.viewmodel.DashboardWeek
 import br.com.fcr.gastin.ui.page.viewmodels.toView
 import br.com.fcr.gastin.ui.utils.getDatesOfWeek
 import br.com.fcr.gastin.ui.utils.toFlowMonth
@@ -34,7 +34,7 @@ sealed interface CategoriaEvent{
     data class deleteAll(val ids:List<Int>):CategoriaEvent
     data class update(val categoria: Categoria):CategoriaEvent
     data class get(val id:Int,val onResult:(Categoria?)->Unit):CategoriaEvent
-    data class insert(val categoira:Categoria):CategoriaEvent
+    data class insert(val categoira: Categoria):CategoriaEvent
     data class setInformsTotal(val it:Boolean):CategoriaEvent
 }
 sealed interface RegisterEvent{
@@ -42,7 +42,7 @@ sealed interface RegisterEvent{
     data class deleteAll(val ids:List<Int>):RegisterEvent
     data class update(val isDespesa:Boolean,val register: Registro):RegisterEvent
     data class get(val id:Int,val onResult:(Registro?)->Unit):RegisterEvent
-    data class insert(val registro:Registro):RegisterEvent
+    data class insert(val registro: Registro):RegisterEvent
     data class next(val it:Int):RegisterEvent
     data class before(val it:Int):RegisterEvent
     data class nextWeek(val it:Int):RegisterEvent

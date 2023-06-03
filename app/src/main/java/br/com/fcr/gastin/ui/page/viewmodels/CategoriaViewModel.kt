@@ -1,8 +1,8 @@
 package br.com.fcr.gastin.ui.page.viewmodels
 
 import androidx.compose.ui.graphics.Color
-import br.com.fcr.gastin.data.model.Categoria
-import br.com.fcr.gastin.data.model.Registro
+import br.com.fcr.gastin.data.database.model.Categoria
+import br.com.fcr.gastin.data.database.model.Registro
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -18,7 +18,7 @@ fun Categoria.toView():CategoriaViewModel{
         Id = this.Id
     )
 }
-fun CategoriaViewModel.toModel():Categoria{
+fun CategoriaViewModel.toModel(): Categoria {
     return Categoria(
         Id = this.Id,
         Description = this.Description,

@@ -1,10 +1,10 @@
-package br.com.fcr.gastin.data
+package br.com.fcr.gastin.data.database
 
 import android.content.Context
 import androidx.room.Room
 
 object DB {
-    fun getService(context: Context): MyDatabase{
+    fun getService(context: Context): MyDatabase {
         return Room.databaseBuilder(
             context,
             MyDatabase::class.java,

@@ -1,4 +1,4 @@
-package br.com.fcr.gastin.data.model
+package br.com.fcr.gastin.data.database.model
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

@@ -1,12 +1,12 @@
-package br.com.fcr.gastin.data.dao
+package br.com.fcr.gastin.data.database.dao
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import br.com.fcr.gastin.data.model.Registro
-import br.com.fcr.gastin.data.viewmodel.DashboardWeek
+import br.com.fcr.gastin.data.database.model.Registro
+import br.com.fcr.gastin.data.database.viewmodel.DashboardWeek
 import kotlinx.coroutines.flow.Flow
 
 @Dao

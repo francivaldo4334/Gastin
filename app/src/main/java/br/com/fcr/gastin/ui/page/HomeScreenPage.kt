@@ -17,8 +17,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import br.com.fcr.gastin.R
-import br.com.fcr.gastin.data.model.Categoria
-import br.com.fcr.gastin.data.viewmodel.DashboardWeek
+import br.com.fcr.gastin.data.database.model.Categoria
+import br.com.fcr.gastin.data.database.viewmodel.DashboardWeek
 import br.com.fcr.gastin.ui.common.Constants
 import br.com.fcr.gastin.ui.utils.Route
 import br.com.fcr.gastin.ui.page.components.*

@@ -1,7 +1,7 @@
-package br.com.fcr.gastin.data.dao
+package br.com.fcr.gastin.data.database.dao
 
 import androidx.room.*
-import br.com.fcr.gastin.data.model.Categoria
+import br.com.fcr.gastin.data.database.model.Categoria
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -11,7 +11,7 @@ interface CategoriaDao {
     @Query("SELECT * FROM TB_CATEGORIA")
     fun getAll(): Flow<List<Categoria>>
     @Insert
-    fun insert(Categoria:Categoria):Long
+    fun insert(Categoria: Categoria):Long
     @Query("DELETE FROM TB_CATEGORIA WHERE ID = :ID")
     fun delete(ID:Int)
     @Query("SELECT TB_CATEGORIA.*,SUM(TB_REGISTRO.VALUE) AS TOTAL " +

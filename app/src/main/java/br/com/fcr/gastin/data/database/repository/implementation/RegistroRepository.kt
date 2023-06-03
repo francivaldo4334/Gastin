@@ -1,10 +1,10 @@
-package br.com.fcr.gastin.data.repository.implementation
+package br.com.fcr.gastin.data.database.repository.implementation
 
 import androidx.lifecycle.LiveData
-import br.com.fcr.gastin.data.MyDatabase
-import br.com.fcr.gastin.data.model.Registro
-import br.com.fcr.gastin.data.repository.IRegistroRepository
-import br.com.fcr.gastin.data.viewmodel.DashboardWeek
+import br.com.fcr.gastin.data.database.MyDatabase
+import br.com.fcr.gastin.data.database.model.Registro
+import br.com.fcr.gastin.data.database.repository.IRegistroRepository
+import br.com.fcr.gastin.data.database.viewmodel.DashboardWeek
 import kotlinx.coroutines.flow.Flow
 
 class RegistroRepository constructor(

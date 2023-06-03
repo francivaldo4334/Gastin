@@ -15,7 +15,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import br.com.fcr.gastin.data.model.Categoria
+import br.com.fcr.gastin.data.database.model.Categoria
 import br.com.fcr.gastin.ui.common.Constants
 import br.com.fcr.gastin.ui.page.HomeScreenPage
 import br.com.fcr.gastin.ui.page.ListCategoriasPage

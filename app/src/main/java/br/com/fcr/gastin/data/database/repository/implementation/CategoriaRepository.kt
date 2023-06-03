@@ -1,13 +1,13 @@
-package br.com.fcr.gastin.data.repository.implementation
+package br.com.fcr.gastin.data.database.repository.implementation
 
-import br.com.fcr.gastin.data.MyDatabase
-import br.com.fcr.gastin.data.model.Categoria
-import br.com.fcr.gastin.data.repository.ICategoriaRepository
+import br.com.fcr.gastin.data.database.MyDatabase
+import br.com.fcr.gastin.data.database.model.Categoria
+import br.com.fcr.gastin.data.database.repository.ICategoriaRepository
 import kotlinx.coroutines.flow.Flow
 
 class CategoriaRepository constructor(
-    private val db:MyDatabase
-): ICategoriaRepository{
+    private val db: MyDatabase
+): ICategoriaRepository {
     override fun getAll(): Flow<List<Categoria>> {
         return db.getCategoriaDao().getAll()
     }

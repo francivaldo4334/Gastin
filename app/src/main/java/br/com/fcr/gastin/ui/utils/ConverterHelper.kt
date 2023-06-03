@@ -3,7 +3,7 @@ package br.com.fcr.gastin.ui.utils
 import android.content.Context
 import androidx.compose.ui.graphics.Color
 import br.com.fcr.gastin.R
-import br.com.fcr.gastin.data.model.Categoria
+import br.com.fcr.gastin.data.database.model.Categoria
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.util.Calendar
 import java.util.Date

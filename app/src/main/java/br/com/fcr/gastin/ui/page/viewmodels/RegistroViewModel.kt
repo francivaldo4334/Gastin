@@ -1,7 +1,7 @@
 package br.com.fcr.gastin.ui.page.viewmodels
 
 import androidx.compose.ui.graphics.Color
-import br.com.fcr.gastin.data.model.Registro
+import br.com.fcr.gastin.data.database.model.Registro
 import java.text.SimpleDateFormat
 
 data class RegistroViewModel(
@@ -28,7 +28,7 @@ fun Registro.toView():RegistroViewModel{
         Id = this.Id
     )
 }
-fun RegistroViewModel.toModel(isDespesa:Boolean = true):Registro{
+fun RegistroViewModel.toModel(isDespesa:Boolean = true): Registro {
     return Registro(
         IsDespesa = isDespesa,
         Id = this.Id,

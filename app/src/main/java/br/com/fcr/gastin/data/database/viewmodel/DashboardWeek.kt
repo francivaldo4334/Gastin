@@ -1,4 +1,4 @@
-package br.com.fcr.gastin.data.viewmodel
+package br.com.fcr.gastin.data.database.viewmodel
 
 import java.util.Date
 

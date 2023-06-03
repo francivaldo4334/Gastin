@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import br.com.fcr.gastin.HomeActivity
 import br.com.fcr.gastin.R
-import br.com.fcr.gastin.data.model.Registro
+import br.com.fcr.gastin.data.database.model.Registro
 import br.com.fcr.gastin.ui.page.viewmodels.CategoriaViewModel
 import br.com.fcr.gastin.ui.page.viewmodels.EmptyCategoriaViewModel
 import br.com.fcr.gastin.ui.page.viewmodels.RegistroViewModel

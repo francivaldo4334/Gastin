@@ -2,12 +2,12 @@ package br.com.fcr.gastin
 
 import android.app.Application
 import androidx.room.Room
-import br.com.fcr.gastin.data.DB
-import br.com.fcr.gastin.data.MyDatabase
-import br.com.fcr.gastin.data.repository.ICategoriaRepository
-import br.com.fcr.gastin.data.repository.IRegistroRepository
-import br.com.fcr.gastin.data.repository.implementation.CategoriaRepository
-import br.com.fcr.gastin.data.repository.implementation.RegistroRepository
+import br.com.fcr.gastin.data.database.DB
+import br.com.fcr.gastin.data.database.MyDatabase
+import br.com.fcr.gastin.data.database.repository.ICategoriaRepository
+import br.com.fcr.gastin.data.database.repository.IRegistroRepository
+import br.com.fcr.gastin.data.database.repository.implementation.CategoriaRepository
+import br.com.fcr.gastin.data.database.repository.implementation.RegistroRepository
 
 
 class MyApplication : Application() {

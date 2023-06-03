@@ -1,4 +1,4 @@
-package br.com.fcr.gastin.data.resource
+package br.com.fcr.gastin.data.database.resource
 
 import androidx.room.TypeConverter
 import java.util.*

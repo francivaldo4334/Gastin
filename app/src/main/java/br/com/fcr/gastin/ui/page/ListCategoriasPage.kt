@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import br.com.fcr.gastin.R
-import br.com.fcr.gastin.data.model.Categoria
+import br.com.fcr.gastin.data.database.model.Categoria
 import br.com.fcr.gastin.ui.page.components.DropDownMoreOptions
 import br.com.fcr.gastin.ui.page.components.DropUpNewCategory
 import br.com.fcr.gastin.ui.page.components.DropUpUpdateCategoria

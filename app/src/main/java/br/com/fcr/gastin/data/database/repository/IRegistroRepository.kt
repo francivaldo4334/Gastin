@@ -1,8 +1,8 @@
-package br.com.fcr.gastin.data.repository
+package br.com.fcr.gastin.data.database.repository
 
 import androidx.lifecycle.LiveData
-import br.com.fcr.gastin.data.model.Registro
-import br.com.fcr.gastin.data.viewmodel.DashboardWeek
+import br.com.fcr.gastin.data.database.model.Registro
+import br.com.fcr.gastin.data.database.viewmodel.DashboardWeek
 import kotlinx.coroutines.flow.Flow
 
 interface IRegistroRepository {
