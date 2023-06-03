@@ -8,7 +8,9 @@ import br.com.fcr.gastin.data.model.Categoria
 import br.com.fcr.gastin.data.model.Registro
 import br.com.fcr.gastin.data.repository.ICategoriaRepository
 import br.com.fcr.gastin.data.repository.IRegistroRepository
+import br.com.fcr.gastin.data.viewmodel.DashboardWeek
 import br.com.fcr.gastin.ui.page.viewmodels.toView
+import br.com.fcr.gastin.ui.utils.getDatesOfWeek
 import br.com.fcr.gastin.ui.utils.toFlowMonth
 import br.com.fcr.gastin.ui.utils.toFlowTriper
 import kotlinx.coroutines.Dispatchers
@@ -24,8 +26,7 @@ import java.util.Calendar
 import java.util.Date
 
 enum class GraphicPeriod{
-    WEEK,
-    MONTH
+    WEEK
 }
 sealed interface CategoriaEvent{
     data class delete(val id:Int):CategoriaEvent
@@ -105,13 +106,27 @@ class HomeViewModel constructor(
     val graphicInforms = graphicPeriod.flatMapLatest {
         when(it){
             GraphicPeriod.WEEK ->{
-                buscaSemanaAno.flatMapConcat {
-                    registroRepository.getDasboardWeek(it.first,it.second)
-                }
-            }
-            GraphicPeriod.MONTH ->{
-                buscaMesAno.flatMapConcat {
-                    registroRepository.getDasboardMonth(it.first,it.second)
+                buscaSemanaAno.flatMapConcat {busca ->
+
+                    registroRepository.getDasboardWeek(busca.first,busca.second).flatMapLatest { listWeek->
+                        var resp:MutableList<DashboardWeek> = mutableListOf()
+                        getDatesOfWeek(busca.second,busca.first).map {
+                            DashboardWeek(
+                                0,
+                                it
+                            )
+                        }.forEach{ itResp ->
+                            var item = listWeek.firstOrNull{
+                                it.date.day == itResp.date.day &&
+                                it.date.year == itResp.date.year
+                            }
+                            if(item == null)
+                                resp.add(itResp)
+                            else
+                                resp.add(item)
+                        }
+                        MutableStateFlow(resp)
+                    }
                 }
             }
         }

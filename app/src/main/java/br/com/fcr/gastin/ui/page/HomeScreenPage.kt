@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -24,6 +25,8 @@ import br.com.fcr.gastin.ui.page.components.*
 import br.com.fcr.gastin.ui.page.viewmodels.CategoriaViewModel
 import br.com.fcr.gastin.ui.page.viewmodels.RegistroViewModel
 import br.com.fcr.gastin.ui.page.viewmodels.toModel
+import br.com.fcr.gastin.ui.utils.toWeekString
+import java.util.Calendar
 
 @Composable
 fun HomeScreenPage(
@@ -45,6 +48,7 @@ fun HomeScreenPage(
     onInformsTotal:(Boolean)->Unit,
     graphicInforms:List<DashboardWeek>
 ) {
+    val calendar = Calendar.getInstance()
     var IsDespesa:Boolean? by remember {mutableStateOf(null)}
     var openDropUpNewCategory by remember{ mutableStateOf(false) }
     var openDropDownTop by remember {mutableStateOf(false)}
@@ -52,8 +56,11 @@ fun HomeScreenPage(
     var openDropDownEvolucao by remember {mutableStateOf(false)}
     var openDropUpNewRegister by remember { mutableStateOf(false) }
     val values = graphicInforms.map { it.valor }
+    val context = LocalContext.current
     val days = graphicInforms.map {
-        Pair(it.valor,it.date.toString())
+        calendar.time = it.date
+        val week = calendar.get(Calendar.DAY_OF_WEEK)
+        Pair(it.valor,week.toWeekString(context))
     }
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -149,6 +156,9 @@ fun HomeScreenPage(
                             openDropDownEvolucao = false
                         })
                 }
+            }
+            item{
+                Spacer(modifier = Modifier.size(100.dp))//TODO
             }
         }
     }

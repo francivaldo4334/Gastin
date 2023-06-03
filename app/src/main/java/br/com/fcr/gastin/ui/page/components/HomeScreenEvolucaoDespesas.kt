@@ -71,12 +71,13 @@ fun HomeScreenEvolucaoDespesas(listValues:List<Int>, listDays:List<Pair<Int,Stri
                         Spacer(modifier = Modifier.height(8.dp))
                     }
                 }
+                Spacer(modifier = Modifier.width(8.dp))
                 Column(Modifier.fillMaxSize()) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(
-                                with(Density){
+                                with(Density) {
                                     height.toDp()
                                 }
                             ),
@@ -104,9 +105,9 @@ fun HomeScreenEvolucaoDespesas(listValues:List<Int>, listDays:List<Pair<Int,Stri
                     ) {
                         listDays.forEach {
                             Text(
-                                modifier = Modifier.width(40.dp),
+                                modifier = Modifier.width(16.dp),
                                 text = it.second,
-                                fontSize = 10.sp,
+                                fontSize = 8.sp,
                                 maxLines = 1
                             )
                         }
