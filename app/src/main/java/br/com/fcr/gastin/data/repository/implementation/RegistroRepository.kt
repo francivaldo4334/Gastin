@@ -13,8 +13,16 @@ class RegistroRepository constructor(
         return db.getRegistroDao().getAllDespesas()
     }
 
+    override fun getAllDespesasMesAno(mes: Int, ano: Int): Flow<List<Registro>> {
+        return db.getRegistroDao().getAllDespesasMesAno(mes,ano)
+    }
+
     override fun getAllReceitas(): Flow<List<Registro>> {
         return db.getRegistroDao().getAllReceitas()
+    }
+
+    override fun getAllReceitasMesAno(mes: Int, ano: Int): Flow<List<Registro>> {
+        return db.getRegistroDao().getAllReceitasMesAno(mes,ano)
     }
 
     override fun getById(ID: Int): Flow<Registro> {

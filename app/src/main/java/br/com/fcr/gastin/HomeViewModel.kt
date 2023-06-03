@@ -1,7 +1,6 @@
 package br.com.fcr.gastin
 
 import android.content.Context
-import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.fcr.gastin.data.model.Categoria
@@ -9,6 +8,8 @@ import br.com.fcr.gastin.data.model.Registro
 import br.com.fcr.gastin.data.repository.ICategoriaRepository
 import br.com.fcr.gastin.data.repository.IRegistroRepository
 import br.com.fcr.gastin.ui.page.viewmodels.toView
+import br.com.fcr.gastin.ui.utils.toFlowMonth
+import br.com.fcr.gastin.ui.utils.toFlowTriper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -42,78 +43,56 @@ class HomeViewModel constructor(
     private val registroRepository: IRegistroRepository,
     private val context:Context
 ) : ViewModel() {
-    //TODO: listas
-    val despesas = registroRepository.getAllDespesas()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
-    val receitas = registroRepository.getAllReceitas()
-        .flatMapLatest { MutableStateFlow(it.map { it.toView() }) }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
-    val categorias =
-        categoriaRepository.getAll().flatMapLatest { MutableStateFlow(it.map { it.toView() }) }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
-    var valorDespesas = registroRepository
-        .getAllDespesasValor()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0)
-    var valorReceitas = registroRepository
-        .getAllReceitasValor()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0)
-    private var mesAno = Pair(0,0)
+    //OBTEM O MES E ANO ATURAIS
+    private var mesAno = Pair(0, 0)
     private val datenow = Date()
     private val calendar = Calendar.getInstance().apply {
         time = datenow
-        mesAno = Pair(
-            get(Calendar.MONTH)+1,
-            get(Calendar.YEAR)
-        )
+        mesAno = Pair(get(Calendar.MONTH) + 1, get(Calendar.YEAR))
     }
-    private val buscaMesAno = MutableStateFlow(mesAno)
-    var valorDespesasBusca = buscaMesAno.flatMapLatest {
-        registroRepository.getAllDespesasValorMesAno(it.first,it.second)
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0)
-    var valorReceitasBusca =  buscaMesAno.flatMapLatest {
-        registroRepository.getAllReceitasValorMesAno(it.first,it.second)
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0)
+    //TODO: IS TOTAL DASHBOAR
     private val isCategoriasInformsTotal = MutableStateFlow(false)
-    val categoriasInforms = isCategoriasInformsTotal.flatMapLatest {
+    //TODO: IS TOTAL REGISTROS
+    private val isRegistrosInformsTotal = MutableStateFlow(false)
+    //TODO: BUSCA POR MES E ANO
+    private val buscaMesAno = MutableStateFlow(mesAno)
+    //TODO: lista DESPESAS TOTAL
+    val despesas = isRegistrosInformsTotal.flatMapLatest {isTotal->
+        if(isTotal) registroRepository.getAllDespesas()
+        else buscaMesAno.flatMapLatest { registroRepository.getAllDespesasMesAno(it.first,it.second) }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
+    //TODO: lista RECEITAS TOTAL
+    val receitas = isRegistrosInformsTotal.flatMapLatest {isTotal ->
+        if(isTotal) registroRepository.getAllReceitas()
+        else buscaMesAno.flatMapLatest { registroRepository.getAllReceitasMesAno(it.first, it.second) }
+    }.flatMapLatest { MutableStateFlow(it.map { it.toView() }) }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
+    //TODO: lista CATEGORIA
+    val categorias = categoriaRepository.getAll().flatMapLatest { MutableStateFlow(it.map { it.toView() }) }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
+    //TODO: DESPESAS VALOR TOTAL
+    var valorDespesas = isRegistrosInformsTotal.flatMapLatest {isTotal ->
+        if(isTotal) registroRepository.getAllDespesasValor()
+        else buscaMesAno.flatMapLatest { registroRepository.getAllDespesasValorMesAno(it.first,it.second) }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0)
+    //TODO: RECEITA VALOR TOTAL
+    var valorReceitas = isRegistrosInformsTotal.flatMapLatest { isTotal ->
+        if(isTotal) registroRepository.getAllReceitasValor()
+        else buscaMesAno.flatMapLatest { registroRepository.getAllReceitasValorMesAno(it.first,it.second) }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0)
+    //TODO: DESPESAS VALOR TOTAL MES ANO
+    var valorDespesasBusca = buscaMesAno.flatMapLatest {registroRepository.getAllDespesasValorMesAno(it.first,it.second)}.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0)
+    //TODO: DESPESAS VALOR TOTAL MES ANO
+    var valorReceitasBusca =  buscaMesAno.flatMapLatest {registroRepository.getAllReceitasValorMesAno(it.first,it.second) }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0)
+    //TODO: INFOR DASHBOARD
+    val categoriasInforms = isCategoriasInformsTotal.flatMapLatest {isTotal->
         val listCatgoria: Flow<List<Categoria>>
-        if(it)
-            listCatgoria = categoriaRepository.getAllWithTotal()
-        else
-            listCatgoria = buscaMesAno.flatMapLatest {
-                categoriaRepository.getAllWithMesAno(it.first,it.second)
-            }
-        listCatgoria.flatMapLatest {
-            val list = it.map {
-                Triple(
-                    it.Name,
-                    it.total,
-                    Color(it.Color)
-                )
-            }
-            MutableStateFlow(list)
-        }
+        if(isTotal) listCatgoria = categoriaRepository.getAllWithTotal()
+        else        listCatgoria = buscaMesAno.flatMapLatest { categoriaRepository.getAllWithMesAno(it.first,it.second) }
+        listCatgoria.flatMapLatest {it.toFlowTriper()}
     }.stateIn(viewModelScope,SharingStarted.WhileSubscribed(),emptyList())
-    val stringMonthResourceId = buscaMesAno.flatMapLatest {
-        val resp = when(it.first){
-            1 -> context.getString(R.string.txt_january)
-            2 -> context.getString(R.string.txt_february)
-            3 -> context.getString(R.string.txt_march)
-            4 -> context.getString(R.string.txt_april)
-            5 -> context.getString(R.string.txt_may)
-            6 -> context.getString(R.string.txt_june)
-            7 -> context.getString(R.string.txt_july)
-            8 -> context.getString(R.string.txt_august)
-            9 -> context.getString(R.string.txt_september)
-            10 -> context.getString(R.string.txt_october)
-            11 -> context.getString(R.string.txt_november)
-            12 -> context.getString(R.string.txt_december)
-            else -> ""
-        }
-        MutableStateFlow(resp)
-    }.stateIn(viewModelScope,SharingStarted.WhileSubscribed(), "")
-    val stringYear = buscaMesAno.flatMapLatest {
-        MutableStateFlow(it.second)
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(),0)
+    //String month
+    val stringMonthResourceId = buscaMesAno.flatMapLatest {it.toFlowMonth(context)}.stateIn(viewModelScope,SharingStarted.WhileSubscribed(), "")
+    //String year
+    val stringYear = buscaMesAno.flatMapLatest {MutableStateFlow(it.second)}.stateIn(viewModelScope, SharingStarted.WhileSubscribed(),0)
     fun onEvent(event:RegisterEvent){
         when(event){
 

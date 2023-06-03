@@ -6,7 +6,9 @@ import kotlinx.coroutines.flow.Flow
 
 interface IRegistroRepository {
     fun getAllDespesas(): Flow<List<Registro>>
+    fun getAllDespesasMesAno(mes:Int,ano:Int): Flow<List<Registro>>
     fun getAllReceitas(): Flow<List<Registro>>
+    fun getAllReceitasMesAno(mes:Int,ano:Int): Flow<List<Registro>>
     fun getAllDespesasValor(): Flow<Int?>
     fun getAllReceitasValor(): Flow<Int?>
     fun getAllDespesasValorMesAno(mes:Int,ano:Int): Flow<Int?>

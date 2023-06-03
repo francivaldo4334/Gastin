@@ -40,4 +40,12 @@ interface RegistroDao {
     fun getAllReceitasValorMesAno(mes:Int, ano:Int): Flow<Int?>
     @Update
     fun update(resgister: Registro)
+    @Query("SELECT * FROM TB_REGISTRO WHERE IS_DEPESA = 1 " +
+            "AND CAST(strftime('%m', datetime(TB_REGISTRO.CREATE_AT/1000, 'unixepoch')) AS int) = :mes " +
+            "AND CAST(strftime('%Y', datetime(TB_REGISTRO.CREATE_AT/1000, 'unixepoch')) AS int) = :ano")
+    fun getAllDespesasMesAno(mes: Int, ano: Int): Flow<List<Registro>>
+    @Query("SELECT * FROM TB_REGISTRO WHERE IS_DEPESA = 0 " +
+            "AND CAST(strftime('%m', datetime(TB_REGISTRO.CREATE_AT/1000, 'unixepoch')) AS int) = :mes " +
+            "AND CAST(strftime('%Y', datetime(TB_REGISTRO.CREATE_AT/1000, 'unixepoch')) AS int) = :ano")
+    fun getAllReceitasMesAno(mes: Int, ano: Int): Flow<List<Registro>>
 }
