@@ -49,11 +49,6 @@ class SplashScreenActivity : ComponentActivity() {
         val sharedPreferences = getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         val IsDarkTheme = sharedPreferences.getBoolean(Constants.IS_DARKTHEM,false)
-        val isFirstTime = sharedPreferences.getBoolean(Constants.IS_FIRST_TIME,true)
-        if(isFirstTime) {
-            scheduleNotification()
-            editor.putBoolean(Constants.IS_FIRST_TIME,false)
-        }
         setContent {
             GastinTheme(IsDarkTheme) {//Gestao de gasto
                 // A surface container using the 'background' color from the theme
@@ -69,6 +64,12 @@ class SplashScreenActivity : ComponentActivity() {
             delay(3000)
             startActivity(Intent(this@SplashScreenActivity,HomeActivity::class.java))
             finish()
+        }
+        val isFirstTime = sharedPreferences.getBoolean(Constants.IS_FIRST_TIME,true)
+        if(isFirstTime) {
+            scheduleNotification()
+            editor.putBoolean(Constants.IS_FIRST_TIME,false)
+            editor.apply()
         }
     }
 }
