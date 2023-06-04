@@ -18,6 +18,16 @@ import androidx.compose.ui.unit.sp
 import br.com.fcr.gastin.R
 import br.com.fcr.gastin.ui.utils.toMonetaryString
 
+private fun createList(max:Int,min:Int):List<Int>{
+    if (min >= max)
+        return emptyList()
+    val increment = (max - min)/6
+    val listResponse = mutableListOf<Int>()
+    for (it in min..max step increment){
+        listResponse.add(it)
+    }
+    return listResponse
+}
 @Composable
 fun HomeScreenEvolucaoDespesas(
     listValues: List<Int>,
@@ -26,6 +36,8 @@ fun HomeScreenEvolucaoDespesas(
     onNext: () -> Unit
 ){
     val valueMax = if(listValues.isNotEmpty()) listValues.sortedBy { it }.last() else 0
+    val valueMin = if(listValues.isNotEmpty()) listValues.sortedBy { it }.first() else 0
+    val simpleList = createList(valueMax,valueMin).distinct().sortedBy { it }.reversed()
     val Density = LocalDensity.current
     BoxContent(
         enablePadding = false,
@@ -46,7 +58,7 @@ fun HomeScreenEvolucaoDespesas(
                     }
                 }
             }
-            if(listValues.isEmpty() && listDays.isEmpty()){
+            if(simpleList.isEmpty()){
                 Box(modifier = Modifier
                     .fillMaxWidth()
                     .height(100.dp)
@@ -66,7 +78,7 @@ fun HomeScreenEvolucaoDespesas(
                             height = it.size.height
                         }
                     ) {
-                        listValues.sortedBy { it }.reversed().forEach {
+                        simpleList.forEach {
                             Text(
                                 modifier = Modifier.width(40.dp),
                                 text = it.toMonetaryString(),
