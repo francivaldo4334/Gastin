@@ -276,8 +276,5 @@ fun ListValuesScreenPage(
         onActionsResult = onNewRegister,
         Categorias = Categorias,
         CategoriaDefault = CategoriaDefault,
-        focusDescription = FocusRequester(),
-        focusManager = LocalFocusManager.current,
-        focusValue = FocusRequester()
     )
 }

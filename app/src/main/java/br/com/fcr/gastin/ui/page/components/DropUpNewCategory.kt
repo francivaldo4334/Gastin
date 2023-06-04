@@ -1,6 +1,10 @@
 package br.com.fcr.gastin.ui.page.components
 
+import android.app.Activity
+import android.content.Context
+import android.inputmethodservice.InputMethodService
 import android.util.Log
+import android.view.inputmethod.InputMethodManager
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -13,11 +17,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
@@ -34,23 +40,23 @@ import br.com.fcr.gastin.ui.utils.colorToLongHex
 
 @Composable
 fun DropUpNewCategory (enable:Boolean,onDismiss:()->Unit,onActionsResult:(CategoriaViewModel)->Unit){
-    val focusValue = remember{FocusRequester()}
-    val focusDescricao = remember{FocusRequester()}
     val focusManeger = LocalFocusManager.current
+    val context = LocalContext.current as Activity
     val Density = LocalDensity.current
     var Nome by remember {mutableStateOf("")}
     var Descricao by remember {mutableStateOf("")}
     var colorSelect by remember{ mutableStateOf(Color(0xFFD4D4D4)) }
     var openDropDownColorPicker by remember {mutableStateOf(false)}
+    val focusValue = remember{FocusRequester()}
     BoxDropUpContent(enable = enable, onDismiss = onDismiss) {
+        LaunchedEffect(key1 = Unit, block = {
+            focusValue.requestFocus()
+        })
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 16.dp)
         ) {
-            LaunchedEffect(key1 = Unit, block = {
-                focusValue.requestFocus()
-            })
             Column(
                 Modifier
                     .fillMaxWidth()
@@ -73,7 +79,7 @@ fun DropUpNewCategory (enable:Boolean,onDismiss:()->Unit,onActionsResult:(Catego
                         .fillMaxWidth()
                         .focusRequester(focusValue),
                     shape = RoundedCornerShape(16.dp),
-                    keyboardActions = KeyboardActions(onNext = {focusDescricao.requestFocus()}),
+                    keyboardActions = KeyboardActions(onNext = {focusManeger.moveFocus(FocusDirection.Down)}),
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
                 )
                 Spacer(modifier = Modifier.height(16.dp))
@@ -86,8 +92,7 @@ fun DropUpNewCategory (enable:Boolean,onDismiss:()->Unit,onActionsResult:(Catego
                         Descricao = it
                     },
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .focusRequester(focusDescricao),
+                        .fillMaxWidth(),
                     keyboardActions = KeyboardActions(onDone = {focusManeger.clearFocus()}),
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                     shape = RoundedCornerShape(16.dp)

@@ -14,6 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
@@ -62,7 +63,11 @@ fun DropUpUpdateRegister (
     var openDropDownCategoria by remember { mutableStateOf(false) }
     val focusManeger = LocalFocusManager.current
     val Density = LocalDensity.current
+    val focusValue = FocusRequester()
     BoxDropUpContent(enable = enable, onDismiss = onDismiss) {
+        LaunchedEffect(key1 = Unit, block = {
+            focusValue.requestFocus()
+        })
         Column(
             Modifier
                 .fillMaxWidth()
@@ -82,9 +87,11 @@ fun DropUpUpdateRegister (
                     onValor(Regex("[^0-9]").replace(it,""))
                 },
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .focusRequester(focusValue),
                 shape = RoundedCornerShape(16.dp),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next,keyboardType = KeyboardType.Number),
+                keyboardActions = KeyboardActions(onNext = {focusManeger.moveFocus(FocusDirection.Down)}),
                 visualTransformation = if(Valor.isEmpty()) VisualTransformation.None else MaskTransformation()
             )
             Spacer(modifier = Modifier.height(16.dp))
@@ -99,6 +106,7 @@ fun DropUpUpdateRegister (
                 modifier = Modifier
                     .fillMaxWidth(),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(onDone = {focusManeger.clearFocus()}),
                 shape = RoundedCornerShape(16.dp)
             )
             Spacer(modifier = Modifier.height(24.dp))

@@ -17,6 +17,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -55,11 +56,9 @@ fun DropUpNewRegister (
     Categorias:List<CategoriaViewModel>,
     onDismiss:()->Unit,
     onActionsResult:(RegistroViewModel)->Unit,
-    CategoriaDefault:CategoriaViewModel,
-    focusValue:FocusRequester,
-    focusDescription:FocusRequester,
-    focusManager: FocusManager
+    CategoriaDefault:CategoriaViewModel
 ){
+    val focusManager = LocalFocusManager.current
     var Valor by remember{ mutableStateOf("") }
     var Descricao by remember{ mutableStateOf("") }
     var openDropDownCategoria by remember { mutableStateOf(false) }
@@ -96,6 +95,7 @@ fun DropUpNewRegister (
                         .fillMaxWidth(),
                     shape = RoundedCornerShape(16.dp),
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next,keyboardType = KeyboardType.Number),
+                    keyboardActions = KeyboardActions(onNext = {focusManager.moveFocus(FocusDirection.Down)}),
                     visualTransformation = if(Valor.isEmpty()) VisualTransformation.None else MaskTransformation()
                 )
                 Spacer(modifier = Modifier.height(16.dp))
@@ -110,6 +110,7 @@ fun DropUpNewRegister (
                     modifier = Modifier
                         .fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions(onDone = {focusManager.clearFocus()}),
                     shape = RoundedCornerShape(16.dp)
                 )
                 Spacer(modifier = Modifier.height(24.dp))

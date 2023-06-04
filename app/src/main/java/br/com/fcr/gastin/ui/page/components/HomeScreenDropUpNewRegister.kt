@@ -16,6 +16,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
@@ -97,7 +98,6 @@ fun HomeScreenDropUpNewRegister (
     var openDropDownCategoria by remember { mutableStateOf(false) }
     var Categoria by remember{ mutableStateOf(CategoriaDefault) }
     val Density = LocalDensity.current
-    val focusDescricao = remember {FocusRequester()}
     val focusValue = remember{FocusRequester()}
     val focusManeger = LocalFocusManager.current
     val configuration = LocalConfiguration.current
@@ -209,7 +209,7 @@ fun HomeScreenDropUpNewRegister (
                                 .fillMaxWidth()
                                 .focusRequester(focusValue),
                             shape = RoundedCornerShape(16.dp),
-                            keyboardActions = KeyboardActions(onNext = {focusDescricao.requestFocus()}),
+                            keyboardActions = KeyboardActions(onNext = {focusManeger.moveFocus(FocusDirection.Down)}),
                             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next,keyboardType = KeyboardType.Number),
                             visualTransformation = if(Valor.isEmpty()) VisualTransformation.None else MaskTransformation()
                         )
@@ -223,8 +223,7 @@ fun HomeScreenDropUpNewRegister (
                                 Descricao = it
                             },
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .focusRequester(focusDescricao),
+                                .fillMaxWidth(),
                             keyboardActions = KeyboardActions(onDone = {focusManeger.clearFocus()}),
                             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                             shape = RoundedCornerShape(16.dp)

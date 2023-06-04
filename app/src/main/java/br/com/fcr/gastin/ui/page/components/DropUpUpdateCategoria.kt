@@ -16,10 +16,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
@@ -73,6 +75,7 @@ fun DropUpUpdateCategoria (
                     .fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next,keyboardType = KeyboardType.Number),
+                keyboardActions = KeyboardActions(onNext = {focusManeger.moveFocus(FocusDirection.Down)})
             )
             Spacer(modifier = Modifier.height(16.dp))
             OutlinedTextField(
@@ -86,6 +89,7 @@ fun DropUpUpdateCategoria (
                 modifier = Modifier
                     .fillMaxWidth(),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(onDone = {focusManeger.clearFocus()}),
                 shape = RoundedCornerShape(16.dp)
             )
             Spacer(modifier = Modifier.height(24.dp))
