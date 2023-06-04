@@ -18,19 +18,19 @@
         +Adicionar categoria
     </string>
     <string name="txt_adicionar_despesa">
-        -Adicionar despesa
+        - Adicionar despesa
     </string>
     <string name="txt_adicionar_receita">
         +Adicionar receita
     </string>
     <string name="txt_remover_categoria">
-        -Remover categoria
+        - Remover categoria
     </string>
     <string name="txt_remover_despesa">
-        -Remover despesa
+        - Remover despesa
     </string>
     <string name="txt_remover_receita">
-        -Remover receita
+        - Remover receita
     </string>
     <string name="txt_como_funciona">
         Como funciona?
@@ -39,7 +39,7 @@
         Ver categorias
     </string>
     <string name="txt_visualizar_por_mes">
-        Visualizar por mes
+        Visualizar por mês
     </string>
     <string name="txt_visualizar_por_quinzena">
         Visualizar por quinzena
@@ -48,7 +48,7 @@
         Visualizar por semana
     </string>
     <string name="txt_evolucao_das_despesas">
-        Evolucao das despesas
+        Evolução das despesas
     </string>
     <string name="txt_recebido">
         Recebido
@@ -60,13 +60,13 @@
         Previsto
     </string>
     <string name="txt_visao_geral">
-        Visao geral
+        Visão geral
     </string>
     <string name="txt_selecionar_tudo">
         Selecionar tudo
     </string>
     <string name="txt_excluir">
-        -Excluir
+        - Excluir
     </string>
     <string name="txt_adicionar">
         +Adicionar
@@ -81,7 +81,7 @@
         Valor
     </string>
     <string name="txt_descricao">
-        Descricao
+        Descrição
     </string>
     <string name="txt_salvar">
         Salvar
@@ -105,7 +105,7 @@
         Cor
     </string>
     <string name="txt_indefinido">
-        Indefinite
+        Indefinido
     </string>
     <string name="txt_january">
         Janeiro
@@ -147,28 +147,28 @@
         Domingo
     </string>
     <string name="txt_segunda_feira">
-        Segunda feira
+Segunda-feira
     </string>
     <string name="txt_terça_feira">
-        Terça feira
+Terça-feira
     </string>
     <string name="txt_quarta_feira">
-        Quarta feira
+Quarta-feira
     </string>
     <string name="txt_quinta_feira">
-        Quinta feira
+Quinta-feira
     </string>
     <string name="txt_sexta_feira">
-        Sexta feira
+Sexta-feira
     </string>
     <string name="txt_sabado">
         Sábado
     </string>
-    <string name="txt_mostrar_periodo_completo">Periodo completo</string>
+    <string name="txt_mostrar_periodo_completo">Período completo</string>
     <string name="txt_sem_registros">Sem registros!</string>
     <string name="txt_atualizar_registros">Atualizar Registros</string>
     <string name="txt_hora_de_anotar_seus_gastos">Hora de anotar seus gastos!</string>
     <string name="txt_confirmar_exclucao">Tem certeza de que deseja prosseguir com a exclusão deste(s) registro(s)? Essa ação não pode ser desfeita.</string>
     <string name="txt_cancelar">Cancelar</string>
-    <string name="txt_atencao">Atencao!</string>
+    <string name="txt_atencao">Atenção</string>
 </resources>

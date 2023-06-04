@@ -19,7 +19,12 @@ import br.com.fcr.gastin.R
 import br.com.fcr.gastin.ui.utils.toMonetaryString
 
 @Composable
-fun HomeScreenEvolucaoDespesas(listValues:List<Int>, listDays:List<Pair<Int,String>>, onBefore:()->Unit, onNext:()->Unit){
+fun HomeScreenEvolucaoDespesas(
+    listValues: List<Int>,
+    listDays: List<Pair<Int, String>>,
+    onBefore: () -> Unit,
+    onNext: () -> Unit
+){
     val valueMax = if(listValues.isNotEmpty()) listValues.sortedBy { it }.last() else 0
     val Density = LocalDensity.current
     BoxContent(
@@ -41,64 +46,76 @@ fun HomeScreenEvolucaoDespesas(listValues:List<Int>, listDays:List<Pair<Int,Stri
                     }
                 }
             }
-            Row(modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)) {
-                var height by remember{ mutableStateOf(0) }
-                Column(
-                    modifier = Modifier.onGloballyPositioned {
-                        height = it.size.height
-                    }
-                ) {
-                    listValues.sortedBy { it }.reversed().forEach {
-                        Text(
-                            modifier = Modifier.width(40.dp),
-                            text = it.toMonetaryString(),
-                            fontSize = 10.sp,
-                            maxLines = 1
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                    }
+            if(listValues.isEmpty() && listDays.isEmpty()){
+                Box(modifier = Modifier
+                    .fillMaxWidth()
+                    .height(100.dp)
+                    .padding(16.dp), contentAlignment = Alignment.Center){
+                    Text(text = stringResource(id = R.string.txt_sem_registros))
                 }
-                Spacer(modifier = Modifier.width(8.dp))
-                Column(Modifier.fillMaxSize()) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(
-                                with(Density) {
-                                    height.toDp()
-                                }
-                            ),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.Bottom
-                    ) {
-                        listDays.forEach {
-                            Box(modifier = Modifier
-                                .clip(RoundedCornerShape(16.dp))
-                                .width(16.dp)
-                                .height(
-                                    with(Density) {
-                                        ((it.first.toFloat() / valueMax.toFloat()) * height).toDp()
-                                    }
-                                )
-                                .background(color = Color(0xFF269FB9))
-                            )
+            }
+            else {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    var height by remember { mutableStateOf(0) }
+                    Column(
+                        modifier = Modifier.onGloballyPositioned {
+                            height = it.size.height
                         }
-                    }
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        listDays.forEach {
+                        listValues.sortedBy { it }.reversed().forEach {
                             Text(
-                                modifier = Modifier.width(16.dp),
-                                text = it.second,
-                                fontSize = 8.sp,
+                                modifier = Modifier.width(40.dp),
+                                text = it.toMonetaryString(),
+                                fontSize = 10.sp,
                                 maxLines = 1
                             )
+                            Spacer(modifier = Modifier.height(8.dp))
+                        }
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Column(Modifier.fillMaxSize()) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(
+                                    with(Density) {
+                                        height.toDp()
+                                    }
+                                ),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.Bottom
+                        ) {
+                            listDays.forEach {
+                                Box(modifier = Modifier
+                                    .clip(RoundedCornerShape(16.dp))
+                                    .width(16.dp)
+                                    .height(
+                                        with(Density) {
+                                            ((it.first.toFloat() / valueMax.toFloat()) * height).toDp()
+                                        }
+                                    )
+                                    .background(color = Color(0xFF269FB9))
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            listDays.forEach {
+                                Text(
+                                    modifier = Modifier.width(16.dp),
+                                    text = it.second,
+                                    fontSize = 8.sp,
+                                    maxLines = 1
+                                )
+                            }
                         }
                     }
                 }
