@@ -82,7 +82,7 @@ fun DialogExcluir (enable:Boolean,onDismiss:()->Unit,onConfirm:()->Unit){
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(start = 8.dp),
-                        onClick = { onConfirm();onDismiss }
+                        onClick = { onConfirm();onDismiss() }
                     ) {
                         Text(text = stringResource(id = R.string.txt_excluir).replace("-", ""))
                     }
