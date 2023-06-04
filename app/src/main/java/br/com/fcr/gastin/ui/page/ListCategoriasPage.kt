@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import br.com.fcr.gastin.R
 import br.com.fcr.gastin.data.database.model.Categoria
+import br.com.fcr.gastin.ui.page.components.DialogExcluir
 import br.com.fcr.gastin.ui.page.components.DropDownMoreOptions
 import br.com.fcr.gastin.ui.page.components.DropUpNewCategory
 import br.com.fcr.gastin.ui.page.components.DropUpUpdateCategoria
@@ -49,6 +50,7 @@ fun ListCategoriasPage (
     var Nome by remember{ mutableStateOf("") }
     var Descricao by remember{ mutableStateOf("") }
     var CategoriaCor by remember{ mutableStateOf(Color.White) }
+    var openDialogExcluir by remember { mutableStateOf(false) }
     Column(Modifier.fillMaxSize()){
         Row(
             modifier = Modifier
@@ -76,8 +78,7 @@ fun ListCategoriasPage (
                                     listIdCheckeds = emptyList()
                                 }, true),
                                 Triple(stringResource(R.string.txt_excluir), {
-                                    onDeleteCategoria(listIdCheckeds)
-                                    listIdCheckeds = emptyList()
+                                    openDialogExcluir = true
                                 }, listIdCheckeds.size > 0),
                                 Triple(stringResource(R.string.txt_editar), {
                                     IdUpdateCategoria = listIdCheckeds.first()
@@ -213,6 +214,15 @@ fun ListCategoriasPage (
         onNome = {Nome = it},
         onDescricao = {Descricao = it},
     )
+    DialogExcluir(
+        enable = openDialogExcluir,
+        onDismiss = {
+            openDialogExcluir = false
+        }
+    ) {
+        onDeleteCategoria(listIdCheckeds)
+        listIdCheckeds = emptyList()
+    }
     if(listIdCheckeds.isEmpty()){
         showAllCheckBox = false
     }

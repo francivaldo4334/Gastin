@@ -25,10 +25,5 @@ fun HomeScreenInformes(valorInit:Int, valorSaldo:Int, valorPrevisto:Int){
             Text(text = stringResource(R.string.txt_saldo), fontSize = 14.sp)
             Text(text = valorSaldo.toMonetaryString(), fontSize = 18.sp)
         }
-        Spacer(modifier = Modifier.size(16.dp))
-        Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = stringResource(R.string.txt_previsto), fontSize = 12.sp,color = MaterialTheme.colors.onBackground.copy(0.5f))
-            Text(text = valorPrevisto.toMonetaryString(), fontSize = 14.sp,color = MaterialTheme.colors.onBackground.copy(0.5f))
-        }
     }
 }

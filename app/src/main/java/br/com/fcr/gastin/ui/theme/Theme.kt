@@ -10,25 +10,12 @@ import br.com.fcr.gastin.ui.common.Constants
 
 private val DarkColorPalette = darkColors(
     primary = primary_dark,
-    primaryVariant = Purple700,
-    secondary = Teal200
+    error = Color.Red,
+    onError = white
 )
 
 private val LightColorPalette = lightColors(
     primary = primary_light,
-    primaryVariant = Purple700,
-    secondary = Teal200,
-    background = background,
-    surface = white
-
-    /* Other default colors to override
-    background = Color.White,
-    surface = Color.White,
-    onPrimary = Color.White,
-    onSecondary = Color.Black,
-    onBackground = Color.Black,
-    onSurface = Color.Black,
-    */
 )
 
 @Composable

@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import br.com.fcr.gastin.HomeActivity
 import br.com.fcr.gastin.R
+import br.com.fcr.gastin.ui.page.components.DialogExcluir
 import br.com.fcr.gastin.ui.page.components.DropDownMoreOptions
 import br.com.fcr.gastin.ui.page.components.DropUpNewRegister
 import br.com.fcr.gastin.ui.page.components.DropUpUpdateRegister
@@ -101,6 +102,7 @@ fun ListValuesScreenPage(
     var Descricao by remember{ mutableStateOf("") }
     var CategoriaCor by remember { mutableStateOf(Color(HomeActivity.CategoriaDefault.Color)) }
     var CategoriaNome by remember { mutableStateOf(HomeActivity.CategoriaDefault.Name)}
+    var openDialogExcluir by remember { mutableStateOf(false) }
     if(listIdCheckeds.isEmpty()){ showAllCheckBox = false }
     BackHandler {
         if(showAllCheckBox) {
@@ -136,8 +138,7 @@ fun ListValuesScreenPage(
                                     listIdCheckeds = emptyList()
                                 }, true),
                                 Triple(stringResource(R.string.txt_excluir), {
-                                    onDeleteRegister(listIdCheckeds)
-                                    listIdCheckeds = emptyList()
+                                    openDialogExcluir = true
                                 }, listIdCheckeds.size > 0),
                                 Triple(stringResource(R.string.txt_editar), {
                                     onLoadRegister(listIdCheckeds.first()){
@@ -277,4 +278,13 @@ fun ListValuesScreenPage(
         Categorias = Categorias,
         CategoriaDefault = CategoriaDefault,
     )
+    DialogExcluir(
+        enable = openDialogExcluir,
+        onDismiss = {
+            openDialogExcluir = false
+        }
+    ) {
+        onDeleteRegister(listIdCheckeds)
+        listIdCheckeds = emptyList()
+    }
 }

@@ -168,4 +168,7 @@
     <string name="txt_sem_registros">Sem registros!</string>
     <string name="txt_atualizar_registros">Atualizar Registros</string>
     <string name="txt_hora_de_anotar_seus_gastos">Hora de anotar seus gastos!</string>
+    <string name="txt_confirmar_exclucao">Tem certeza de que deseja prosseguir com a exclusão deste(s) registro(s)? Essa ação não pode ser desfeita.</string>
+    <string name="txt_cancelar">Cancelar</string>
+    <string name="txt_atencao">Atencao!</string>
 </resources>
