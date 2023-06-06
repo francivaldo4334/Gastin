@@ -17,8 +17,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.lifecycle.lifecycleScope
@@ -50,7 +54,7 @@ class HomeActivity : ComponentActivity() {
         var CHANNEL_ID = "channel_notification_Gastin_ID"
     }
     private lateinit var navController:NavHostController
-    fun scheduleNotification(){
+    private fun scheduleNotification(){
         val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val calendar21 = Calendar.getInstance().apply {
             set(Calendar.HOUR_OF_DAY,21)
@@ -81,6 +85,18 @@ class HomeActivity : ComponentActivity() {
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.createNotificationChannel(channel)
 
+    }
+    private fun setCategoriaDefault(homeViewModel:HomeViewModel){
+        homeViewModel.onEvent(CategoriaEvent.get(1){
+            if(it == null){
+                homeViewModel.onEvent(CategoriaEvent.insert(
+                    Categoria(
+                        Name = getString(R.string.txt_indefinido),
+                        Color = 0xFFD4D4D4
+                    )
+                ))
+            }
+        })
     }
     @SuppressLint("InternalInsetResource", "CoroutineCreationDuringComposition")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -114,6 +130,7 @@ class HomeActivity : ComponentActivity() {
             val stringMonth by homeViewModel.stringMonthResourceId.collectAsState()
             val stringYear by homeViewModel.stringYear.collectAsState()
             val graphicInforms by homeViewModel.graphicInforms.collectAsState()
+            var isSplashScreen by rememberSaveable { mutableStateOf(true) }
             navController = rememberNavController()
             GastinTheme(Constants.IsDarkTheme) {//Gestao de gasto
                 val statusBarHeigth = with(LocalDensity.current){
@@ -264,10 +281,13 @@ class HomeActivity : ComponentActivity() {
                     }
                 }
             }
-        }
-        lifecycleScope.launch(Dispatchers.Main){
-            delay(3000)
-            navController.navigate(Route.HOME){popUpTo(0)}
+            if(isSplashScreen) {
+                LaunchedEffect(Unit) {
+                    delay(2000)
+                    navController.navigate(Route.HOME){popUpTo(0)}
+                    isSplashScreen = false
+                }
+            }
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             createNotificationChannel()
@@ -277,17 +297,5 @@ class HomeActivity : ComponentActivity() {
                 editor.apply()
             }
         }
-    }
-    fun setCategoriaDefault(homeViewModel:HomeViewModel){
-        homeViewModel.onEvent(CategoriaEvent.get(1){
-            if(it == null){
-                homeViewModel.onEvent(CategoriaEvent.insert(
-                    Categoria(
-                        Name = getString(R.string.txt_indefinido),
-                        Color = 0xFFD4D4D4
-                    )
-                ))
-            }
-        })
     }
 }
