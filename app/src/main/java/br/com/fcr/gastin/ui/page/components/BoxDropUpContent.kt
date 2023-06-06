@@ -7,7 +7,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -25,36 +27,37 @@ fun BoxDropUpContent (enable:Boolean, onDismiss:()->Unit,content:@Composable Box
     expandedStates.targetState = enable
 
     if (expandedStates.currentState || expandedStates.targetState) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .clickable(false, onClick = {})
-                .background(Color.Black.copy(0.7f))
-        )
-        Column(
-            modifier = Modifier
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.Bottom
-        ) {
-            if(enable) {
-                Box(modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-                    .pointerInput(Unit) {
-                        detectTapGestures(
-                            onTap = {
-                                onDismiss()
-                            }
-                        )
-                    })
-            }
             Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(topEnd = 16.dp, topStart = 16.dp))
-                    .background(MaterialTheme.colors.background),
-                content = content
+                    .fillMaxSize()
+                    .clickable(false, onClick = {})
+                    .background(Color.Black.copy(0.7f))
             )
-        }
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.Bottom
+            ) {
+                if(enable) {
+                    Box(modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .pointerInput(Unit) {
+                            detectTapGestures(
+                                onTap = {
+                                    onDismiss()
+                                }
+                            )
+                        })
+                }
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(topEnd = 16.dp, topStart = 16.dp))
+                        .background(MaterialTheme.colors.background),
+                    content = content
+                )
+            }
     }
 }
