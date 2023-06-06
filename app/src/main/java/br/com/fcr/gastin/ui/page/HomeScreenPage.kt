@@ -49,7 +49,8 @@ fun HomeScreenPage(
     Categorias:List<CategoriaViewModel>,
     CategoriaDefault: CategoriaViewModel,
     onInformsTotal:(Boolean)->Unit,
-    graphicInforms:List<DashboardWeek>
+    graphicInforms:List<DashboardWeek>,
+    onDateUpdate:()->Unit
 ) {
     val context = LocalContext.current as Activity
     val calendar = Calendar.getInstance()
@@ -192,7 +193,8 @@ fun HomeScreenPage(
         onDismiss = {openDropUpNewRegister = false},
         onActionsResult = onNewRegister,
         Categorias = Categorias,
-        CategoriaDefault = CategoriaDefault
+        CategoriaDefault = CategoriaDefault,
+        onDateUpdate = onDateUpdate
     )
     DropUpNewCategory(
         enable = openDropUpNewCategory,

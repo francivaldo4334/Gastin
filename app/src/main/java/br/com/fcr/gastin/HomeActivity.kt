@@ -163,6 +163,9 @@ class HomeActivity : ComponentActivity() {
                                 onInformsTotal = {
                                     homeViewModel.onEvent(CategoriaEvent.setInformsTotal(it))
                                     Constants.IsTotalPeriod = it
+                                },
+                                onDateUpdate = {
+                                    homeViewModel.onDateUpdate()
                                 }
                             )
                         }
@@ -195,6 +198,9 @@ class HomeActivity : ComponentActivity() {
                                             onResult(it.toView())
                                         }
                                     })
+                                },
+                                onDateUpdate = {
+                                    homeViewModel.onDateUpdate()
                                 }
                             )
                         }
@@ -227,6 +233,9 @@ class HomeActivity : ComponentActivity() {
                                             onResult(it.toView())
                                         }
                                     })
+                                },
+                                onDateUpdate = {
+                                    homeViewModel.onDateUpdate()
                                 }
                             )
                         }

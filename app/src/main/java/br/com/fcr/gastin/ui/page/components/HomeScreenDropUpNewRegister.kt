@@ -91,7 +91,8 @@ fun HomeScreenDropUpNewRegister (
     setIsDespesa:(Boolean?) -> Unit,
     onActionsResult:(Boolean, RegistroViewModel)->Unit,
     Categorias:List<CategoriaViewModel>,
-    CategoriaDefault:CategoriaViewModel
+    CategoriaDefault:CategoriaViewModel,
+    onDateUpdate:()->Unit
 ){
     var Valor by remember{ mutableStateOf("") }
     var Descricao by remember{ mutableStateOf("") }
@@ -306,6 +307,7 @@ fun HomeScreenDropUpNewRegister (
                                 )
                                 ROUTE = SELECT_TYPE_REGISTER
                                 _onDismiss()
+                                onDateUpdate()
                             }) {
                                 Text(text = stringResource(R.string.txt_salvar))
                             }

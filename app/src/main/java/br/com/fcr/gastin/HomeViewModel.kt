@@ -245,4 +245,19 @@ class HomeViewModel constructor(
             }
         }
     }
+
+    fun onDateUpdate() {
+        val date = Date()
+        val calendar = Calendar.getInstance()
+        calendar.clear()
+        calendar.time = date
+        buscaMesAno.value = Pair(
+            calendar.get(Calendar.MONTH)+1,
+            calendar.get(Calendar.YEAR)
+        )
+        buscaSemanaAno.value = Pair(
+            calendar.get(Calendar.WEEK_OF_YEAR),
+            calendar.get(Calendar.YEAR)
+        )
+    }
 }

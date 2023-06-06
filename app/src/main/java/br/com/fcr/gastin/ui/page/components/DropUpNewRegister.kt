@@ -56,7 +56,8 @@ fun DropUpNewRegister (
     Categorias:List<CategoriaViewModel>,
     onDismiss:()->Unit,
     onActionsResult:(RegistroViewModel)->Unit,
-    CategoriaDefault:CategoriaViewModel
+    CategoriaDefault:CategoriaViewModel,
+    onDateUpdate:()->Unit
 ){
     val focusManager = LocalFocusManager.current
     var Valor by remember{ mutableStateOf("") }
@@ -188,6 +189,7 @@ fun DropUpNewRegister (
                             )
                         )
                         onDismiss()
+                        onDateUpdate()
                     }) {
                         Text(text = stringResource(R.string.txt_salvar))
                     }

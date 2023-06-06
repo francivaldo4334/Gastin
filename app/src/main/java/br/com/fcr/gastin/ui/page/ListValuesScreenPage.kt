@@ -91,7 +91,8 @@ fun ListValuesScreenPage(
     onLoadRegister:(Int,(RegistroViewModel)->Unit)->Unit,
     Categorias:List<CategoriaViewModel>,
     CategoriaDefault:CategoriaViewModel,
-    onLoadCategory:(Int,(CategoriaViewModel)->Unit)->Unit
+    onLoadCategory:(Int,(CategoriaViewModel)->Unit)->Unit,
+    onDateUpdate:()->Unit
 ){
     var showAllCheckBox by remember {mutableStateOf(false)}
     var openMoreOptions by remember{ mutableStateOf(false) }
@@ -277,6 +278,7 @@ fun ListValuesScreenPage(
         onActionsResult = onNewRegister,
         Categorias = Categorias,
         CategoriaDefault = CategoriaDefault,
+        onDateUpdate = onDateUpdate
     )
     DialogExcluir(
         enable = openDialogExcluir,

@@ -52,56 +52,67 @@ fun HomeScreenDashboard(categorias:List<Triple<String,Int, Color>>, onClickMore:
                     content()
                 }
             }
-            Spacer(modifier = Modifier.size(16.dp))
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-            ) {
-                PizzaChart(
-                    categorias,
-                    modifier = Modifier.size(size.dp)
-                )
+            if(categorias.isEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(100.dp), contentAlignment = Alignment.Center
+                ) {
+                    Text(text = stringResource(id = R.string.txt_sem_registros))
+                }
+            }
+            else {
                 Spacer(modifier = Modifier.size(16.dp))
-                Column {
-                    if(categorias.isEmpty())
-                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
-                            Text(text = stringResource(id = R.string.txt_sem_registros), fontSize = 14.sp)
-                        }
-                    categorias.forEach {
-                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                ) {
+                    PizzaChart(
+                        categorias,
+                        modifier = Modifier.size(size.dp)
+                    )
+                    Spacer(modifier = Modifier.size(16.dp))
+                    Column {
+                        categorias.forEach {
                             Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.weight(1f)
+                                Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
                             ) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(24.dp)
-                                        .clip(CircleShape)
-                                        .background(it.third)
-                                )
-                                Spacer(modifier = Modifier.size(16.dp))
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(24.dp)
+                                            .clip(CircleShape)
+                                            .background(it.third)
+                                    )
+                                    Spacer(modifier = Modifier.size(16.dp))
+                                    Text(
+                                        text = it.first,
+                                        fontWeight = FontWeight.Light,
+                                        fontSize = 14.sp,
+                                        maxLines = 1
+                                    )
+                                }
+                                var valorPorcentagen =
+                                    (it.second.toFloat() / totalPizzas.toFloat() * 100).toInt()
                                 Text(
-                                    text = it.first,
+                                    text = "% ${valorPorcentagen.toString().padStart(3, ' ')}",
                                     fontWeight = FontWeight.Light,
                                     fontSize = 14.sp,
                                     maxLines = 1
                                 )
                             }
-                            var valorPorcentagen = (it.second.toFloat()/totalPizzas.toFloat() * 100).toInt()
-                            Text(
-                                text = "% ${valorPorcentagen.toString().padStart(3,' ')}",
-                                fontWeight = FontWeight.Light,
-                                fontSize = 14.sp,
-                                maxLines = 1
-                            )
+                            Spacer(modifier = Modifier.size(16.dp))
                         }
-                        Spacer(modifier = Modifier.size(16.dp))
                     }
                 }
+                Spacer(modifier = Modifier.size(16.dp))
             }
-            Spacer(modifier = Modifier.size(16.dp))
         }
     }
 }
