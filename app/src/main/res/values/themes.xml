@@ -3,6 +3,6 @@
 
     <style name="Theme.Gastin" parent="android:Theme.Material.NoActionBar">
         <item name="android:windowTranslucentStatus">true</item>
-        <item name="android:colorBackground">@color/background</item>
+        <item name="android:colorBackground">#00000000</item>
     </style>
 </resources>

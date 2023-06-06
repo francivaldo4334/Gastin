@@ -12,6 +12,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
@@ -144,6 +145,8 @@ class HomeActivity : ComponentActivity() {
                                 onWeekBefore = { homeViewModel.onEvent(RegisterEvent.beforeWeek(1)) },
                                 onWeekNext = { homeViewModel.onEvent(RegisterEvent.nextWeek(1)) },
                                 onSwitchTheme = {
+                                    if(it) AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                                    else AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
                                     editor.putBoolean(Constants.IS_DARKTHEM, it)
                                     editor.apply()
                                     Constants.IsDarkTheme = it
