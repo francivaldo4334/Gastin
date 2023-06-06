@@ -1,19 +1,34 @@
 package br.com.fcr.gastin
 
+import android.Manifest
+import android.R
+import android.annotation.TargetApi
 import android.app.AlarmManager
-import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
-import androidx.appcompat.app.AppCompatDelegate
+import androidx.activity.result.contract.ActivityResultContract
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import br.com.fcr.gastin.data.notification.NotificationReceiver
 import br.com.fcr.gastin.ui.common.Constants
@@ -24,31 +39,38 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
+
 class SplashScreenActivity : ComponentActivity() {
+    companion object{
+        var CHANNEL_ID = "channel_notification_Gastin_ID"
+    }
     fun scheduleNotification(){
         val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val notificationsTime = listOf(12,21)
-        for (time in notificationsTime){
-            val calendar = Calendar.getInstance().apply {
-                set(Calendar.HOUR_OF_DAY,time)
-                set(Calendar.MINUTE,0)
-                set(Calendar.SECOND,0)
-            }
-            val intent = Intent(this,NotificationReceiver::class.java)
-            val pendingIntent = PendingIntent.getBroadcast(this,time,intent,PendingIntent.FLAG_UPDATE_CURRENT)
-            alarmManager.setRepeating(
-                AlarmManager.RTC_WAKEUP,
-                calendar.timeInMillis,
-                AlarmManager.INTERVAL_DAY,
-                pendingIntent
-            )
+        val calendar21 = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY,12)
+            set(Calendar.MINUTE,0)
+            set(Calendar.SECOND,0)
         }
+        val intent21 = Intent(applicationContext,NotificationReceiver::class.java)
+        val pendingIntent21 = PendingIntent.getBroadcast(
+            applicationContext,
+            1,
+            intent21,
+            PendingIntent.FLAG_IMMUTABLE or  PendingIntent.FLAG_UPDATE_CURRENT
+        )
+        alarmManager.setRepeating(
+            AlarmManager.RTC_WAKEUP,
+            calendar21.timeInMillis,
+            AlarmManager.INTERVAL_DAY,
+            pendingIntent21
+        )
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val sharedPreferences = getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
+        val edit = sharedPreferences.edit()
         val IsDarkTheme = sharedPreferences.getBoolean(Constants.IS_DARKTHEM,false)
+        val firstTime = sharedPreferences.getBoolean(Constants.IS_FIRST_TIME,true)
         setContent {
             GastinTheme(IsDarkTheme) {//Gestao de gasto
                 // A surface container using the 'background' color from the theme
@@ -65,11 +87,24 @@ class SplashScreenActivity : ComponentActivity() {
             startActivity(Intent(this@SplashScreenActivity,HomeActivity::class.java))
             finish()
         }
-        val isFirstTime = sharedPreferences.getBoolean(Constants.IS_FIRST_TIME,true)
-        if(isFirstTime) {
-            scheduleNotification()
-            editor.putBoolean(Constants.IS_FIRST_TIME,false)
-            editor.apply()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            createNotificationChannel()
+            if(firstTime) {
+                scheduleNotification()
+                edit.putBoolean(Constants.IS_FIRST_TIME,false)
+                edit.apply()
+            }
         }
+    }
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun createNotificationChannel(){
+        val name = "canal Gastin"
+        val desc = "canal de notificacao Gastin"
+        val important = NotificationManager.IMPORTANCE_DEFAULT
+        val channel = NotificationChannel(CHANNEL_ID,name,important)
+        channel.description = desc
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(channel)
+
     }
 }
