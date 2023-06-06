@@ -1,6 +1,5 @@
 package br.com.fcr.gastin.ui.page
 
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Icon

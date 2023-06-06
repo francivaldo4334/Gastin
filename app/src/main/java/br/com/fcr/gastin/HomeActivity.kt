@@ -1,9 +1,17 @@
 package br.com.fcr.gastin
 
 import android.annotation.SuppressLint
+import android.app.AlarmManager
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
@@ -12,28 +20,71 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import br.com.fcr.gastin.data.database.model.Categoria
+import br.com.fcr.gastin.data.notification.NotificationReceiver
 import br.com.fcr.gastin.ui.common.Constants
 import br.com.fcr.gastin.ui.page.HomeScreenPage
 import br.com.fcr.gastin.ui.page.ListCategoriasPage
 import br.com.fcr.gastin.ui.page.ListValuesScreenPage
+import br.com.fcr.gastin.ui.page.SplashScreenPage
 import br.com.fcr.gastin.ui.page.viewmodels.CategoriaViewModel
 import br.com.fcr.gastin.ui.page.viewmodels.EmptyCategoriaViewModel
 import br.com.fcr.gastin.ui.page.viewmodels.toModel
 import br.com.fcr.gastin.ui.page.viewmodels.toView
 import br.com.fcr.gastin.ui.theme.GastinTheme
 import br.com.fcr.gastin.ui.utils.Route
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import java.util.Calendar
 
 class HomeActivity : ComponentActivity() {
     companion object{
         var CategoriaDefault:CategoriaViewModel = EmptyCategoriaViewModel()
+        var CHANNEL_ID = "channel_notification_Gastin_ID"
     }
-    @SuppressLint("InternalInsetResource")
+    private lateinit var navController:NavHostController
+    fun scheduleNotification(){
+        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val calendar21 = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY,21)
+            set(Calendar.MINUTE,0)
+            set(Calendar.SECOND,0)
+        }
+        val intent21 = Intent(applicationContext, NotificationReceiver::class.java)
+        val pendingIntent21 = PendingIntent.getBroadcast(
+            applicationContext,
+            1,
+            intent21,
+            PendingIntent.FLAG_IMMUTABLE or  PendingIntent.FLAG_UPDATE_CURRENT
+        )
+        alarmManager.setRepeating(
+            AlarmManager.RTC_WAKEUP,
+            calendar21.timeInMillis,
+            AlarmManager.INTERVAL_DAY,
+            pendingIntent21
+        )
+    }
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun createNotificationChannel(){
+        val name = "canal Gastin"
+        val desc = "canal de notificacao Gastin"
+        val important = NotificationManager.IMPORTANCE_DEFAULT
+        val channel = NotificationChannel(HomeActivity.CHANNEL_ID,name,important)
+        channel.description = desc
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(channel)
+
+    }
+    @SuppressLint("InternalInsetResource", "CoroutineCreationDuringComposition")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         val homeViewModel = HomeViewModel(
             (applicationContext as MyApplication).categoriaRepository,
             (applicationContext as MyApplication).registroRepository,
@@ -62,6 +113,7 @@ class HomeActivity : ComponentActivity() {
             val stringMonth by homeViewModel.stringMonthResourceId.collectAsState()
             val stringYear by homeViewModel.stringYear.collectAsState()
             val graphicInforms by homeViewModel.graphicInforms.collectAsState()
+            navController = rememberNavController()
             GastinTheme(Constants.IsDarkTheme) {//Gestao de gasto
                 val statusBarHeigth = with(LocalDensity.current){
                     val resourceId = resources.getIdentifier("status_bar_height","dimen","android")
@@ -73,8 +125,10 @@ class HomeActivity : ComponentActivity() {
                         .fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    val navController = rememberNavController()
-                    NavHost(modifier = Modifier.padding(top = statusBarHeigth),navController = navController, startDestination = Route.HOME){
+                    NavHost(modifier = Modifier.padding(top = statusBarHeigth),navController = navController, startDestination = Route.SPLASH_SCREEN){
+                        composable(Route.SPLASH_SCREEN){
+                            SplashScreenPage(Constants.IsDarkTheme)
+                        }
                         composable(Route.HOME){
                             HomeScreenPage(
                                 navController = navController,
@@ -197,6 +251,18 @@ class HomeActivity : ComponentActivity() {
                         }
                     }
                 }
+            }
+        }
+        lifecycleScope.launch(Dispatchers.Main){
+            delay(3000)
+            navController.navigate(Route.HOME){popUpTo(0)}
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            createNotificationChannel()
+            if(Constants.IsDarkTheme) {
+                scheduleNotification()
+                editor.putBoolean(Constants.IS_FIRST_TIME,false)
+                editor.apply()
             }
         }
     }
