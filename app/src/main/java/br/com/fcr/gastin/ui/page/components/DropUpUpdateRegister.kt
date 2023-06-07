@@ -38,6 +38,10 @@ import br.com.fcr.gastin.ui.page.viewmodels.RegistroViewModel
 import br.com.fcr.gastin.ui.page.viewmodels.toView
 import br.com.fcr.gastin.ui.utils.MaskTransformation
 import br.com.fcr.gastin.ui.utils.Tetra
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun DropUpUpdateRegister (
@@ -63,9 +67,12 @@ fun DropUpUpdateRegister (
     var openDropDownCategoria by remember { mutableStateOf(false) }
     val focusManeger = LocalFocusManager.current
     val Density = LocalDensity.current
-    val focusValue = FocusRequester()
+    val focusValue = remember { FocusRequester() }
+    val focusDesc = remember { FocusRequester() }
+
     BoxDropUpContent(enable = enable, onDismiss = onDismiss) {
         LaunchedEffect(key1 = Unit, block = {
+            delay(500)
             focusValue.requestFocus()
         })
         Column(
@@ -91,7 +98,13 @@ fun DropUpUpdateRegister (
                     .focusRequester(focusValue),
                 shape = RoundedCornerShape(16.dp),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next,keyboardType = KeyboardType.Number),
-                keyboardActions = KeyboardActions(onNext = {focusManeger.moveFocus(FocusDirection.Down)}),
+                keyboardActions = KeyboardActions(onNext = {
+                    focusManeger.clearFocus()
+                    CoroutineScope(Dispatchers.Main).launch {
+                        delay(700)
+                        focusDesc.requestFocus()
+                    }
+                }),
                 visualTransformation = if(Valor.isEmpty()) VisualTransformation.None else MaskTransformation()
             )
             Spacer(modifier = Modifier.height(16.dp))
@@ -104,7 +117,8 @@ fun DropUpUpdateRegister (
                     onDescricao(it)
                 },
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .focusRequester(focusDesc),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(onDone = {focusManeger.clearFocus()}),
                 shape = RoundedCornerShape(16.dp)

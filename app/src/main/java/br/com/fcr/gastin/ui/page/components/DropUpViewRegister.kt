@@ -30,13 +30,10 @@ fun DropUpViewRegister(
     Valor:String,
     Descricao:String,
     CategoriaCor:Color,
-    CategoriaNome:String
+    CategoriaNome:String,
+    onClearValues:()->Unit
 ){
-    BackHandler(enabled = enable) {
-        onDismiss()
-    }
-
-    BoxDropUpContent(enable = enable, onDismiss = { onDismiss() }) {
+    BoxDropUpContent(enable = enable, onDismiss = {onClearValues(); onDismiss() }) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -59,5 +56,9 @@ fun DropUpViewRegister(
             Text(text = CategoriaNome, fontWeight = FontWeight.Bold)
             Spacer(modifier = Modifier.height(56.dp))
         }
+    }
+    BackHandler(enabled = enable) {
+        onClearValues();
+        onDismiss()
     }
 }

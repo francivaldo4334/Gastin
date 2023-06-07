@@ -201,6 +201,11 @@ fun ListCategoriasPage (
         Nome = Nome,
         Descricao = Descricao,
         CategoriaCor = CategoriaCor,
+        clearValues ={
+            Nome = ""
+            Descricao = ""
+            CategoriaCor = Color.White
+        }
     )
     DropUpUpdateCategoria(
         enable = openDropUpUpdateCategoria,

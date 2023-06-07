@@ -269,7 +269,13 @@ fun ListValuesScreenPage(
         Valor = Valor,
         Descricao = Descricao,
         CategoriaCor = CategoriaCor,
-        CategoriaNome = CategoriaNome
+        CategoriaNome = CategoriaNome,
+        onClearValues = {
+            Valor = ""
+            Descricao = ""
+            CategoriaCor = Color.White
+            CategoriaNome = ""
+        }
     )
     DropUpUpdateRegister(enable = openUpdateItem, onDismiss = { openUpdateItem = false }, Categorias = Categorias, registerId = registerId, CategoriaId = CategoriaId, Valor = Valor, Descricao = Descricao, CategoriaCor = CategoriaCor, CategoriaNome = CategoriaNome, onCategoriaId = { CategoriaId = it }, onValor = { Valor = it }, onDescricao = { Descricao = it }, onCategoriaCor = { CategoriaCor = it }, onCategoriaNome = { CategoriaNome = it }, onActionsResult = { onUpdateRegister(it); listIdCheckeds = emptyList() })
     DropUpNewRegister(

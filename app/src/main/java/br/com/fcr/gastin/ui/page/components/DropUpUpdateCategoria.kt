@@ -20,8 +20,6 @@ import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
@@ -33,6 +31,10 @@ import androidx.compose.ui.unit.sp
 import br.com.fcr.gastin.R
 import br.com.fcr.gastin.ui.page.viewmodels.CategoriaViewModel
 import br.com.fcr.gastin.ui.utils.colorToLongHex
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun DropUpUpdateCategoria (
@@ -47,12 +49,15 @@ fun DropUpUpdateCategoria (
     onDescricao:(String)->Unit,
 ){
     var openDropDownColorPicker by remember {mutableStateOf(false)}
-    BackHandler(enabled = enable) {
-        onDismiss()
-    }
-    val focusManeger = LocalFocusManager.current
+    val focusManager = LocalFocusManager.current
+    val focusDesc = remember { FocusRequester() }
+    val focusName = remember { FocusRequester() }
     val Density = LocalDensity.current
     BoxDropUpContent(enable = enable, onDismiss = onDismiss) {
+        LaunchedEffect(key1 = Unit) {
+            delay(500)
+            focusName.requestFocus()
+        }
         Column(
             Modifier
                 .fillMaxWidth()
@@ -72,10 +77,17 @@ fun DropUpUpdateCategoria (
                     onNome(it)
                 },
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .focusRequester(focusName),
                 shape = RoundedCornerShape(16.dp),
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next,keyboardType = KeyboardType.Number),
-                keyboardActions = KeyboardActions(onNext = {focusManeger.moveFocus(FocusDirection.Down)})
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                keyboardActions = KeyboardActions(onNext = {
+                    focusManager.clearFocus()
+                    CoroutineScope(Dispatchers.Main).launch {
+                        delay(700)
+                        focusDesc.requestFocus()
+                    }
+                })
             )
             Spacer(modifier = Modifier.height(16.dp))
             OutlinedTextField(
@@ -87,9 +99,10 @@ fun DropUpUpdateCategoria (
                     onDescricao(it)
                 },
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .focusRequester(focusDesc),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                keyboardActions = KeyboardActions(onDone = {focusManeger.clearFocus()}),
+                keyboardActions = KeyboardActions(onDone = {focusManager.clearFocus()}),
                 shape = RoundedCornerShape(16.dp)
             )
             Spacer(modifier = Modifier.height(24.dp))
@@ -155,5 +168,8 @@ fun DropUpUpdateCategoria (
                 }
             }
         }
+    }
+    BackHandler(enabled = enable) {
+        onDismiss()
     }
 }

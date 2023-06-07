@@ -60,6 +60,8 @@ fun DropUpNewRegister (
     onDateUpdate:()->Unit
 ){
     val focusManager = LocalFocusManager.current
+    val focusDesc = remember { FocusRequester() }
+    val focusValue = remember { FocusRequester() }
     var Valor by remember{ mutableStateOf("") }
     var Descricao by remember{ mutableStateOf("") }
     var openDropDownCategoria by remember { mutableStateOf(false) }
@@ -69,6 +71,10 @@ fun DropUpNewRegister (
         onDismiss()
     }
     BoxDropUpContent(enable = enable, onDismiss = onDismiss) {
+        LaunchedEffect(key1 = Unit){
+            delay(500)
+            focusValue.requestFocus()
+        }
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -93,10 +99,17 @@ fun DropUpNewRegister (
                         Valor = Regex("[^0-9]").replace(it,"")
                     },
                     modifier = Modifier
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                        .focusRequester(focusValue),
                     shape = RoundedCornerShape(16.dp),
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next,keyboardType = KeyboardType.Number),
-                    keyboardActions = KeyboardActions(onNext = {focusManager.moveFocus(FocusDirection.Down)}),
+                    keyboardActions = KeyboardActions(onNext = {
+                        focusManager.clearFocus()
+                        CoroutineScope(Dispatchers.Main).launch {
+                            delay(700)
+                            focusDesc.requestFocus()
+                        }
+                    }),
                     visualTransformation = if(Valor.isEmpty()) VisualTransformation.None else MaskTransformation()
                 )
                 Spacer(modifier = Modifier.height(16.dp))
@@ -109,7 +122,8 @@ fun DropUpNewRegister (
                         Descricao = it
                     },
                     modifier = Modifier
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                        .focusRequester(focusDesc),
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                     keyboardActions = KeyboardActions(onDone = {focusManager.clearFocus()}),
                     shape = RoundedCornerShape(16.dp)

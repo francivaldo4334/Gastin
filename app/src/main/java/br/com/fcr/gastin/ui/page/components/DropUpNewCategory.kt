@@ -5,6 +5,7 @@ import android.content.Context
 import android.inputmethodservice.InputMethodService
 import android.util.Log
 import android.view.inputmethod.InputMethodManager
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -14,6 +15,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,25 +35,31 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import br.com.fcr.gastin.R
+import br.com.fcr.gastin.RegisterEvent
 import br.com.fcr.gastin.ui.page.viewmodels.CategoriaViewModel
 import br.com.fcr.gastin.ui.page.viewmodels.RegistroViewModel
 import br.com.fcr.gastin.ui.utils.MaskTransformation
 import br.com.fcr.gastin.ui.utils.colorToLongHex
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun DropUpNewCategory (enable:Boolean,onDismiss:()->Unit,onActionsResult:(CategoriaViewModel)->Unit){
     val focusManeger = LocalFocusManager.current
-    val context = LocalContext.current as Activity
     val Density = LocalDensity.current
     var Nome by remember {mutableStateOf("")}
     var Descricao by remember {mutableStateOf("")}
     var colorSelect by remember{ mutableStateOf(Color(0xFFD4D4D4)) }
     var openDropDownColorPicker by remember {mutableStateOf(false)}
     val focusValue = remember{FocusRequester()}
+    val focusDesc = remember{FocusRequester()}
     BoxDropUpContent(enable = enable, onDismiss = onDismiss) {
-        LaunchedEffect(key1 = Unit, block = {
+        LaunchedEffect(key1 = Unit){
+            delay(500)
             focusValue.requestFocus()
-        })
+        }
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -79,7 +87,13 @@ fun DropUpNewCategory (enable:Boolean,onDismiss:()->Unit,onActionsResult:(Catego
                         .fillMaxWidth()
                         .focusRequester(focusValue),
                     shape = RoundedCornerShape(16.dp),
-                    keyboardActions = KeyboardActions(onNext = {focusManeger.moveFocus(FocusDirection.Down)}),
+                    keyboardActions = KeyboardActions(onNext = {
+                        focusManeger.clearFocus()
+                        CoroutineScope(Dispatchers.Main).launch {
+                            delay(700)
+                            focusDesc.requestFocus()
+                        }
+                    }),
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
                 )
                 Spacer(modifier = Modifier.height(16.dp))
@@ -92,7 +106,8 @@ fun DropUpNewCategory (enable:Boolean,onDismiss:()->Unit,onActionsResult:(Catego
                         Descricao = it
                     },
                     modifier = Modifier
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                        .focusRequester(focusDesc),
                     keyboardActions = KeyboardActions(onDone = {focusManeger.clearFocus()}),
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                     shape = RoundedCornerShape(16.dp)
@@ -129,7 +144,7 @@ fun DropUpNewCategory (enable:Boolean,onDismiss:()->Unit,onActionsResult:(Catego
                         onDismissRequest = { openDropDownColorPicker = false },
                         modifier = androidx.compose.ui.Modifier
                             .width(
-                                with(Density){
+                                with(Density) {
                                     width.toDp()
                                 }
                             )
@@ -161,5 +176,8 @@ fun DropUpNewCategory (enable:Boolean,onDismiss:()->Unit,onActionsResult:(Catego
                 }
             }
         }
+    }
+    BackHandler {
+        onDismiss()
     }
 }

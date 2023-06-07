@@ -22,8 +22,9 @@ fun DropUpViewCategoria (
     Nome:String,
     Descricao:String,
     CategoriaCor:Color,
+    clearValues:()->Unit
 ){
-    BoxDropUpContent(enable = enable, onDismiss = { /*clearValues();*/onDismiss() }) {
+    BoxDropUpContent(enable = enable, onDismiss = { clearValues();onDismiss() }) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -47,7 +48,7 @@ fun DropUpViewCategoria (
         }
     }
     BackHandler(enabled = enable) {
-//        clearValues()
+        clearValues()
         onDismiss()
     }
 }
