@@ -177,7 +177,7 @@ fun DropUpNewCategory (enable:Boolean,onDismiss:()->Unit,onActionsResult:(Catego
             }
         }
     }
-    BackHandler {
+    BackHandler (enabled = enable){
         onDismiss()
     }
 }

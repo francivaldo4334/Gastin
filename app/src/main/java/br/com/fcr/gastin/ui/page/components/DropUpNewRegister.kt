@@ -67,9 +67,7 @@ fun DropUpNewRegister (
     var openDropDownCategoria by remember { mutableStateOf(false) }
     var Categoria by remember{ mutableStateOf(CategoriaDefault) }
     val Density = LocalDensity.current
-    BackHandler(enabled = enable) {
-        onDismiss()
-    }
+
     BoxDropUpContent(enable = enable, onDismiss = onDismiss) {
         LaunchedEffect(key1 = Unit){
             delay(500)
@@ -210,5 +208,8 @@ fun DropUpNewRegister (
                 }
             }
         }
+    }
+    BackHandler(enabled = enable) {
+        onDismiss()
     }
 }
