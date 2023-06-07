@@ -1,5 +1,6 @@
 package br.com.fcr.gastin.ui.page.components
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -58,7 +59,7 @@ fun HomeScreenEvolucaoDespesas(
                     }
                 }
             }
-            if(simpleList.isEmpty()){
+            AnimatedVisibility(visible = simpleList.isEmpty()) {
                 Box(modifier = Modifier
                     .fillMaxWidth()
                     .height(100.dp)
@@ -66,7 +67,7 @@ fun HomeScreenEvolucaoDespesas(
                     Text(text = stringResource(id = R.string.txt_sem_registros))
                 }
             }
-            else {
+            AnimatedVisibility(visible = simpleList.isNotEmpty()) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()

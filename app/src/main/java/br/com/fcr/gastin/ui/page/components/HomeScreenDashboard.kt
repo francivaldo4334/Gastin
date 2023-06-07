@@ -1,4 +1,9 @@
 package br.com.fcr.gastin.ui.page.components
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -36,7 +41,7 @@ fun HomeScreenDashboard(categorias:List<Triple<String,Int, Color>>, onClickMore:
                 Text(
                     text =
                         if(Constants.IsTotalPeriod)stringResource(id = R.string.txt_despesas_totais)
-                        else stringResource(id = R.string.txt_despesas),
+                        else stringResource(id = R.string.txt_despesas_mensais),
                     fontSize = 14.sp,
                     modifier = Modifier.padding(top = 16.dp, start = 16.dp)
                 )
@@ -52,7 +57,9 @@ fun HomeScreenDashboard(categorias:List<Triple<String,Int, Color>>, onClickMore:
                     content()
                 }
             }
-            if(categorias.isEmpty()) {
+            AnimatedVisibility(
+                visible = categorias.isEmpty()
+            ) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -61,12 +68,14 @@ fun HomeScreenDashboard(categorias:List<Triple<String,Int, Color>>, onClickMore:
                     Text(text = stringResource(id = R.string.txt_sem_registros))
                 }
             }
-            else {
-                Spacer(modifier = Modifier.size(16.dp))
+            AnimatedVisibility(
+                visible = categorias.isNotEmpty()
+            ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .fillMaxWidth()
+                        .padding(vertical = 16.dp)
                         .padding(horizontal = 16.dp)
                 ) {
                     PizzaChart(
@@ -111,7 +120,6 @@ fun HomeScreenDashboard(categorias:List<Triple<String,Int, Color>>, onClickMore:
                         }
                     }
                 }
-                Spacer(modifier = Modifier.size(16.dp))
             }
         }
     }

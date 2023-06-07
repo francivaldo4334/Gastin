@@ -5,6 +5,9 @@
     <string name="txt_despesas">
         Despesas
     </string>
+    <string name="txt_despesas_mensais">
+        Despesas mensais
+    </string>
     <string name="txt_despesas_totais">
         Despesas totais
     </string>
@@ -15,7 +18,7 @@
         Modo escuro
     </string>
     <string name="txt_adicionar_categoria">
-        +Adicionar categoria
+        {local_offer} Adicionar categoria
     </string>
     <string name="txt_adicionar_despesa">
         - Adicionar despesa
@@ -36,7 +39,7 @@
         Como funciona?
     </string>
     <string name="txt_ver_categorias">
-        Ver categorias
+        {list} Ver categorias
     </string>
     <string name="txt_visualizar_por_mes">
         Visualizar por mês
@@ -48,7 +51,7 @@
         Visualizar por semana
     </string>
     <string name="txt_evolucao_das_despesas">
-        Evolução das despesas
+        Despesas na semana
     </string>
     <string name="txt_recebido">
         Recebido
@@ -63,7 +66,7 @@
         Visão geral
     </string>
     <string name="txt_selecionar_tudo">
-        Selecionar tudo
+        {check_list} Selecionar tudo
     </string>
     <string name="txt_excluir">
         - Excluir

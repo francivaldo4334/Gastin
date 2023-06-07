@@ -81,16 +81,22 @@ fun HomeScreenPage(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(text = stringResource(R.string.txt_modo_escuro), fontSize = 14.sp)
-                        Switch(checked = Constants.IsDarkTheme, onCheckedChange = {
-                            onSwitchTheme(it)
-                        })
+                        Switch(
+                            checked = Constants.IsDarkTheme,
+                            onCheckedChange = {
+                                onSwitchTheme(it)
+                            },
+                            colors = SwitchDefaults.colors(
+                                uncheckedThumbColor = MaterialTheme.colors.onBackground
+                            )
+                        )
                     }
                 },
                 listOptions = listOf(
                     Pair(stringResource(R.string.txt_adicionar_categoria),{openDropUpNewCategory = true}),
                     Pair(stringResource(R.string.txt_adicionar_receita),{IsDespesa= false;openDropUpNewRegister = true}),
                     Pair(stringResource(R.string.txt_adicionar_despesa),{IsDespesa= true;openDropUpNewRegister = true}),
-                    Pair(stringResource(R.string.txt_como_funciona),{}),
+//                    Pair(stringResource(R.string.txt_como_funciona),{}),
                 ),
                 enable = openDropDownTop,
                 onDismiss = {
@@ -132,9 +138,15 @@ fun HomeScreenPage(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Text(text = stringResource(R.string.txt_mostrar_periodo_completo), fontSize = 14.sp)
-                                Switch(checked = Constants.IsTotalPeriod, onCheckedChange = {
-                                    onInformsTotal(it)
-                                })
+                                Switch(
+                                    checked = Constants.IsTotalPeriod,
+                                    onCheckedChange = {
+                                        onInformsTotal(it)
+                                    },
+                                    colors = SwitchDefaults.colors(
+                                        uncheckedThumbColor = MaterialTheme.colors.onBackground
+                                    )
+                                )
                             }
                         },
                         listOptions = listOf(
