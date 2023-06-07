@@ -107,13 +107,15 @@ class HomeActivity : ComponentActivity() {
         )
         val sharedPreferences = getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE)
         val editor = sharedPreferences.edit()
+        var openNewRegister = intent.extras?.getBoolean(Constants.OPEN_REGISTRO,false)
+        var InitRout = Route.SPLASH_SCREEN
+        if(openNewRegister == true)
+            InitRout = Route.HOME
+        var isSplashScreen = true
+        if(openNewRegister == true)
+            isSplashScreen = false
         Constants.IsDarkTheme = sharedPreferences.getBoolean(Constants.IS_DARKTHEM,false)
         setCategoriaDefault(homeViewModel)
-        homeViewModel.onEvent(CategoriaEvent.get(1){
-            it?.let {
-                CategoriaDefault = it.toView()
-            }
-        })
         setContent {
             //TODO: listas
             val listDespesas by homeViewModel.despesas.collectAsState()
@@ -128,7 +130,6 @@ class HomeActivity : ComponentActivity() {
             val stringMonth by homeViewModel.stringMonthResourceId.collectAsState()
             val stringYear by homeViewModel.stringYear.collectAsState()
             val graphicInforms by homeViewModel.graphicInforms.collectAsState()
-            var isSplashScreen by rememberSaveable { mutableStateOf(true) }
             navController = rememberNavController()
             GastinTheme(Constants.IsDarkTheme) {//Gestao de gasto
                 val statusBarHeigth = with(LocalDensity.current){
@@ -141,12 +142,13 @@ class HomeActivity : ComponentActivity() {
                         .fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    NavHost(modifier = Modifier.padding(top = statusBarHeigth),navController = navController, startDestination = Route.SPLASH_SCREEN){
+                    NavHost(modifier = Modifier.padding(top = statusBarHeigth),navController = navController, startDestination = InitRout){
                         composable(Route.SPLASH_SCREEN){
                             SplashScreenPage(Constants.IsDarkTheme)
                         }
                         composable(Route.HOME){
                             HomeScreenPage(
+                                openNewRegister = openNewRegister,
                                 navController = navController,
                                 valorDespesas = valorDespesas?:0,
                                 valorReceitas = valorReceitas?:0,
@@ -287,6 +289,11 @@ class HomeActivity : ComponentActivity() {
                 }
             }
         }
+        homeViewModel.onEvent(CategoriaEvent.get(1){
+            it?.let {
+                CategoriaDefault = it.toView()
+            }
+        })
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             createNotificationChannel()
             if(Constants.IsDarkTheme) {

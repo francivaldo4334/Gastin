@@ -50,7 +50,8 @@ fun HomeScreenPage(
     CategoriaDefault: CategoriaViewModel,
     onInformsTotal:(Boolean)->Unit,
     graphicInforms:List<DashboardWeek>,
-    onDateUpdate:()->Unit
+    onDateUpdate:()->Unit,
+    openNewRegister:Boolean?
 ) {
     val context = LocalContext.current as Activity
     val calendar = Calendar.getInstance()
@@ -58,7 +59,6 @@ fun HomeScreenPage(
     var openDropUpNewCategory by remember{ mutableStateOf(false) }
     var openDropDownTop by remember {mutableStateOf(false)}
     var openDropDownDashboard by remember {mutableStateOf(false)}
-    var openNewRegister = context.intent.extras?.getBoolean(Constants.OPEN_REGISTRO,false)
     var openDropUpNewRegister by remember { mutableStateOf(openNewRegister?:false)}
     val values = graphicInforms.map { it.valor }
     val days = graphicInforms.map {
