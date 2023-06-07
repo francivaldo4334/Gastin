@@ -79,7 +79,7 @@ class HomeActivity : ComponentActivity() {
         val name = "canal Gastin"
         val desc = "canal de notificacao Gastin"
         val important = NotificationManager.IMPORTANCE_DEFAULT
-        val channel = NotificationChannel(HomeActivity.CHANNEL_ID,name,important)
+        val channel = NotificationChannel(CHANNEL_ID,name,important)
         channel.description = desc
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.createNotificationChannel(channel)
@@ -115,6 +115,7 @@ class HomeActivity : ComponentActivity() {
         if(openNewRegister == true)
             isSplashScreen = false
         Constants.IsDarkTheme = sharedPreferences.getBoolean(Constants.IS_DARKTHEM,false)
+        val isFirstTime = sharedPreferences.getBoolean(Constants.IS_FIRST_TIME,true)
         setCategoriaDefault(homeViewModel)
         setContent {
             //TODO: listas
@@ -295,8 +296,8 @@ class HomeActivity : ComponentActivity() {
             }
         })
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            createNotificationChannel()
-            if(Constants.IsDarkTheme) {
+            if(isFirstTime) {
+                createNotificationChannel()
                 scheduleNotification()
                 editor.putBoolean(Constants.IS_FIRST_TIME,false)
                 editor.apply()
