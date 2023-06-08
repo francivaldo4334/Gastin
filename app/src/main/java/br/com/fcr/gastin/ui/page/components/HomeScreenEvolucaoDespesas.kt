@@ -14,6 +14,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import br.com.fcr.gastin.R
@@ -32,7 +33,7 @@ private fun createList(max:Int,min:Int):List<Int>{
 @Composable
 fun HomeScreenEvolucaoDespesas(
     listValues: List<Int>,
-    listDays: List<Pair<Int, String>>,
+    listDays: List<Triple<Int, String,String>>,
     onBefore: () -> Unit,
     onNext: () -> Unit
 ){
@@ -68,69 +69,78 @@ fun HomeScreenEvolucaoDespesas(
                 }
             }
             AnimatedVisibility(visible = simpleList.isNotEmpty()) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                ) {
-                    var height by remember { mutableStateOf(0) }
-                    Column(
-                        modifier = Modifier.onGloballyPositioned {
-                            height = it.size.height
-                        }
+                Column(Modifier.fillMaxWidth()) {
+                    val dates = listDays.sortedBy { it.third }
+                    Text(
+                        text = "${dates.first().third} - ${dates.last().third}",
+                        fontSize = 12.sp,
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
                     ) {
-                        simpleList.forEach {
-                            Text(
-                                modifier = Modifier.width(40.dp),
-                                text = it.toMonetaryString(),
-                                fontSize = 10.sp,
-                                maxLines = 1
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-                        }
-                    }
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Column(Modifier.fillMaxSize()) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(
-                                    with(Density) {
-                                        height.toDp()
-                                    }
-                                ),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.Bottom
-                        ) {
-                            listDays.forEach {
-                                Box(modifier = Modifier
-                                    .clip(RoundedCornerShape(16.dp))
-                                    .width(16.dp)
-                                    .height(
-                                        with(Density) {
-                                            ((it.first.toFloat() / valueMax.toFloat()) * height).toDp()
-                                        }
-                                    )
-                                    .background(color = Color(0xFF269FB9))
-                                )
+                        var height by remember { mutableStateOf(0) }
+                        Column(
+                            modifier = Modifier.onGloballyPositioned {
+                                height = it.size.height
                             }
-                        }
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            listDays.forEach {
+                            simpleList.forEach {
                                 Text(
-                                    modifier = Modifier.width(16.dp),
-                                    text = it.second,
-                                    fontSize = 8.sp,
+                                    modifier = Modifier.width(40.dp),
+                                    text = it.toMonetaryString(),
+                                    fontSize = 10.sp,
                                     maxLines = 1
                                 )
+                                Spacer(modifier = Modifier.height(8.dp))
                             }
                         }
-                    }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Column(Modifier.fillMaxSize()) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(
+                                        with(Density) {
+                                            height.toDp()
+                                        }
+                                    ),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.Bottom
+                            ) {
+                                listDays.forEach {
+                                    Box(modifier = Modifier
+                                        .clip(RoundedCornerShape(16.dp))
+                                        .width(16.dp)
+                                        .height(
+                                            with(Density) {
+                                                ((it.first.toFloat() / valueMax.toFloat()) * height).toDp()
+                                            }
+                                        )
+                                        .background(color = Color(0xFF269FB9))
+                                    )
+                                }
+                            }
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                listDays.forEach {
+                                    Text(
+                                        modifier = Modifier.width(16.dp),
+                                        text = it.second,
+                                        fontSize = 8.sp,
+                                        maxLines = 1
+                                    )
+                                }
+                            }
+                        }
+                    }   
                 }
             }
 

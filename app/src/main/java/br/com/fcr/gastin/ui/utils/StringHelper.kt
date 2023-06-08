@@ -1,6 +1,7 @@
 package br.com.fcr.gastin.ui.utils
 
 import java.text.NumberFormat
+import java.text.SimpleDateFormat
 import java.util.*
 object Route{
     val HOME = "HOME"
@@ -15,4 +16,8 @@ fun Int.toMonetaryString():String{
     val formato = NumberFormat.getCurrencyInstance(locale)
     val valorString = formato.format(valorDouble)
     return valorString
+}
+fun Date.toStringDate(it:String = "dd/MM/yyyy"):String{
+    val format = SimpleDateFormat(it)
+    return format.format(this)
 }

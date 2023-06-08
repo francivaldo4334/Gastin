@@ -10,6 +10,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -59,7 +61,7 @@ fun listOptions(listOptions:List<Triple<String,()->Unit,Boolean>>,onDismiss:()->
             }
             if(it.first.contains("-")){
                 replace = "-"
-                Icon(painter = painterResource(id = R.drawable.ic_minus), contentDescription = "despesa", modifier = Modifier.size(24.dp))
+                Icon(Icons.Default.Delete, contentDescription = "despesa", modifier = Modifier.size(24.dp).padding(4.dp))
             }
             if(it.first.contains("+")){
                 replace = "+"

@@ -26,6 +26,7 @@ import br.com.fcr.gastin.ui.page.components.*
 import br.com.fcr.gastin.ui.page.viewmodels.CategoriaViewModel
 import br.com.fcr.gastin.ui.page.viewmodels.RegistroViewModel
 import br.com.fcr.gastin.ui.page.viewmodels.toModel
+import br.com.fcr.gastin.ui.utils.toStringDate
 import br.com.fcr.gastin.ui.utils.toWeekString
 import java.util.Calendar
 
@@ -64,7 +65,7 @@ fun HomeScreenPage(
     val days = graphicInforms.map {
         calendar.time = it.date
         val week = calendar.get(Calendar.DAY_OF_WEEK)
-        Pair(it.valor,week.toWeekString(context))
+        Triple(it.valor,week.toWeekString(context),it.date.toStringDate())
     }
     Column(
         modifier = Modifier.fillMaxSize(),
