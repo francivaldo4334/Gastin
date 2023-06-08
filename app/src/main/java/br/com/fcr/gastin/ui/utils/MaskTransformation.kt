@@ -43,8 +43,9 @@ class MaskTransformation() : VisualTransformation {
             }
         }
         out = out.reversed();
-        while (out.length>4 && out[0] == '0')
+        while (out.length>4 && out[0] == '0') {
             out = out.substring(1)
+        }
         val numberOffsetTranslator = object : OffsetMapping {
             override fun originalToTransformed(offset: Int): Int {
                 return out.length

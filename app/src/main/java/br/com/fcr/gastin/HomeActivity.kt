@@ -9,10 +9,8 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -21,12 +19,8 @@ import androidx.compose.material.Surface
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
-import androidx.core.view.WindowCompat
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -50,40 +44,44 @@ import java.util.Calendar
 class HomeActivity : ComponentActivity() {
     companion object{
         var CategoriaDefault:CategoriaViewModel = EmptyCategoriaViewModel()
-        var CHANNEL_ID = "channel_notification_Gastin_ID"
+        var CHANNEL_ID = "channel_notification_Gastin_ID_2023"
+        val NOTIFICATION_ID = 1
     }
     private lateinit var navController:NavHostController
     private fun scheduleNotification(){
         val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val calendar21 = Calendar.getInstance().apply {
+        val calendar = Calendar.getInstance().apply {
+            clear()
             set(Calendar.HOUR_OF_DAY,21)
             set(Calendar.MINUTE,0)
             set(Calendar.SECOND,0)
         }
-        val intent21 = Intent(applicationContext, NotificationReceiver::class.java)
-        val pendingIntent21 = PendingIntent.getBroadcast(
+        val intent = Intent(applicationContext, NotificationReceiver::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(
             applicationContext,
-            1,
-            intent21,
-            PendingIntent.FLAG_IMMUTABLE or  PendingIntent.FLAG_UPDATE_CURRENT
+            NOTIFICATION_ID,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT
         )
         alarmManager.setRepeating(
             AlarmManager.RTC_WAKEUP,
-            calendar21.timeInMillis,
+            calendar.timeInMillis,
             AlarmManager.INTERVAL_DAY,
-            pendingIntent21
+            pendingIntent
         )
     }
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun createNotificationChannel(){
-        val name = "canal Gastin"
-        val desc = "canal de notificacao Gastin"
-        val important = NotificationManager.IMPORTANCE_DEFAULT
-        val channel = NotificationChannel(CHANNEL_ID,name,important)
-        channel.description = desc
-        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.createNotificationChannel(channel)
-
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channelName = "Gatin_Pro"
+            val descriptionText = "canal de notificacao Gastin"
+            val important = NotificationManager.IMPORTANCE_DEFAULT
+            val channel =
+            NotificationChannel(CHANNEL_ID,channelName,important).apply {
+                description = descriptionText
+            }
+            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
     }
     private fun setCategoriaDefault(homeViewModel:HomeViewModel){
         homeViewModel.onEvent(CategoriaEvent.get(1){
@@ -97,9 +95,9 @@ class HomeActivity : ComponentActivity() {
             }
         })
     }
-    @SuppressLint("InternalInsetResource", "CoroutineCreationDuringComposition")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        createNotificationChannel()
         val homeViewModel = HomeViewModel(
             (applicationContext as MyApplication).categoriaRepository,
             (applicationContext as MyApplication).registroRepository,
@@ -107,6 +105,13 @@ class HomeActivity : ComponentActivity() {
         )
         val sharedPreferences = getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE)
         val editor = sharedPreferences.edit()
+        val isFirstTime = sharedPreferences.getBoolean(Constants.IS_FIRST_TIME,true)
+        if(isFirstTime) {
+            scheduleNotification()
+            editor.putBoolean(Constants.IS_FIRST_TIME,false)
+            editor.apply()
+        }
+
         var openNewRegister = intent.extras?.getBoolean(Constants.OPEN_REGISTRO,false)
         var InitRout = Route.SPLASH_SCREEN
         if(openNewRegister == true)
@@ -115,7 +120,6 @@ class HomeActivity : ComponentActivity() {
         if(openNewRegister == true)
             isSplashScreen = false
         Constants.IsDarkTheme = sharedPreferences.getBoolean(Constants.IS_DARKTHEM,false)
-        val isFirstTime = sharedPreferences.getBoolean(Constants.IS_FIRST_TIME,true)
         setCategoriaDefault(homeViewModel)
         setContent {
             //TODO: listas
@@ -295,13 +299,5 @@ class HomeActivity : ComponentActivity() {
                 CategoriaDefault = it.toView()
             }
         })
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            if(isFirstTime) {
-                createNotificationChannel()
-                scheduleNotification()
-                editor.putBoolean(Constants.IS_FIRST_TIME,false)
-                editor.apply()
-            }
-        }
     }
 }
