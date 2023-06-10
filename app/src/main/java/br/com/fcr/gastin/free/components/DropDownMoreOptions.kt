@@ -5,16 +5,20 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.*
 import br.com.fcr.gastin.free.R
 
 @Composable
 fun DropDownMoreOptions(customItem:(@Composable ColumnScope.()->Unit)? = null, listOptions:List<Pair<String,()->Unit>>, enable:Boolean, onDismiss:()->Unit){
+    val context = LocalContext.current
     DropdownMenu(expanded = enable, onDismissRequest = onDismiss) {
         if(customItem != null)
             customItem()
         listOptions.forEach {
+            if(it.first == context.getString(R.string.remover_anuncios))
+                Divider()
             Row(modifier = Modifier
                 .height(40.dp)
                 .fillMaxWidth()
@@ -40,11 +44,15 @@ fun DropDownMoreOptions(customItem:(@Composable ColumnScope.()->Unit)? = null, l
                 }
                 if(it.first.contains("{check_list}")){
                     replace = "{check_list}"
-                    Icon(painter = painterResource(id = R.drawable.ic_check_all), contentDescription = "receita", modifier = Modifier.size(24.dp).padding(4.dp))
+                    Icon(painter = painterResource(id = R.drawable.ic_check_all), contentDescription = "receita", modifier = Modifier
+                        .size(24.dp)
+                        .padding(4.dp))
                 }
                 if(it.first.contains("{list}")){
                     replace = "{list}"
-                    Icon(painter = painterResource(id = R.drawable.ic_list), contentDescription = "receita", modifier = Modifier.size(24.dp).padding(4.dp))
+                    Icon(painter = painterResource(id = R.drawable.ic_list), contentDescription = "receita", modifier = Modifier
+                        .size(24.dp)
+                        .padding(4.dp))
                 }
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(text = text.replace(replace,""), fontSize = 14.sp)

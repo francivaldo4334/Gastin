@@ -1,6 +1,8 @@
 package br.com.fcr.gastin.free
 
 import android.app.Activity
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -17,7 +19,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import br.com.fcr.gastin.free.R
 import br.com.fcr.gastin.free.data.database.model.Categoria
 import br.com.fcr.gastin.free.data.database.viewmodel.DashboardWeek
 import br.com.fcr.gastin.free.ui.page.components.DropDownMoreOptions
@@ -35,6 +36,7 @@ import br.com.fcr.gastin.free.ui.page.viewmodels.RegistroViewModel
 import br.com.fcr.gastin.free.ui.page.viewmodels.toModel
 import br.com.fcr.gastin.free.ui.utils.toStringDate
 import br.com.fcr.gastin.free.ui.utils.toWeekString
+import java.lang.Exception
 import java.util.Calendar
 
 @Composable
@@ -101,12 +103,24 @@ fun HomeScreenPage(
                     }
                 },
                 listOptions = listOf(
-                    Pair(stringResource(R.string.txt_adicionar_categoria),{openDropUpNewCategory = true}),
-                    Pair(stringResource(R.string.txt_adicionar_receita),{IsDespesa= false;openDropUpNewRegister = true}),
-                    Pair(stringResource(R.string.txt_adicionar_despesa),{IsDespesa= true;openDropUpNewRegister = true}),
-                    Pair(stringResource(R.string.txt_como_funciona),{
+                    Pair(stringResource(R.string.txt_adicionar_categoria)) {
+                        openDropUpNewCategory = true
+                    },
+                    Pair(stringResource(R.string.txt_adicionar_receita)) {
+                        IsDespesa = false;openDropUpNewRegister = true
+                    },
+                    Pair(stringResource(R.string.txt_adicionar_despesa)) {
+                        IsDespesa = true;openDropUpNewRegister = true
+                    },
+                    Pair(stringResource(R.string.txt_como_funciona)) {
                         navController.navigate(Route.HELP_SCREEN)
-                    }),
+                    },
+                    Pair(stringResource(R.string.remover_anuncios)) {
+                        val packageNameGastinPro = "br.com.fcr.gastin"
+                        val webUri = Uri.parse("https://play.google.com/store/apps/details?id=$packageNameGastinPro")
+                        val goToWebMarketIntent = Intent(Intent.ACTION_VIEW, webUri)
+                        context.startActivity(goToWebMarketIntent)
+                    }
                 ),
                 enable = openDropDownTop,
                 onDismiss = {
