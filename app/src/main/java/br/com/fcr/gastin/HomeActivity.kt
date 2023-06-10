@@ -28,6 +28,7 @@ import androidx.navigation.compose.rememberNavController
 import br.com.fcr.gastin.data.database.model.Categoria
 import br.com.fcr.gastin.data.notification.NotificationReceiver
 import br.com.fcr.gastin.ui.common.Constants
+import br.com.fcr.gastin.ui.page.HelpScreen
 import br.com.fcr.gastin.ui.page.HomeScreenPage
 import br.com.fcr.gastin.ui.page.ListCategoriasPage
 import br.com.fcr.gastin.ui.page.ListValuesScreenPage
@@ -57,18 +58,21 @@ class HomeActivity : ComponentActivity() {
             set(Calendar.SECOND,0)
         }
         val intent = Intent(applicationContext, NotificationReceiver::class.java)
+
         val pendingIntent = PendingIntent.getBroadcast(
             applicationContext,
             NOTIFICATION_ID,
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT
         )
-        alarmManager.setRepeating(
-            AlarmManager.RTC_WAKEUP,
-            calendar.timeInMillis,
-            AlarmManager.INTERVAL_DAY,
-            pendingIntent
-        )
+        val nextAlarm = alarmManager.nextAlarmClock
+        if(nextAlarm == null)
+            alarmManager.setRepeating(
+                AlarmManager.RTC_WAKEUP,
+                calendar.timeInMillis,
+                AlarmManager.INTERVAL_DAY,
+                pendingIntent
+            )
     }
     private fun createNotificationChannel(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -98,6 +102,7 @@ class HomeActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         createNotificationChannel()
+        scheduleNotification()
         val homeViewModel = HomeViewModel(
             (applicationContext as MyApplication).categoriaRepository,
             (applicationContext as MyApplication).registroRepository,
@@ -105,13 +110,6 @@ class HomeActivity : ComponentActivity() {
         )
         val sharedPreferences = getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE)
         val editor = sharedPreferences.edit()
-        val isFirstTime = sharedPreferences.getBoolean(Constants.IS_FIRST_TIME,true)
-        if(isFirstTime) {
-            scheduleNotification()
-            editor.putBoolean(Constants.IS_FIRST_TIME,false)
-            editor.apply()
-        }
-
         var openNewRegister = intent.extras?.getBoolean(Constants.OPEN_REGISTRO,false)
         var InitRout = Route.SPLASH_SCREEN
         if(openNewRegister == true)
@@ -282,6 +280,9 @@ class HomeActivity : ComponentActivity() {
                                     homeViewModel.onEvent(CategoriaEvent.update(it.toModel()))
                                 }
                             )
+                        }
+                        composable(Route.HELP_SCREEN){
+                            HelpScreen()
                         }
                     }
                 }

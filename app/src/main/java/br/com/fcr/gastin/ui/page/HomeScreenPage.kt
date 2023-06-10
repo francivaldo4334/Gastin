@@ -97,7 +97,9 @@ fun HomeScreenPage(
                     Pair(stringResource(R.string.txt_adicionar_categoria),{openDropUpNewCategory = true}),
                     Pair(stringResource(R.string.txt_adicionar_receita),{IsDespesa= false;openDropUpNewRegister = true}),
                     Pair(stringResource(R.string.txt_adicionar_despesa),{IsDespesa= true;openDropUpNewRegister = true}),
-//                    Pair(stringResource(R.string.txt_como_funciona),{}),
+                    Pair(stringResource(R.string.txt_como_funciona),{
+                        navController.navigate(Route.HELP_SCREEN)
+                    }),
                 ),
                 enable = openDropDownTop,
                 onDismiss = {

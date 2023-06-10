@@ -4,6 +4,7 @@ import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
 object Route{
+    val HELP_SCREEN = "HELP_SCREEN"
     val HOME = "HOME"
     val LISTA_DESPESAS = "LISTA_DESPESAS"
     val LISTA_RESEITAS = "LISTA_RESEITAS"
