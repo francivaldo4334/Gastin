@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace 'br.com.fcr.gastin'
+    namespace 'br.com.fcr.gastin.free'
     compileSdk 32
 
     defaultConfig {
-        applicationId "br.com.fcr.gastin"
+        applicationId "br.com.fcr.gastin.free"
         minSdk 21
         targetSdk 32
         versionCode 3
