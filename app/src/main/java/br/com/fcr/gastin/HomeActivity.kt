@@ -50,7 +50,7 @@ class HomeActivity : ComponentActivity() {
     }
     private lateinit var navController:NavHostController
     private fun scheduleNotification(){
-        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val calendar = Calendar.getInstance().apply {
             clear()
             set(Calendar.HOUR_OF_DAY,21)
@@ -65,14 +65,12 @@ class HomeActivity : ComponentActivity() {
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT
         )
-        val nextAlarm = alarmManager.nextAlarmClock
-        if(nextAlarm == null)
-            alarmManager.setRepeating(
-                AlarmManager.RTC_WAKEUP,
-                calendar.timeInMillis,
-                AlarmManager.INTERVAL_DAY,
-                pendingIntent
-            )
+        alarmManager.setRepeating(
+            AlarmManager.RTC_WAKEUP,
+            calendar.timeInMillis,
+            1000 * 60 * 60 * 24,
+            pendingIntent
+        )
     }
     private fun createNotificationChannel(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -102,7 +100,6 @@ class HomeActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         createNotificationChannel()
-        scheduleNotification()
         val homeViewModel = HomeViewModel(
             (applicationContext as MyApplication).categoriaRepository,
             (applicationContext as MyApplication).registroRepository,
@@ -110,6 +107,12 @@ class HomeActivity : ComponentActivity() {
         )
         val sharedPreferences = getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE)
         val editor = sharedPreferences.edit()
+        val isFirstTime = sharedPreferences.getBoolean(Constants.IS_FIRST_TIME,true)
+        if(isFirstTime) {
+            scheduleNotification()
+            editor.putBoolean(Constants.IS_FIRST_TIME,false)
+            editor.apply()
+        }
         var openNewRegister = intent.extras?.getBoolean(Constants.OPEN_REGISTRO,false)
         var InitRout = Route.SPLASH_SCREEN
         if(openNewRegister == true)
