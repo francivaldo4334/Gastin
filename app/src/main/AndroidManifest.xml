@@ -15,6 +15,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Gastin"
         tools:targetApi="31">
+<!--        ca-app-pub-9206409300799461~2329555686-->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-3940256099942544~3347511713"/>
         <receiver
             android:name=".data.notification.NotificationReceiver"
             android:enabled="true"/>

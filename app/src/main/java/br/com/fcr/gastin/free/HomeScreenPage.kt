@@ -36,11 +36,13 @@ import br.com.fcr.gastin.free.ui.page.viewmodels.RegistroViewModel
 import br.com.fcr.gastin.free.ui.page.viewmodels.toModel
 import br.com.fcr.gastin.free.ui.utils.toStringDate
 import br.com.fcr.gastin.free.ui.utils.toWeekString
+import kotlinx.coroutines.delay
 import java.lang.Exception
 import java.util.Calendar
 
 @Composable
 fun HomeScreenPage(
+    onShowAd:()->Unit,
     navController: NavController,
     textMes:String,
     stringYear:String,
@@ -227,7 +229,7 @@ fun HomeScreenPage(
         IsDespesa = IsDespesa,
         setIsDespesa = {IsDespesa = it},
         onDismiss = {openDropUpNewRegister = false},
-        onActionsResult = onNewRegister,
+        onActionsResult = {n0,n1 -> onNewRegister(n0,n1);onShowAd() },
         Categorias = Categorias,
         CategoriaDefault = CategoriaDefault,
         onDateUpdate = onDateUpdate
@@ -236,6 +238,7 @@ fun HomeScreenPage(
         enable = openDropUpNewCategory,
         onDismiss = {
             openDropUpNewCategory = false
+            onShowAd()
         }
     ){
         onNewCategoria(it.toModel())

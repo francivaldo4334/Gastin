@@ -4,10 +4,12 @@ import android.app.AlarmManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatDelegate
@@ -18,6 +20,9 @@ import androidx.compose.material.Surface
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.navigation.NavHostController
@@ -34,6 +39,11 @@ import br.com.fcr.gastin.free.ui.page.viewmodels.toModel
 import br.com.fcr.gastin.free.ui.page.viewmodels.toView
 import br.com.fcr.gastin.free.ui.theme.GastinTheme
 import br.com.fcr.gastin.free.ui.utils.Route
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.LoadAdError
+import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.interstitial.InterstitialAd
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import kotlinx.coroutines.delay
 import java.util.Calendar
 
@@ -44,6 +54,9 @@ class HomeActivity : ComponentActivity() {
         val NOTIFICATION_ID = 1
     }
     private lateinit var navController:NavHostController
+    private var mInterstitialAd: InterstitialAd? = null
+    private val AdUnitId = "ca-app-pub-3940256099942544/1033173712"
+
     private fun scheduleNotification(){
             val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val calendar = Calendar.getInstance().apply {
@@ -96,6 +109,7 @@ class HomeActivity : ComponentActivity() {
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        MobileAds.initialize(this) {}
         createNotificationChannel()
         val homeViewModel = HomeViewModel(
             (applicationContext as MyApplication).categoriaRepository,
@@ -140,17 +154,44 @@ class HomeActivity : ComponentActivity() {
                     val heightPixels = resources.getDimensionPixelSize(resourceId)
                     heightPixels.toDp()
                 }
+                var isOneShow by rememberSaveable { mutableStateOf(false) }
                 Surface(
                     modifier = Modifier
                         .fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    NavHost(modifier = Modifier.padding(top = statusBarHeigth),navController = navController, startDestination = InitRout){
+                    NavHost(
+                        modifier = Modifier.padding(top = statusBarHeigth),
+                        navController = navController,
+                        startDestination = InitRout
+                    ){
                         composable(Route.SPLASH_SCREEN){
+
                             SplashScreenPage(Constants.IsDarkTheme)
                         }
                         composable(Route.HOME){
+                            LaunchedEffect(key1 = Unit, block = {
+                                if(!isOneShow) {
+                                    loadAdIntertistial {
+                                        if (mInterstitialAd != null) {
+                                            mInterstitialAd?.show(this@HomeActivity)
+                                        } else {
+                                            Log.d("TAG", "The interstitial ad wasn't ready yet.")
+                                        }
+                                    }
+                                    isOneShow = true
+                                }
+                            })
                             HomeScreenPage(
+                                onShowAd = {
+                                   loadAdIntertistial {
+                                       if (mInterstitialAd != null) {
+                                           mInterstitialAd?.show(this@HomeActivity)
+                                       } else {
+                                           Log.d("TAG", "The interstitial ad wasn't ready yet.")
+                                       }
+                                   }
+                                },
                                 openNewRegister = openNewRegister,
                                 navController = navController,
                                 valorDespesas = valorDespesas?:0,
@@ -204,6 +245,13 @@ class HomeActivity : ComponentActivity() {
                                      })
                                 },
                                 onNewRegister = {
+                                    loadAdIntertistial {
+                                        if (mInterstitialAd != null) {
+                                            mInterstitialAd?.show(this@HomeActivity)
+                                        } else {
+                                            Log.d("TAG", "The interstitial ad wasn't ready yet.")
+                                        }
+                                    }
                                     homeViewModel.onEvent(RegisterEvent.insert(it.toModel()))
                                 },
                                 onDeleteRegister = {
@@ -239,6 +287,13 @@ class HomeActivity : ComponentActivity() {
                                     })
                                 },
                                 onNewRegister = {
+                                    loadAdIntertistial {
+                                        if (mInterstitialAd != null) {
+                                            mInterstitialAd?.show(this@HomeActivity)
+                                        } else {
+                                            Log.d("TAG", "The interstitial ad wasn't ready yet.")
+                                        }
+                                    }
                                     homeViewModel.onEvent(RegisterEvent.insert(it.toModel(false)))
                                 },
                                 onDeleteRegister = {
@@ -267,6 +322,13 @@ class HomeActivity : ComponentActivity() {
                                     homeViewModel.onEvent(CategoriaEvent.deleteAll(it))
                                 },
                                 onNewCategoria = {
+                                    loadAdIntertistial {
+                                        if (mInterstitialAd != null) {
+                                            mInterstitialAd?.show(this@HomeActivity)
+                                        } else {
+                                            Log.d("TAG", "The interstitial ad wasn't ready yet.")
+                                        }
+                                    }
                                     homeViewModel.onEvent(CategoriaEvent.insert(it))
                                 },
                                 onLoadCategoria = {IdRegeistro,onResult->
@@ -300,5 +362,26 @@ class HomeActivity : ComponentActivity() {
                 CategoriaDefault = it.toView()
             }
         })
+    }
+    fun loadAdIntertistial(onLoad:()->Unit){
+        var adRequest = AdRequest.Builder().build()
+
+        InterstitialAd.load(
+            this@HomeActivity,
+            AdUnitId,
+            adRequest,
+            object : InterstitialAdLoadCallback() {
+                override fun onAdFailedToLoad(adError: LoadAdError) {
+                    Log.d(TAG, adError?.toString())
+                    mInterstitialAd = null
+                }
+
+                override fun onAdLoaded(interstitialAd: InterstitialAd) {
+                    Log.d(TAG, "Ad was loaded.")
+                    mInterstitialAd = interstitialAd
+                    onLoad()
+                }
+            }
+        )
     }
 }
