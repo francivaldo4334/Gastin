@@ -58,7 +58,7 @@ class HomeActivity : ComponentActivity() {
             applicationContext,
             NOTIFICATION_ID,
             intent,
-            PendingIntent.FLAG_UPDATE_CURRENT
+            PendingIntent.FLAG_IMMUTABLE
         )
         alarmManager.setRepeating(
             AlarmManager.RTC_WAKEUP,
