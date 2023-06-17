@@ -21,6 +21,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -39,7 +40,9 @@ import br.com.fcr.gastin.ui.page.viewmodels.toModel
 import br.com.fcr.gastin.ui.page.viewmodels.toView
 import br.com.fcr.gastin.ui.theme.GastinTheme
 import br.com.fcr.gastin.ui.utils.Route
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.util.Calendar
 
 class HomeActivity : ComponentActivity() {
@@ -99,7 +102,6 @@ class HomeActivity : ComponentActivity() {
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        createNotificationChannel()
         val homeViewModel = HomeViewModel(
             (applicationContext as MyApplication).categoriaRepository,
             (applicationContext as MyApplication).registroRepository,
@@ -108,20 +110,19 @@ class HomeActivity : ComponentActivity() {
         val sharedPreferences = getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         val isFirstTime = sharedPreferences.getBoolean(Constants.IS_FIRST_TIME,true)
+        val openNewRegister = intent.extras?.getBoolean(Constants.OPEN_REGISTRO,false)
+        var InitRout = Route.SPLASH_SCREEN
+        var isSplashScreen = true
+        Constants.IsDarkTheme = sharedPreferences.getBoolean(Constants.IS_DARKTHEM,false)
         if(isFirstTime) {
             scheduleNotification()
             editor.putBoolean(Constants.IS_FIRST_TIME,false)
             editor.apply()
         }
-        var openNewRegister = intent.extras?.getBoolean(Constants.OPEN_REGISTRO,false)
-        var InitRout = Route.SPLASH_SCREEN
         if(openNewRegister == true)
             InitRout = Route.HOME
-        var isSplashScreen = true
         if(openNewRegister == true)
             isSplashScreen = false
-        Constants.IsDarkTheme = sharedPreferences.getBoolean(Constants.IS_DARKTHEM,false)
-        setCategoriaDefault(homeViewModel)
         setContent {
             //TODO: listas
             val listDespesas by homeViewModel.despesas.collectAsState()
@@ -303,5 +304,9 @@ class HomeActivity : ComponentActivity() {
                 CategoriaDefault = it.toView()
             }
         })
+        lifecycleScope.launch(Dispatchers.IO){
+            createNotificationChannel()
+            setCategoriaDefault(homeViewModel)
+        }
     }
 }

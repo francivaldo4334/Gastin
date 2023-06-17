@@ -45,7 +45,7 @@ private var listIdCheckeds by mutableStateOf(listOf<Int>())
 fun listOptions(listOptions:List<Triple<String,()->Unit,Boolean>>,onDismiss:()->Unit){
     listOptions.forEach {
         Row(modifier = Modifier
-            .height(40.dp)
+            .height(56.dp)
             .fillMaxWidth()
             .clickable(enabled = it.third) { it.second();onDismiss() }
             .padding(start = 16.dp, end = 72.dp)
