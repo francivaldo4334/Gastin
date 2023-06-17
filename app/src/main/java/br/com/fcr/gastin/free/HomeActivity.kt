@@ -25,6 +25,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -44,7 +45,9 @@ import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.util.Calendar
 
 class HomeActivity : ComponentActivity() {
@@ -55,7 +58,7 @@ class HomeActivity : ComponentActivity() {
     }
     private lateinit var navController:NavHostController
     private var mInterstitialAd: InterstitialAd? = null
-    private val AdUnitId = "ca-app-pub-3940256099942544/1033173712"
+    private val AdUnitId = "ca-app-pub-9206409300799461/3558026813"
 
     private fun scheduleNotification(){
             val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
@@ -110,7 +113,6 @@ class HomeActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         MobileAds.initialize(this) {}
-        createNotificationChannel()
         val homeViewModel = HomeViewModel(
             (applicationContext as MyApplication).categoriaRepository,
             (applicationContext as MyApplication).registroRepository,
@@ -119,20 +121,19 @@ class HomeActivity : ComponentActivity() {
         val sharedPreferences = getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         val isFirstTime = sharedPreferences.getBoolean(Constants.IS_FIRST_TIME,true)
+        val openNewRegister = intent.extras?.getBoolean(Constants.OPEN_REGISTRO,false)
+        Constants.IsDarkTheme = sharedPreferences.getBoolean(Constants.IS_DARKTHEM,false)
+        var InitRout = Route.SPLASH_SCREEN
+        var isSplashScreen = true
         if(isFirstTime) {
             scheduleNotification()
             editor.putBoolean(Constants.IS_FIRST_TIME,false)
             editor.apply()
         }
-        var openNewRegister = intent.extras?.getBoolean(Constants.OPEN_REGISTRO,false)
-        var InitRout = Route.SPLASH_SCREEN
         if(openNewRegister == true)
             InitRout = Route.HOME
-        var isSplashScreen = true
         if(openNewRegister == true)
             isSplashScreen = false
-        Constants.IsDarkTheme = sharedPreferences.getBoolean(Constants.IS_DARKTHEM,false)
-        setCategoriaDefault(homeViewModel)
         setContent {
             //TODO: listas
             val listDespesas by homeViewModel.despesas.collectAsState()
@@ -362,6 +363,10 @@ class HomeActivity : ComponentActivity() {
                 CategoriaDefault = it.toView()
             }
         })
+        lifecycleScope.launch(Dispatchers.IO){
+            createNotificationChannel()
+            setCategoriaDefault(homeViewModel)
+        }
     }
     fun loadAdIntertistial(onLoad:()->Unit){
         var adRequest = AdRequest.Builder().build()

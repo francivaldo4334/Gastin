@@ -157,7 +157,7 @@ fun HomeScreenPage(
                     DropDownMoreOptions(
                         customItem = {
                             Row(modifier = Modifier
-                                .height(40.dp)
+                                .height(56.dp)
                                 .padding(horizontal = 16.dp)
                                 .fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween,

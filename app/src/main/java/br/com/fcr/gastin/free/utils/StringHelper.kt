@@ -1,5 +1,6 @@
 package br.com.fcr.gastin.free.ui.utils
 
+import android.annotation.SuppressLint
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
@@ -18,6 +19,7 @@ fun Int.toMonetaryString():String{
     val valorString = formato.format(valorDouble)
     return valorString
 }
+@SuppressLint("SimpleDateFormat")
 fun Date.toStringDate(it:String = "dd/MM/yyyy"):String{
     val format = SimpleDateFormat(it)
     return format.format(this)

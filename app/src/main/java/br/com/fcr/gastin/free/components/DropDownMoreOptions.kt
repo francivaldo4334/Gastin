@@ -20,7 +20,7 @@ fun DropDownMoreOptions(customItem:(@Composable ColumnScope.()->Unit)? = null, l
             if(it.first == context.getString(R.string.remover_anuncios))
                 Divider()
             Row(modifier = Modifier
-                .height(40.dp)
+                .height(56.dp)
                 .fillMaxWidth()
                 .clickable { it.second();onDismiss() }
                 .padding(start = 16.dp, end = 72.dp)
