@@ -1,27 +1,21 @@
 package br.com.fcr.gastin.ui.page
 
+import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.*
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.FocusManager
-import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -35,14 +29,14 @@ import br.com.fcr.gastin.ui.page.components.DropUpNewRegister
 import br.com.fcr.gastin.ui.page.components.DropUpUpdateRegister
 import br.com.fcr.gastin.ui.page.components.DropUpViewRegister
 import br.com.fcr.gastin.ui.page.viewmodels.CategoriaViewModel
-import br.com.fcr.gastin.ui.page.viewmodels.EmptyCategoriaViewModel
-import br.com.fcr.gastin.ui.page.viewmodels.EmptyRegistroViewModel
 import br.com.fcr.gastin.ui.page.viewmodels.RegistroViewModel
 import br.com.fcr.gastin.ui.utils.toMonetaryString
 
 private var listIdCheckeds by mutableStateOf(listOf<Int>())
+
+@SuppressLint("ComposableNaming")
 @Composable
-fun listOptions(listOptions:List<Triple<String,()->Unit,Boolean>>,onDismiss:()->Unit){
+fun listOptions(listOptions: List<Triple<String, () -> Unit, Boolean>>, onDismiss: () -> Unit) {
     listOptions.forEach {
         Row(modifier = Modifier
             .height(56.dp)
@@ -53,69 +47,102 @@ fun listOptions(listOptions:List<Triple<String,()->Unit,Boolean>>,onDismiss:()->
             verticalAlignment = Alignment.CenterVertically) {
             var text = it.first
             var replace = ""
-            if(it.first.contains("{local_offer}")){
+            if (it.first.contains("{local_offer}")) {
                 replace = "{local_offer}"
-                Icon(painter = painterResource(id = R.drawable.ic_local_offer), contentDescription = "Categoria", modifier = Modifier
-                    .size(24.dp)
-                    .padding(4.dp))
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_local_offer),
+                    contentDescription = "Categoria",
+                    modifier = Modifier
+                        .size(24.dp)
+                        .padding(4.dp)
+                )
             }
-            if(it.first.contains("-")){
+            if (it.first.contains("-")) {
                 replace = "-"
-                Icon(Icons.Default.Delete, contentDescription = "despesa", modifier = Modifier.size(24.dp).padding(4.dp))
+                Icon(
+                    Icons.Default.Delete,
+                    contentDescription = "despesa",
+                    modifier = Modifier
+                        .size(24.dp)
+                        .padding(4.dp)
+                )
             }
-            if(it.first.contains("+")){
+            if (it.first.contains("+")) {
                 replace = "+"
-                Icon(painter = painterResource(id = R.drawable.ic_add), contentDescription = "receita", modifier = Modifier.size(24.dp))
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_add),
+                    contentDescription = "receita",
+                    modifier = Modifier.size(24.dp)
+                )
             }
-            if(it.first.contains("{check_list}")){
+            if (it.first.contains("{check_list}")) {
                 replace = "{check_list}"
-                Icon(painter = painterResource(id = R.drawable.ic_check_all), contentDescription = "receita", modifier = Modifier.size(24.dp).padding(4.dp))
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_check_all),
+                    contentDescription = "receita",
+                    modifier = Modifier
+                        .size(24.dp)
+                        .padding(4.dp)
+                )
             }
-            if(it.first.contains("{list}")){
+            if (it.first.contains("{list}")) {
                 replace = "{list}"
-                Icon(painter = painterResource(id = R.drawable.ic_list), contentDescription = "receita", modifier = Modifier.size(24.dp).padding(4.dp))
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_list),
+                    contentDescription = "receita",
+                    modifier = Modifier
+                        .size(24.dp)
+                        .padding(4.dp)
+                )
             }
             Spacer(modifier = Modifier.width(12.dp))
-            Text(text = text.replace(replace,""), fontSize = 14.sp,color = MaterialTheme.colors.onBackground.copy(if(it.third)  1f else 0.3f))
+            Text(
+                text = text.replace(replace, ""),
+                fontSize = 14.sp,
+                color = MaterialTheme.colors.onBackground.copy(if (it.third) 1f else 0.3f)
+            )
         }
     }
 }
+
 var openUpdateItem by mutableStateOf(false)
 var openNewItem by mutableStateOf(false)
+
 @Composable
 fun ListValuesScreenPage(
     navController: NavController,
-    title:String,
-    listItem:List<RegistroViewModel>,
-    onNewRegister:(RegistroViewModel)->Unit,
-    onDeleteRegister:(List<Int>)->Unit,
-    onUpdateRegister:(RegistroViewModel)->Unit,
-    onLoadRegister:(Int,(RegistroViewModel)->Unit)->Unit,
-    Categorias:List<CategoriaViewModel>,
-    CategoriaDefault:CategoriaViewModel,
-    onLoadCategory:(Int,(CategoriaViewModel)->Unit)->Unit,
-    onDateUpdate:()->Unit
-){
-    var showAllCheckBox by remember {mutableStateOf(false)}
-    var openMoreOptions by remember{ mutableStateOf(false) }
+    title: String,
+    listItem: List<RegistroViewModel>,
+    onNewRegister: (RegistroViewModel) -> Unit,
+    onDeleteRegister: (List<Int>) -> Unit,
+    onUpdateRegister: (RegistroViewModel) -> Unit,
+    onLoadRegister: (Int, (RegistroViewModel) -> Unit) -> Unit,
+    Categorias: List<CategoriaViewModel>,
+    CategoriaDefault: CategoriaViewModel,
+    onLoadCategory: (Int, (CategoriaViewModel) -> Unit) -> Unit,
+    onDateUpdate: () -> Unit
+) {
+    var showAllCheckBox by remember { mutableStateOf(false) }
+    var openMoreOptions by remember { mutableStateOf(false) }
     var openViewItem by remember { mutableStateOf(false) }
-    var registerId by remember{ mutableStateOf(0) }
-    var CategoriaId by remember{ mutableStateOf(0) }
-    var Valor by remember{ mutableStateOf("") }
-    var Descricao by remember{ mutableStateOf("") }
+    var registerId by remember { mutableStateOf(0) }
+    var CategoriaId by remember { mutableStateOf(0) }
+    var Valor by remember { mutableStateOf("") }
+    var Descricao by remember { mutableStateOf("") }
     var CategoriaCor by remember { mutableStateOf(Color(HomeActivity.CategoriaDefault.Color)) }
-    var CategoriaNome by remember { mutableStateOf(HomeActivity.CategoriaDefault.Name)}
+    var CategoriaNome by remember { mutableStateOf(HomeActivity.CategoriaDefault.Name) }
     var openDialogExcluir by remember { mutableStateOf(false) }
-    if(listIdCheckeds.isEmpty()){ showAllCheckBox = false }
+    if (listIdCheckeds.isEmpty()) {
+        showAllCheckBox = false
+    }
     BackHandler {
-        if(showAllCheckBox) {
+        if (showAllCheckBox) {
             showAllCheckBox = false
             listIdCheckeds = emptyList()
-        }
-        else
+        } else
             navController.popBackStack()
     }
-    Column(Modifier.fillMaxSize()){
+    Column(Modifier.fillMaxSize()) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -125,8 +152,11 @@ fun ListValuesScreenPage(
         ) {
             Text(text = title, fontSize = 24.sp, modifier = Modifier.padding(start = 16.dp))
             Column {
-                IconButton(onClick = {openMoreOptions = true}) {
-                    Icon(painter = painterResource(id = R.drawable.ic_more_options_chorts), contentDescription = "")
+                IconButton(onClick = { openMoreOptions = true }) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_more_options_chorts),
+                        contentDescription = ""
+                    )
                 }
                 DropDownMoreOptions(
                     customItem = {
@@ -144,12 +174,12 @@ fun ListValuesScreenPage(
                                     openDialogExcluir = true
                                 }, listIdCheckeds.size > 0),
                                 Triple(stringResource(R.string.txt_editar), {
-                                    onLoadRegister(listIdCheckeds.first()){
+                                    onLoadRegister(listIdCheckeds.first()) {
                                         registerId = it.Id
-                                        CategoriaId = it.CategoriaFk?:1
+                                        CategoriaId = it.CategoriaFk ?: 1
                                         Valor = it.Value.toString()
                                         Descricao = it.Description
-                                        onLoadCategory(CategoriaId){
+                                        onLoadCategory(CategoriaId) {
                                             CategoriaCor = Color(it.Color)
                                             CategoriaNome = it.Name
                                         }
@@ -163,26 +193,28 @@ fun ListValuesScreenPage(
                         )
                     },
                     listOptions = emptyList(),
-                    enable = openMoreOptions) {
+                    enable = openMoreOptions
+                ) {
                     openMoreOptions = false
                 }
             }
         }
-        if(listItem.isEmpty())
+        if (listItem.isEmpty())
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
-            ){
+            ) {
                 Text(text = stringResource(R.string.txt_sem_registros))
             }
         else
-            LazyColumn(modifier = Modifier
-                .fillMaxSize()
-            ){
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
                 item {
                     Spacer(modifier = Modifier.height(32.dp))
                 }
-                items(listItem){ register->
+                items(listItem) { register ->
                     Column {
                         Row(
                             modifier = Modifier
@@ -250,7 +282,7 @@ fun ListValuesScreenPage(
                                     Checkbox(
                                         checked = listIdCheckeds.any { it == register.Id },
                                         onCheckedChange = {
-                                            if(it)
+                                            if (it)
                                                 listIdCheckeds += register.Id
                                             else
                                                 listIdCheckeds -= register.Id
@@ -279,10 +311,25 @@ fun ListValuesScreenPage(
             CategoriaNome = ""
         }
     )
-    DropUpUpdateRegister(enable = openUpdateItem, onDismiss = { openUpdateItem = false }, Categorias = Categorias, registerId = registerId, CategoriaId = CategoriaId, Valor = Valor, Descricao = Descricao, CategoriaCor = CategoriaCor, CategoriaNome = CategoriaNome, onCategoriaId = { CategoriaId = it }, onValor = { Valor = it }, onDescricao = { Descricao = it }, onCategoriaCor = { CategoriaCor = it }, onCategoriaNome = { CategoriaNome = it }, onActionsResult = { onUpdateRegister(it); listIdCheckeds = emptyList() })
+    DropUpUpdateRegister(
+        enable = openUpdateItem,
+        onDismiss = { openUpdateItem = false },
+        Categorias = Categorias,
+        registerId = registerId,
+        CategoriaId = CategoriaId,
+        Valor = Valor,
+        Descricao = Descricao,
+        CategoriaCor = CategoriaCor,
+        CategoriaNome = CategoriaNome,
+        onCategoriaId = { CategoriaId = it },
+        onValor = { Valor = it },
+        onDescricao = { Descricao = it },
+        onCategoriaCor = { CategoriaCor = it },
+        onCategoriaNome = { CategoriaNome = it },
+        onActionsResult = { onUpdateRegister(it); listIdCheckeds = emptyList() })
     DropUpNewRegister(
         enable = openNewItem,
-        onDismiss = {openNewItem = false},
+        onDismiss = { openNewItem = false },
         onActionsResult = onNewRegister,
         Categorias = Categorias,
         CategoriaDefault = CategoriaDefault,

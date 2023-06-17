@@ -79,7 +79,7 @@ fun ListCategoriasPage (
                                 }, true),
                                 Triple(stringResource(R.string.txt_excluir), {
                                     openDialogExcluir = true
-                                }, listIdCheckeds.size > 0),
+                                }, listIdCheckeds.isNotEmpty()),
                                 Triple(stringResource(R.string.txt_editar), {
                                     IdUpdateCategoria = listIdCheckeds.first()
                                     onLoadCategoria(IdUpdateCategoria){
@@ -174,9 +174,9 @@ fun ListCategoriasPage (
                                 checked = listIdCheckeds.any { it == item.Id },
                                 onCheckedChange = {
                                     if(it)
-                                        listIdCheckeds += item.Id
+                                        listIdCheckeds = listIdCheckeds + item.Id
                                     else
-                                        listIdCheckeds -= item.Id
+                                        listIdCheckeds = listIdCheckeds - item.Id
 
                                 }
                             )
