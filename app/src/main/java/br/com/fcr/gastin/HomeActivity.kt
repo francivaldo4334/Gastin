@@ -317,11 +317,11 @@ class HomeActivity : ComponentActivity() {
                 CategoriaDefault = it.toView()
             }
         })
+        setCategoryDefault(homeViewModel)
         var isFirstTime by sharedPreferences(Constants.IS_FIRST_TIME, true)
         if (isFirstTime) {
             lifecycleScope.launch(Dispatchers.IO) {
                 createNotificationChannel()
-                setCategoryDefault(homeViewModel)
                 scheduleNotification()
                 isFirstTime = false
             }
