@@ -1,12 +1,8 @@
 package br.com.fcr.gastin
 
-import android.annotation.SuppressLint
-import android.app.AlarmManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.PendingIntent
 import android.content.Context
-import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -27,6 +23,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import br.com.fcr.gastin.data.database.model.Categoria
+import br.com.fcr.gastin.data.sharedPreferencesBoolean
+import br.com.fcr.gastin.data.sharedPreferencesString
 //import br.com.fcr.gastin.data.notification.NotificationReceiver
 import br.com.fcr.gastin.ui.common.Constants
 import br.com.fcr.gastin.ui.page.HelpScreen
@@ -43,7 +41,6 @@ import br.com.fcr.gastin.ui.utils.Route
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.util.Calendar
 
 class HomeActivity : ComponentActivity() {
     companion object{
@@ -107,18 +104,15 @@ class HomeActivity : ComponentActivity() {
             (applicationContext as MyApplication).registroRepository,
             this
         )
-        val sharedPreferences = getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
-        val isFirstTime = sharedPreferences.getBoolean(Constants.IS_FIRST_TIME,true)
         val openNewRegister = intent.extras?.getBoolean(Constants.OPEN_REGISTRO,false)
         var InitRout = Route.SPLASH_SCREEN
         var isSplashScreen = true
-        Constants.IsDarkTheme = sharedPreferences.getBoolean(Constants.IS_DARKTHEM,false)
-        if(isFirstTime) {
+        var isDarkTheme by sharedPreferencesBoolean(Constants.IS_DARKTHEM)
+//        if(isFirstTime) {
 //            scheduleNotification()
 //            editor.putBoolean(Constants.IS_FIRST_TIME,false)
 //            editor.apply()
-        }
+//        }
         if(openNewRegister == true)
             InitRout = Route.HOME
         if(openNewRegister == true)
@@ -151,10 +145,11 @@ class HomeActivity : ComponentActivity() {
                 ) {
                     NavHost(modifier = Modifier.padding(top = statusBarHeigth),navController = navController, startDestination = InitRout){
                         composable(Route.SPLASH_SCREEN){
-                            SplashScreenPage(Constants.IsDarkTheme)
+                            SplashScreenPage(isDarkTheme)
                         }
                         composable(Route.HOME){
                             HomeScreenPage(
+                                isDarkTheme = isDarkTheme,
                                 openNewRegister = openNewRegister,
                                 navController = navController,
                                 valorDespesas = valorDespesas?:0,
@@ -171,9 +166,8 @@ class HomeActivity : ComponentActivity() {
                                 onSwitchTheme = {
                                     if(it) AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
                                     else AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-                                    editor.putBoolean(Constants.IS_DARKTHEM, it)
-                                    editor.apply()
-                                    Constants.IsDarkTheme = it
+                                    isDarkTheme = it
+                                    Constants.IsDarkTheme = isDarkTheme
                                 },
                                 onNewRegister = {isDespesa,item->
                                     homeViewModel.onEvent(RegisterEvent.insert(item.toModel(isDespesa)))
