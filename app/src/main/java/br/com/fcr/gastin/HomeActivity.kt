@@ -27,7 +27,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import br.com.fcr.gastin.data.database.model.Categoria
-import br.com.fcr.gastin.data.notification.NotificationReceiver
+//import br.com.fcr.gastin.data.notification.NotificationReceiver
 import br.com.fcr.gastin.ui.common.Constants
 import br.com.fcr.gastin.ui.page.HelpScreen
 import br.com.fcr.gastin.ui.page.HomeScreenPage
@@ -52,29 +52,29 @@ class HomeActivity : ComponentActivity() {
         val NOTIFICATION_ID = 1
     }
     private lateinit var navController:NavHostController
-    private fun scheduleNotification(){
-            val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val calendar = Calendar.getInstance().apply {
-            clear()
-            set(Calendar.HOUR_OF_DAY,21)
-            set(Calendar.MINUTE,0)
-            set(Calendar.SECOND,0)
-        }
-        val intent = Intent(applicationContext, NotificationReceiver::class.java)
-
-        val pendingIntent = PendingIntent.getBroadcast(
-            applicationContext,
-            NOTIFICATION_ID,
-            intent,
-            PendingIntent.FLAG_IMMUTABLE
-        )
-        alarmManager.setRepeating(
-            AlarmManager.RTC_WAKEUP,
-            calendar.timeInMillis,
-            1000 * 60 * 60 * 24,
-            pendingIntent
-        )
-    }
+//    private fun scheduleNotification(){
+//            val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+//        val calendar = Calendar.getInstance().apply {
+//            clear()
+//            set(Calendar.HOUR_OF_DAY,21)
+//            set(Calendar.MINUTE,0)
+//            set(Calendar.SECOND,0)
+//        }
+//        val intent = Intent(applicationContext, NotificationReceiver::class.java)
+//
+//        val pendingIntent = PendingIntent.getBroadcast(
+//            applicationContext,
+//            NOTIFICATION_ID,
+//            intent,
+//            PendingIntent.FLAG_IMMUTABLE
+//        )
+//        alarmManager.setRepeating(
+//            AlarmManager.RTC_WAKEUP,
+//            calendar.timeInMillis,
+//            1000 * 60 * 60 * 24,
+//            pendingIntent
+//        )
+//    }
     private fun createNotificationChannel(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channelName = "Gatin_Pro"
@@ -115,9 +115,9 @@ class HomeActivity : ComponentActivity() {
         var isSplashScreen = true
         Constants.IsDarkTheme = sharedPreferences.getBoolean(Constants.IS_DARKTHEM,false)
         if(isFirstTime) {
-            scheduleNotification()
-            editor.putBoolean(Constants.IS_FIRST_TIME,false)
-            editor.apply()
+//            scheduleNotification()
+//            editor.putBoolean(Constants.IS_FIRST_TIME,false)
+//            editor.apply()
         }
         if(openNewRegister == true)
             InitRout = Route.HOME
