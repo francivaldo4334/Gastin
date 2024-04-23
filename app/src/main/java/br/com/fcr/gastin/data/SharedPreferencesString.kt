@@ -5,6 +5,23 @@ import androidx.activity.ComponentActivity
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
+class SharedPreferencesInt(
+    private val context: Context,
+    private val name: String,
+    private val defaultValues: Int
+) : ReadWriteProperty<Any?, Int> {
+    private val sharedPreferences by lazy {
+        context.getSharedPreferences("Preferences", ComponentActivity.MODE_PRIVATE)
+    }
+
+    override fun getValue(thisRef: Any?, property: KProperty<*>): Int {
+        return sharedPreferences.getInt(name,defaultValues)
+    }
+
+    override fun setValue(thisRef: Any?, property: KProperty<*>, value: Int) {
+        sharedPreferences.edit().putInt(name,value).apply()
+    }
+}
 class SharedPreferencesString(
     private val context: Context,
     private val name: String,
@@ -39,5 +56,6 @@ class SharedPreferencesBoolean(
         sharedPreferences.edit().putBoolean(name,value).apply()
     }
 }
-fun Context.sharedPreferencesString(name: String, defaultValues: String = "") = SharedPreferencesString(this,name, defaultValues)
-fun Context.sharedPreferencesBoolean(name: String, defaultValues: Boolean = false) = SharedPreferencesBoolean(this,name, defaultValues)
+fun Context.sharedPreferences(name: String, defaultValues: String = "") = SharedPreferencesString(this,name, defaultValues)
+fun Context.sharedPreferences(name: String, defaultValues: Boolean = false) = SharedPreferencesBoolean(this,name, defaultValues)
+fun Context.sharedPreferences(name: String, defaultValues: Int = 0) = SharedPreferencesInt(this,name,defaultValues)
