@@ -93,9 +93,6 @@ fun HomeScreenPage(
         val week = calendar.get(Calendar.DAY_OF_WEEK)
         Triple(it.valor, week.toWeekString(context), it.date.toStringDate())
     }
-    var _isDarkTheme by remember {
-        mutableStateOf(isDarkTheme)
-    }
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -118,10 +115,9 @@ fun HomeScreenPage(
                     ) {
                         Text(text = stringResource(R.string.txt_modo_escuro), fontSize = 14.sp)
                         Switch(
-                            checked = _isDarkTheme,
+                            checked = Constants.IsDarkTheme,
                             onCheckedChange = {
-                                onSwitchTheme(_isDarkTheme)
-                                _isDarkTheme = it
+                                onSwitchTheme(it)
                             },
                             colors = SwitchDefaults.colors(
                                 uncheckedThumbColor = MaterialTheme.colors.onBackground

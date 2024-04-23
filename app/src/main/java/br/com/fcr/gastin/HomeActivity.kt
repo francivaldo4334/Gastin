@@ -94,7 +94,7 @@ class HomeActivity : ComponentActivity() {
         }
     }
 
-    private fun setCategoriaDefault(homeViewModel: HomeViewModel) {
+    private fun setCategoryDefault(homeViewModel: HomeViewModel) {
         homeViewModel.onEvent(CategoriaEvent.get(1) {
             if (it == null) {
                 homeViewModel.onEvent(
@@ -120,6 +120,7 @@ class HomeActivity : ComponentActivity() {
         var InitRout = Route.SPLASH_SCREEN
         var isSplashScreen = true
         var isDarkTheme by sharedPreferences(Constants.IS_DARKTHEM, false)
+        Constants.IsDarkTheme = isDarkTheme
         if (openNewRegister == true)
             InitRout = Route.HOME
         if (openNewRegister == true)
@@ -320,7 +321,7 @@ class HomeActivity : ComponentActivity() {
         if (isFirstTime) {
             lifecycleScope.launch(Dispatchers.IO) {
                 createNotificationChannel()
-                setCategoriaDefault(homeViewModel)
+                setCategoryDefault(homeViewModel)
                 scheduleNotification()
                 isFirstTime = false
             }
