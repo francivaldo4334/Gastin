@@ -11,7 +11,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -71,7 +71,7 @@ private fun Item(isDespesas:Boolean,onClick:()->Unit){
                     else
                         R.drawable.ic_add),
                     contentDescription = "",
-                    tint = MaterialTheme.colors.background
+                    tint = MaterialTheme.colorScheme.background
                 )
             }
             Spacer(modifier = Modifier.size(16.dp))

@@ -1,7 +1,7 @@
 package br.com.fcr.gastin.ui.page.components
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.res.stringResource
@@ -17,8 +17,8 @@ fun HomeScreenInformes(valorInit:Int, valorSaldo:Int, valorPrevisto:Int){
         horizontalArrangement = Arrangement.Center
     ) {
         Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = stringResource(R.string.txt_recebido), fontSize = 12.sp,color = MaterialTheme.colors.onBackground.copy(0.5f))
-            Text(text = valorInit.toMonetaryString(), fontSize = 14.sp,color = MaterialTheme.colors.onBackground.copy(0.5f))
+            Text(text = stringResource(R.string.txt_recebido), fontSize = 12.sp,color = MaterialTheme.colorScheme.onBackground.copy(0.5f))
+            Text(text = valorInit.toMonetaryString(), fontSize = 14.sp,color = MaterialTheme.colorScheme.onBackground.copy(0.5f))
         }
         Spacer(modifier = Modifier.size(16.dp))
         Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {

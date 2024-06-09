@@ -10,8 +10,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -55,7 +55,7 @@ fun BoxDropUpContent (enable:Boolean, onDismiss:()->Unit,content:@Composable Box
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(topEnd = 16.dp, topStart = 16.dp))
-                        .background(MaterialTheme.colors.background),
+                        .background(MaterialTheme.colorScheme.background),
                     content = content
                 )
             }

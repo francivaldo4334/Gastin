@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -150,7 +150,7 @@ fun ListCategoriasPage (
                                 Text(
                                     text = item.Name,
                                     fontSize = 14.sp,
-                                    color = MaterialTheme.colors.onBackground,
+                                    color = MaterialTheme.colorScheme.onBackground,
                                     maxLines = 1,
                                     modifier = Modifier.fillMaxWidth()
                                 )
@@ -158,7 +158,7 @@ fun ListCategoriasPage (
                                 Text(
                                     text = item.Description,
                                     fontSize = 12.sp,
-                                    color = MaterialTheme.colors.onBackground.copy(0.5f),
+                                    color = MaterialTheme.colorScheme.onBackground.copy(0.5f),
                                     maxLines = 1,
                                     modifier = Modifier.fillMaxWidth()
                                 )

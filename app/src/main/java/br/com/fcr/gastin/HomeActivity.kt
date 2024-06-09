@@ -13,15 +13,13 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
-import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -41,9 +39,6 @@ import br.com.fcr.gastin.ui.page.viewmodels.toModel
 import br.com.fcr.gastin.ui.page.viewmodels.toView
 import br.com.fcr.gastin.ui.theme.GastinTheme
 import br.com.fcr.gastin.ui.utils.Route
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import java.util.Calendar
 
 class HomeActivity : ComponentActivity() {
@@ -55,76 +50,12 @@ class HomeActivity : ComponentActivity() {
 
     private lateinit var navController: NavHostController
 
-    private fun scheduleNotification() {
-        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val calendar = Calendar.getInstance().apply {
-            clear()
-            set(Calendar.HOUR_OF_DAY, 21)
-            set(Calendar.MINUTE, 0)
-            set(Calendar.SECOND, 0)
-        }
-        val intent = Intent(applicationContext, NotificationReceiver::class.java)
-
-        val pendingIntent = PendingIntent.getBroadcast(
-            applicationContext,
-            NOTIFICATION_ID,
-            intent,
-            PendingIntent.FLAG_IMMUTABLE
-        )
-        alarmManager.setRepeating(
-            AlarmManager.RTC_WAKEUP,
-            calendar.timeInMillis,
-            1000 * 60 * 60 * 24,
-            pendingIntent
-        )
-    }
-
-    private fun createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channelName = "Gatin_Pro"
-            val descriptionText = "canal de notificacao Gastin"
-            val important = NotificationManager.IMPORTANCE_DEFAULT
-            val channel =
-                NotificationChannel(CHANNEL_ID, channelName, important).apply {
-                    description = descriptionText
-                }
-            val notificationManager =
-                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(channel)
-        }
-    }
-
-    private fun setCategoryDefault(homeViewModel: HomeViewModel) {
-        homeViewModel.onEvent(CategoriaEvent.get(1) {
-            if (it == null) {
-                homeViewModel.onEvent(
-                    CategoriaEvent.insert(
-                        Categoria(
-                            Name = getString(R.string.txt_indefinido),
-                            Color = 0xFFD4D4D4
-                        )
-                    )
-                )
-            }
-        })
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val homeViewModel = HomeViewModel(
-            (applicationContext as MyApplication).categoriaRepository,
-            (applicationContext as MyApplication).registroRepository,
-            this
-        )
+        val homeViewModel = ViewModelProvider(this)[HomeViewModel::class.java]
         val openNewRegister = intent.extras?.getBoolean(Constants.OPEN_REGISTRO, false)
-        var InitRout = Route.SPLASH_SCREEN
-        var isSplashScreen = true
         var isDarkTheme by sharedPreferences(Constants.IS_DARKTHEM, false)
         Constants.IsDarkTheme = isDarkTheme
-        if (openNewRegister == true)
-            InitRout = Route.HOME
-        if (openNewRegister == true)
-            isSplashScreen = false
         setContent {
             //TODO: listas
             val listDespesas by homeViewModel.despesas.collectAsState()
@@ -141,25 +72,16 @@ class HomeActivity : ComponentActivity() {
             val graphicInforms by homeViewModel.graphicInforms.collectAsState()
             navController = rememberNavController()
             GastinTheme(Constants.IsDarkTheme) {//Gestao de gasto
-                val statusBarHeigth = with(LocalDensity.current) {
-                    val resourceId =
-                        resources.getIdentifier("status_bar_height", "dimen", "android")
-                    val heightPixels = resources.getDimensionPixelSize(resourceId)
-                    heightPixels.toDp()
-                }
                 Surface(
                     modifier = Modifier
                         .fillMaxSize(),
-                    color = MaterialTheme.colors.background
+                    color = MaterialTheme.colorScheme.background
                 ) {
                     NavHost(
-                        modifier = Modifier.padding(top = statusBarHeigth),
+                        modifier = Modifier.systemBarsPadding(),
                         navController = navController,
-                        startDestination = InitRout
+                        startDestination = Route.HOME
                     ) {
-                        composable(Route.SPLASH_SCREEN) {
-                            SplashScreenPage(isDarkTheme)
-                        }
                         composable(Route.HOME) {
                             HomeScreenPage(
                                 isDarkTheme = isDarkTheme,
@@ -304,13 +226,6 @@ class HomeActivity : ComponentActivity() {
                     }
                 }
             }
-            if (isSplashScreen) {
-                LaunchedEffect(Unit) {
-                    delay(2000)
-                    navController.navigate(Route.HOME) { popUpTo(0) }
-                    isSplashScreen = false
-                }
-            }
         }
         homeViewModel.onEvent(CategoriaEvent.get(1) {
             it?.let {
@@ -318,13 +233,64 @@ class HomeActivity : ComponentActivity() {
             }
         })
         setCategoryDefault(homeViewModel)
-        var isFirstTime by sharedPreferences(Constants.IS_FIRST_TIME, true)
-        if (isFirstTime) {
-            lifecycleScope.launch(Dispatchers.IO) {
-                createNotificationChannel()
-                scheduleNotification()
-                isFirstTime = false
-            }
+        createNotificationChannel()
+        scheduleNotification()
+    }
+
+    private fun scheduleNotification() {
+        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent = Intent(this, NotificationReceiver::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(
+            this,
+            NOTIFICATION_ID,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
+        val calendar = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, 21)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
         }
+
+        if (Calendar.getInstance().after(calendar)) {
+            calendar.set(Calendar.DAY_OF_YEAR, 1)
+        }
+        alarmManager.setRepeating(
+            AlarmManager.RTC_WAKEUP,
+            calendar.timeInMillis,
+            AlarmManager.INTERVAL_DAY,
+            pendingIntent
+        )
+    }
+
+    private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channelName = "Gatin_Pro"
+            val descriptionText = "canal de notificacao Gastin"
+            val important = NotificationManager.IMPORTANCE_DEFAULT
+            val channel =
+                NotificationChannel(CHANNEL_ID, channelName, important).apply {
+                    description = descriptionText
+                }
+            val notificationManager =
+                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
+    }
+
+    private fun setCategoryDefault(homeViewModel: HomeViewModel) {
+        homeViewModel.onEvent(CategoriaEvent.get(1) {
+            if (it == null) {
+                homeViewModel.onEvent(
+                    CategoriaEvent.insert(
+                        Categoria(
+                            Name = getString(R.string.txt_indefinido),
+                            Color = 0xFFD4D4D4
+                        )
+                    )
+                )
+            }
+        })
     }
 }

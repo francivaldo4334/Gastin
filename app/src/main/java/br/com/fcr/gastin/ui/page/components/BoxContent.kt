@@ -6,7 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -21,8 +21,8 @@ fun BoxContent(modifier: Modifier = Modifier.fillMaxSize(),enablePadding:Boolean
             shape = RoundedCornerShape(16.dp),
             clip = true
         )
-        .background(MaterialTheme.colors.surface)
-        .border(1.dp, MaterialTheme.colors.onBackground.copy(0.1f), RoundedCornerShape(16.dp))
+        .background(MaterialTheme.colorScheme.surface)
+        .border(1.dp, MaterialTheme.colorScheme.onBackground.copy(0.1f), RoundedCornerShape(16.dp))
         .padding(if (enablePadding) 16.dp else 0.dp)
     ){
         content()

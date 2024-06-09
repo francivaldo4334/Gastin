@@ -5,7 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.draw.clip
@@ -43,7 +43,7 @@ private fun item(isDespesas:Boolean,value:Int,onClick:()->Unit){
                     else
                         R.drawable.ic_add),
                     contentDescription = "",
-                    tint = MaterialTheme.colors.background
+                    tint = MaterialTheme.colorScheme.background
                 )
             }
             Spacer(modifier = Modifier.size(16.dp))

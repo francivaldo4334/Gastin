@@ -1,6 +1,7 @@
 package br.com.fcr.gastin.data
 
 import android.content.Context
+import android.content.Context.MODE_PRIVATE
 import androidx.activity.ComponentActivity
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
@@ -11,7 +12,7 @@ class SharedPreferencesInt(
     private val defaultValues: Int
 ) : ReadWriteProperty<Any?, Int> {
     private val sharedPreferences by lazy {
-        context.getSharedPreferences("Preferences", ComponentActivity.MODE_PRIVATE)
+        context.getSharedPreferences("Preferences", MODE_PRIVATE)
     }
 
     override fun getValue(thisRef: Any?, property: KProperty<*>): Int {
@@ -28,7 +29,7 @@ class SharedPreferencesString(
     private val defaultValues: String
 ) : ReadWriteProperty<Any?, String> {
     private val sharedPreferences by lazy {
-        context.getSharedPreferences("Preferences", ComponentActivity.MODE_PRIVATE)
+        context.getSharedPreferences("Preferences", MODE_PRIVATE)
     }
 
     override fun getValue(thisRef: Any?, property: KProperty<*>): String {
@@ -45,7 +46,7 @@ class SharedPreferencesBoolean(
     private val defaultValues: Boolean
 ) : ReadWriteProperty<Any?, Boolean> {
     private val sharedPreferences by lazy {
-        context.getSharedPreferences("Preferences", ComponentActivity.MODE_PRIVATE)
+        context.getSharedPreferences("Preferences", MODE_PRIVATE)
     }
 
     override fun getValue(thisRef: Any?, property: KProperty<*>): Boolean {

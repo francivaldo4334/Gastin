@@ -2,7 +2,7 @@ package br.com.fcr.gastin.ui.page.components
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -11,7 +11,7 @@ import br.com.fcr.gastin.ui.utils.drawPieSlice
 fun PizzaChart(pizzalist:List<Triple<String,Int, Color>>, modifier: Modifier = Modifier.fillMaxSize()){
     val totalPizzas = pizzalist.sumOf { it.second }
     var currentAngle = 0f
-    val strokeColor = MaterialTheme.colors.background
+    val strokeColor = MaterialTheme.colorScheme.background
     Canvas(modifier = modifier){
         if(pizzalist.isEmpty()){
             drawPieSlice(

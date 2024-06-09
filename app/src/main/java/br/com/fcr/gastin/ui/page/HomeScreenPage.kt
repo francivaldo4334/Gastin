@@ -14,12 +14,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.FloatingActionButton
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Switch
-import androidx.compose.material.SwitchDefaults
-import androidx.compose.material.Text
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -120,7 +120,7 @@ fun HomeScreenPage(
                                 onSwitchTheme(it)
                             },
                             colors = SwitchDefaults.colors(
-                                uncheckedThumbColor = MaterialTheme.colors.onBackground
+                                uncheckedThumbColor = MaterialTheme.colorScheme.onBackground
                             )
                         )
                     }
@@ -193,7 +193,7 @@ fun HomeScreenPage(
                                         onInformsTotal(it)
                                     },
                                     colors = SwitchDefaults.colors(
-                                        uncheckedThumbColor = MaterialTheme.colors.onBackground
+                                        uncheckedThumbColor = MaterialTheme.colorScheme.onBackground
                                     )
                                 )
                             }
@@ -234,11 +234,11 @@ fun HomeScreenPage(
                 .align(Alignment.BottomEnd)
                 .border(
                     1.dp,
-                    MaterialTheme.colors.onBackground.copy(0.1f),
+                    MaterialTheme.colorScheme.onBackground.copy(0.1f),
                     CircleShape
                 )
                 .clip(CircleShape),
-            backgroundColor = MaterialTheme.colors.surface,
+            containerColor = MaterialTheme.colorScheme.surface,
             onClick = {
                 openDropUpNewRegister = true
             }
@@ -248,7 +248,7 @@ fun HomeScreenPage(
                 contentDescription = "icone adicioanr",
                 modifier = Modifier
                     .size(24.dp),
-                tint = MaterialTheme.colors.onBackground
+                tint = MaterialTheme.colorScheme.onBackground
             )
         }
     }

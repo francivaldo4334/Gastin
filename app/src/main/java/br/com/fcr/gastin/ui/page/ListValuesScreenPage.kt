@@ -8,9 +8,9 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -99,7 +99,7 @@ fun listOptions(listOptions: List<Triple<String, () -> Unit, Boolean>>, onDismis
             Text(
                 text = text.replace(replace, ""),
                 fontSize = 14.sp,
-                color = MaterialTheme.colors.onBackground.copy(if (it.third) 1f else 0.3f)
+                color = MaterialTheme.colorScheme.onBackground.copy(if (it.third) 1f else 0.3f)
             )
         }
     }
@@ -258,7 +258,7 @@ fun ListValuesScreenPage(
                                     Text(
                                         text = register.Description,
                                         fontSize = 12.sp,
-                                        color = MaterialTheme.colors.onBackground.copy(0.5f),
+                                        color = MaterialTheme.colorScheme.onBackground.copy(0.5f),
                                         maxLines = 1,
                                         modifier = Modifier.fillMaxWidth()
                                     )
@@ -266,7 +266,7 @@ fun ListValuesScreenPage(
                                     Text(
                                         text = register.Date,
                                         fontSize = 12.sp,
-                                        color = MaterialTheme.colors.onBackground.copy(0.5f),
+                                        color = MaterialTheme.colorScheme.onBackground.copy(0.5f),
                                         maxLines = 1
                                     )
                                 }
