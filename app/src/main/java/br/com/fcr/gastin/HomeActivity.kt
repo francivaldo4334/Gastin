@@ -1,6 +1,7 @@
 package br.com.fcr.gastin
 
 //import br.com.fcr.gastin.data.notification.NotificationReceiver
+import android.annotation.SuppressLint
 import android.app.AlarmManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -233,8 +234,18 @@ class HomeActivity : ComponentActivity() {
             }
         })
         setCategoryDefault(homeViewModel)
-        createNotificationChannel()
-        scheduleNotification()
+
+        val intent = Intent(this, NotificationReceiver::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(
+            this,
+            NOTIFICATION_ID,
+            intent,
+            PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE
+        )
+        if (pendingIntent == null){
+            createNotificationChannel()
+            scheduleNotification()
+        }
     }
 
     private fun scheduleNotification() {
@@ -244,7 +255,7 @@ class HomeActivity : ComponentActivity() {
             this,
             NOTIFICATION_ID,
             intent,
-            PendingIntent.FLAG_UPDATE_CURRENT
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
         val calendar = Calendar.getInstance().apply {

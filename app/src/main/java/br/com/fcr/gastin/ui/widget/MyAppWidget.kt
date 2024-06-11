@@ -2,15 +2,8 @@ package br.com.fcr.gastin.ui.widget
 
 import android.app.Application
 import android.content.Context
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -39,10 +32,10 @@ import br.com.fcr.gastin.ui.utils.toMonetaryString
 class MyAppWidget : GlanceAppWidget() {
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
-        val homeViewModel = HomeViewModel(context.applicationContext as Application)
+//        val homeViewModel = HomeViewModel(context.applicationContext as Application)
         provideContent {
-            val valorDespesas by homeViewModel.valorDespesas.collectAsState()
-            val valorReceitas by homeViewModel.valorReceitas.collectAsState()
+//            val valorDespesas by homeViewModel.valorDespesas.collectAsState()
+//            val valorReceitas by homeViewModel.valorReceitas.collectAsState()
 
             @Composable
             @GlanceComposable
@@ -74,25 +67,25 @@ class MyAppWidget : GlanceAppWidget() {
                         Box(
                             modifier = GlanceModifier
                                 .width(24.dp)
-                                .height(24.dp)
-                                .background(
-                                    if (isDespesas)
-                                        Color.Red.copy(0.5f)
-                                    else
-                                        Color.Green.copy(0.5f)
-                                ),
+                                .height(24.dp),
+//                                .background(
+//                                    if (isDespesas)
+//                                        Color.Red.copy(0.5f)
+//                                    else
+//                                        Color.Green.copy(0.5f)
+//                                ),
                             contentAlignment = Alignment.Center
                         ) {
-                            Icon(
-                                painter = painterResource(
-                                    id = if (isDespesas)
-                                        R.drawable.ic_minus
-                                    else
-                                        R.drawable.ic_add
-                                ),
-                                contentDescription = "",
-                                tint = MaterialTheme.colorScheme.background
-                            )
+//                            Icon(
+//                                painter = painterResource(
+//                                    id = if (isDespesas)
+//                                        R.drawable.ic_minus
+//                                    else
+//                                        R.drawable.ic_add
+//                                ),
+//                                contentDescription = "",
+//                                tint = MaterialTheme.colorScheme.background
+//                            )
                         }
                         Spacer(modifier = GlanceModifier.width(16.dp).height(16.dp))
                         Text(
@@ -110,7 +103,7 @@ class MyAppWidget : GlanceAppWidget() {
                     )
                 }
             }
-            // create your AppWidget here
+//             create your AppWidget here
             BoxContent(
                 enablePadding = false,
                 modifier = GlanceModifier
@@ -119,18 +112,19 @@ class MyAppWidget : GlanceAppWidget() {
                     .padding(bottom = 16.dp)
             ) {
                 Column(GlanceModifier.fillMaxWidth()) {
-                    androidx.compose.material3.Text(
+                    Text(
                         text = stringResource(R.string.txt_visao_geral),
-                        fontSize = 14.sp,
-                        modifier = Modifier
+                        style = TextDefaults.defaultTextStyle.copy(fontSize = 14.sp),
+                        modifier = GlanceModifier
                             .padding(horizontal = 16.dp)
                             .padding(top = 16.dp)
                     )
                     Spacer(modifier = GlanceModifier.width(16.dp))
-                    item(isDespesas = true, value = valorDespesas?:0) {}
-                    item(isDespesas = false, value = valorReceitas?:0) {}
+//                    item(isDespesas = true, value = valorDespesas?:0) {}
+//                    item(isDespesas = false, value = valorReceitas?:0) {}
                 }
             }
+//            Text(text = "OK")
         }
     }
 }
