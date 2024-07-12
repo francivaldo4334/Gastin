@@ -185,4 +185,5 @@ Sexta-feira
     <string name="a_data_de_fim_n_o_pode_ser_menor_que_a_data_de_in_cio">A data de fim não pode ser menor que a data de início!</string>
     <string name="date_de_in_cio">Date de início</string>
     <string name="data_de_fim">Data de fim</string>
+    <string name="ok">Ok</string>
 </resources>

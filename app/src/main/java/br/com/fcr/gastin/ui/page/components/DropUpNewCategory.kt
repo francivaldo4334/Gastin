@@ -26,6 +26,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.DisplayMode
@@ -102,10 +103,10 @@ fun DropUpNewCategory(
     var isEverDays by remember {
         mutableStateOf(true)
     }
-    val stateDateInit = rememberDatePickerState(
+    var stateDateInit = rememberDatePickerState(
         initialDisplayMode = DisplayMode.Input
     )
-    val stateDateEnd = rememberDatePickerState(
+    var stateDateEnd = rememberDatePickerState(
         initialDisplayMode = DisplayMode.Input
     )
     val localOnDismiss = {
@@ -263,8 +264,10 @@ fun DropUpNewCategory(
                                                     }
                                                 }
                                             }
-                                        textDateSelector(initialDate,
-                                            stringResource(R.string.in_cil)) {
+                                        textDateSelector(
+                                            initialDate,
+                                            stringResource(R.string.in_cil)
+                                        ) {
                                             openDialogDatePickerInit = true
                                         }
                                         textDateSelector(endDate, stringResource(R.string.fim)) {
@@ -324,10 +327,11 @@ fun DropUpNewCategory(
                                     context.getString(R.string.informe_um_nome_para_a_categoria)
 
                             isRecurrent && !isEverDays ->
-                                when{
+                                when {
                                     initialDate == null || endDate == null ->
                                         messageError =
                                             context.getString(R.string.informe_as_datas_de_in_cio_e_fim_da_vig_ncia)
+
                                     endDate!!.isBefore(initialDate) ->
                                         messageError =
                                             context.getString(R.string.a_data_de_fim_n_o_pode_ser_menor_que_a_data_de_in_cio)
@@ -340,7 +344,12 @@ fun DropUpNewCategory(
                                     Description = descripton,
                                     Name = name,
                                     Date = "",
-                                    Color = colorToLongHex(colorSelect)
+                                    Color = colorToLongHex(colorSelect),
+                                    isRecurrent = isRecurrent,
+                                    isEverDays = isEverDays,
+                                    startDate = initialDate?.format(DateTimeFormatter.ofPattern("dd/MM/YYYY")),
+                                    endDate = endDate?.format(DateTimeFormatter.ofPattern("dd/MM/YYYY"))
+
                                 )
                             )
                             localOnDismiss()
@@ -360,19 +369,19 @@ fun DropUpNewCategory(
     val datePickerDialog: @Composable (onDismissRequest: () -> Unit, state: DatePickerState, title: String, onDate: (LocalDate) -> Unit) -> Unit =
         { onDismissRequest, state, title, onDate ->
             Dialog(onDismissRequest = onDismissRequest) {
-                Box(
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp)
                         .clip(RoundedCornerShape(16.dp))
-                        .background(MaterialTheme.colorScheme.surface)
+                        .background(MaterialTheme.colorScheme.surface),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     DatePicker(
                         dateValidator = {
                             val date = Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault())
                                 .toLocalDate()
                             onDate(date)
-                            onDismissRequest()
                             true
                         },
                         state = state,
@@ -387,8 +396,16 @@ fun DropUpNewCategory(
                                 fontSize = 18.sp
                             )
                         },
-                        title = null,
+                        title = null
                     )
+                    Button(
+                        onClick = onDismissRequest,
+                        modifier = Modifier
+                            .fillMaxWidth().padding(bottom = 12.dp).padding(horizontal = 12.dp),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text(text = stringResource(R.string.ok))
+                    }
                 }
             }
         }
