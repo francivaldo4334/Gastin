@@ -6,5 +6,5 @@ import br.com.fcr.gastin.ui.widget.MyAppWidget
 
 //class MyAppWidgetReceiver : GlanceAppWidgetReceiver() {
 //    override val glanceAppWidget: GlanceAppWidget = MyAppWidget()
-
+// TODO: Criar widget de criação rapida.
 //}
