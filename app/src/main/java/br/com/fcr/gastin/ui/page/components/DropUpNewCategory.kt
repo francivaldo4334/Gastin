@@ -102,20 +102,26 @@ fun DropUpNewCategory(
     var isEverDays by remember {
         mutableStateOf(true)
     }
-    var stateDateInit = rememberDatePickerState(
+    val stateDateInit = rememberDatePickerState(
         initialDisplayMode = DisplayMode.Input
     )
-
-    var stateDateEnd = rememberDatePickerState(
+    val stateDateEnd = rememberDatePickerState(
         initialDisplayMode = DisplayMode.Input
     )
+    val localOnDismiss = {
+        onDismiss.invoke()
+        initialDate = null
+        endDate = null
+        isRecurrent = false
+        isEverDays = true
+    }
     var openDialogDatePickerInit by remember {
         mutableStateOf(false)
     }
     var openDialogDatePickerEnd by remember {
         mutableStateOf(false)
     }
-    BoxDropUpContent(enable = enable, onDismiss = onDismiss) {
+    BoxDropUpContent(enable = enable, onDismiss = localOnDismiss) {
         LaunchedEffect(key1 = Unit) {
             delay(500)
             focusValue.requestFocus()
@@ -218,7 +224,7 @@ fun DropUpNewCategory(
                                     Divider()
                                     Spacer(modifier = Modifier.height(12.dp))
                                     Text(
-                                        text = "Vigência:",
+                                        text = stringResource(R.string.vig_ncia),
                                         fontSize = 14.sp,
                                         modifier = Modifier.padding(start = 16.dp)
                                     )
@@ -257,10 +263,11 @@ fun DropUpNewCategory(
                                                     }
                                                 }
                                             }
-                                        textDateSelector(initialDate, "Inicíl:") {
+                                        textDateSelector(initialDate,
+                                            stringResource(R.string.in_cil)) {
                                             openDialogDatePickerInit = true
                                         }
-                                        textDateSelector(endDate, "Fim:") {
+                                        textDateSelector(endDate, stringResource(R.string.fim)) {
                                             openDialogDatePickerEnd = true
                                         }
                                     }
@@ -313,10 +320,18 @@ fun DropUpNewCategory(
                         var messageError = ""
                         when {
                             name.isBlank() ->
-                                messageError = "Informe um nome para a categoria!"
+                                messageError =
+                                    context.getString(R.string.informe_um_nome_para_a_categoria)
 
-                            isRecurrent && !isEverDays && (initialDate == null || endDate == null) ->
-                                messageError = "Informe as data de inicil e fim da vigencia!"
+                            isRecurrent && !isEverDays ->
+                                when{
+                                    initialDate == null || endDate == null ->
+                                        messageError =
+                                            context.getString(R.string.informe_as_datas_de_in_cio_e_fim_da_vig_ncia)
+                                    endDate!!.isBefore(initialDate) ->
+                                        messageError =
+                                            context.getString(R.string.a_data_de_fim_n_o_pode_ser_menor_que_a_data_de_in_cio)
+                                }
                         }
                         if (messageError.isEmpty()) {
                             onActionsResult(
@@ -328,7 +343,7 @@ fun DropUpNewCategory(
                                     Color = colorToLongHex(colorSelect)
                                 )
                             )
-                            onDismiss()
+                            localOnDismiss()
                         } else {
                             Toast.makeText(context, messageError, Toast.LENGTH_LONG).show()
                         }
@@ -340,7 +355,7 @@ fun DropUpNewCategory(
         }
     }
     BackHandler(enabled = enable) {
-        onDismiss()
+        localOnDismiss()
     }
     val datePickerDialog: @Composable (onDismissRequest: () -> Unit, state: DatePickerState, title: String, onDate: (LocalDate) -> Unit) -> Unit =
         { onDismissRequest, state, title, onDate ->
@@ -357,6 +372,7 @@ fun DropUpNewCategory(
                             val date = Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault())
                                 .toLocalDate()
                             onDate(date)
+                            onDismissRequest()
                             true
                         },
                         state = state,
@@ -364,7 +380,9 @@ fun DropUpNewCategory(
                         headline = {
                             Text(
                                 text = title,
-                                modifier = Modifier.fillMaxWidth().padding(12.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(12.dp),
                                 textAlign = TextAlign.Center,
                                 fontSize = 18.sp
                             )
@@ -378,7 +396,7 @@ fun DropUpNewCategory(
         datePickerDialog(
             { openDialogDatePickerInit = false },
             stateDateInit,
-            "Date de inicil",
+            stringResource(R.string.date_de_in_cio),
         ) {
             initialDate = it
         }
@@ -387,7 +405,7 @@ fun DropUpNewCategory(
         datePickerDialog(
             { openDialogDatePickerEnd = false },
             stateDateEnd,
-            "Date de fim",
+            stringResource(R.string.data_de_fim),
         ) {
             endDate = it
         }
