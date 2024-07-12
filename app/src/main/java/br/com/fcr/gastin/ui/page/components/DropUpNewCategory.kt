@@ -2,17 +2,20 @@ package br.com.fcr.gastin.ui.page.components
 
 import android.annotation.SuppressLint
 import android.os.Build
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -24,11 +27,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.DisplayMode
+import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -46,10 +52,12 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -71,20 +79,19 @@ import java.time.format.DateTimeFormatter
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DropUpNewCategory(
-    enable: Boolean,
-    onDismiss: () -> Unit,
-    onActionsResult: (CategoriaViewModel) -> Unit
+    enable: Boolean, onDismiss: () -> Unit, onActionsResult: (CategoriaViewModel) -> Unit
 ) {
+    val context = LocalContext.current
     val focusManeger = LocalFocusManager.current
-    val Density = LocalDensity.current
-    var Nome by remember { mutableStateOf("") }
-    var Descricao by remember { mutableStateOf("") }
+    val density = LocalDensity.current
+    var name by remember { mutableStateOf("") }
+    var descripton by remember { mutableStateOf("") }
     var colorSelect by remember { mutableStateOf(Color(0xFFD4D4D4)) }
     var openDropDownColorPicker by remember { mutableStateOf(false) }
     val focusValue = remember { FocusRequester() }
     val focusDesc = remember { FocusRequester() }
     var isRecurrent by remember {
-        mutableStateOf(true) // TODO: set initial false
+        mutableStateOf(false)
     }
     var initialDate by remember {
         mutableStateOf<LocalDate?>(null)
@@ -93,9 +100,13 @@ fun DropUpNewCategory(
         mutableStateOf<LocalDate?>(null)
     }
     var isEverDays by remember {
-        mutableStateOf(false)
+        mutableStateOf(true)
     }
-    var stateDate = rememberDatePickerState(
+    var stateDateInit = rememberDatePickerState(
+        initialDisplayMode = DisplayMode.Input
+    )
+
+    var stateDateEnd = rememberDatePickerState(
         initialDisplayMode = DisplayMode.Input
     )
     var openDialogDatePickerInit by remember {
@@ -128,9 +139,9 @@ fun DropUpNewCategory(
                     label = {
                         Text(text = stringResource(R.string.txt_nome))
                     },
-                    value = Nome,
+                    value = name,
                     onValueChange = {
-                        Nome = it
+                        name = it
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -150,9 +161,9 @@ fun DropUpNewCategory(
                     label = {
                         Text(text = stringResource(R.string.txt_descricao))
                     },
-                    value = Descricao,
+                    value = descripton,
                     onValueChange = {
-                        Descricao = it
+                        descripton = it
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -161,54 +172,7 @@ fun DropUpNewCategory(
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                     shape = RoundedCornerShape(16.dp)
                 )
-                Spacer(modifier = Modifier.height(24.dp))
-                Column(modifier = Modifier
-                    .clip(RoundedCornerShape(16.dp))
-                    .clickable { openDropDownColorPicker = true }
-                    .padding(end = 16.dp)
-                ) {
-                    var width by remember { mutableStateOf(0) }
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(56.dp)
-                            .onGloballyPositioned {
-                                width = it.size.width
-                            }
-                    ) {
-                        Text(
-                            text = stringResource(R.string.txt_definir_cor),
-                            fontSize = 14.sp,
-                            modifier = Modifier.padding(start = 16.dp)
-                        )
-                        Box(
-                            modifier = Modifier
-                                .size(40.dp)
-                                .clip(CircleShape)
-                                .background(colorSelect)
-                        )
-                    }
-                    DropdownMenu(
-                        expanded = openDropDownColorPicker,
-                        onDismissRequest = { openDropDownColorPicker = false },
-                        modifier = androidx.compose.ui.Modifier
-                            .width(
-                                with(Density) {
-                                    width.toDp()
-                                }
-                            )
-                    ) {
-                        ColorPicker(
-                            width = width,
-                            onColorSelected = {
-                                colorSelect = it
-                            }
-                        )
-                    }
-                }
-                Spacer(modifier = Modifier.height(32.dp))
+                Spacer(modifier = Modifier.height(16.dp))
                 Column(
                     Modifier.fillMaxWidth()
                 ) {
@@ -227,11 +191,10 @@ fun DropUpNewCategory(
                         Switch(checked = isRecurrent, onCheckedChange = { isRecurrent = it })
                     }
                     AnimatedVisibility(
-                        visible = isRecurrent,
-                        enter = expandVertically(),
-                        exit = shrinkVertically()
+                        visible = isRecurrent, enter = expandVertically(), exit = shrinkVertically()
                     ) {
                         Column {
+                            Divider()
                             Row(
                                 Modifier
                                     .fillMaxWidth()
@@ -246,48 +209,129 @@ fun DropUpNewCategory(
                                 )
                                 Switch(checked = isEverDays, onCheckedChange = { isEverDays = it })
                             }
-                            Row(
-                                Modifier.fillMaxWidth()
+                            AnimatedVisibility(
+                                visible = !isEverDays,
+                                enter = expandVertically(),
+                                exit = shrinkVertically()
                             ) {
-                                TextButton(
-                                    modifier = Modifier
-                                        .weight(1f),
-                                    onClick = { openDialogDatePickerInit = true }
-                                ) {
+                                Column(Modifier.fillMaxWidth()) {
+                                    Divider()
+                                    Spacer(modifier = Modifier.height(12.dp))
                                     Text(
-                                        text = initialDate?.format(
-                                            DateTimeFormatter.ofPattern("dd/MM/YYYY")
-                                        ) ?: "DD/MM/AAAA"
+                                        text = "Vigência:",
+                                        fontSize = 14.sp,
+                                        modifier = Modifier.padding(start = 16.dp)
                                     )
-                                }
-                                TextButton(
-                                    modifier = Modifier
-                                        .weight(1f),
-                                    onClick = { openDialogDatePickerInit = true }
-                                ) {
-                                    Text(
-                                        text = endDate?.format(
-                                            DateTimeFormatter.ofPattern("dd/MM/YYYY")
-                                        ) ?: "DD/MM/AAAA"
-                                    )
+                                    Spacer(modifier = Modifier.height(12.dp))
+                                    Row(
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 16.dp),
+                                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                                    ) {
+                                        val textDateSelector: @Composable RowScope.(date: LocalDate?, label: String, onClick: () -> Unit) -> Unit =
+                                            { date, label, onClick ->
+                                                Column(
+                                                    modifier = Modifier.weight(1f)
+                                                ) {
+                                                    Text(text = label, fontSize = 12.sp)
+                                                    TextButton(
+                                                        enabled = !isEverDays,
+                                                        modifier = Modifier
+                                                            .fillMaxWidth()
+                                                            .border(
+                                                                2.dp,
+                                                                MaterialTheme.colorScheme.onBackground.copy(
+                                                                    0.5f
+                                                                ),
+                                                                OutlinedTextFieldDefaults.shape,
+                                                            ),
+                                                        onClick = onClick,
+                                                        shape = OutlinedTextFieldDefaults.shape,
+                                                    ) {
+                                                        Text(
+                                                            text = date?.format(
+                                                                DateTimeFormatter.ofPattern("dd/MM/YYYY")
+                                                            ) ?: "DD/MM/AAAA"
+                                                        )
+                                                    }
+                                                }
+                                            }
+                                        textDateSelector(initialDate, "Inicíl:") {
+                                            openDialogDatePickerInit = true
+                                        }
+                                        textDateSelector(endDate, "Fim:") {
+                                            openDialogDatePickerEnd = true
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
                 }
+                Spacer(modifier = Modifier.height(16.dp))
+                Column(modifier = Modifier
+                    .clip(RoundedCornerShape(16.dp))
+                    .clickable { openDropDownColorPicker = true }
+                    .padding(end = 16.dp)) {
+                    var width by remember { mutableStateOf(0) }
+                    Row(horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp)
+                            .onGloballyPositioned {
+                                width = it.size.width
+                            }) {
+                        Text(
+                            text = stringResource(R.string.txt_definir_cor),
+                            fontSize = 14.sp,
+                            modifier = Modifier.padding(start = 16.dp)
+                        )
+                        Box(
+                            modifier = Modifier
+                                .size(40.dp)
+                                .clip(CircleShape)
+                                .background(colorSelect)
+                        )
+                    }
+                    DropdownMenu(
+                        expanded = openDropDownColorPicker,
+                        onDismissRequest = { openDropDownColorPicker = false },
+                        modifier = androidx.compose.ui.Modifier.width(with(density) {
+                            width.toDp()
+                        })
+                    ) {
+                        ColorPicker(width = width, onColorSelected = {
+                            colorSelect = it
+                        })
+                    }
+                }
                 Spacer(modifier = Modifier.height(32.dp))
                 Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
                     TextButton(onClick = {
-                        onActionsResult(
-                            CategoriaViewModel(
-                                Id = 0,
-                                Description = Descricao,
-                                Name = Nome,
-                                Date = "",
-                                Color = colorToLongHex(colorSelect)
+                        var messageError = ""
+                        when {
+                            name.isBlank() ->
+                                messageError = "Informe um nome para a categoria!"
+
+                            isRecurrent && !isEverDays && (initialDate == null || endDate == null) ->
+                                messageError = "Informe as data de inicil e fim da vigencia!"
+                        }
+                        if (messageError.isEmpty()) {
+                            onActionsResult(
+                                CategoriaViewModel(
+                                    Id = 0,
+                                    Description = descripton,
+                                    Name = name,
+                                    Date = "",
+                                    Color = colorToLongHex(colorSelect)
+                                )
                             )
-                        )
-                        onDismiss()
+                            onDismiss()
+                        } else {
+                            Toast.makeText(context, messageError, Toast.LENGTH_LONG).show()
+                        }
                     }) {
                         Text(text = stringResource(R.string.txt_salvar))
                     }
@@ -298,43 +342,59 @@ fun DropUpNewCategory(
     BackHandler(enabled = enable) {
         onDismiss()
     }
-    val datePickerDialog: @Composable (onDismissRequest: () -> Unit, onDate: (LocalDate) -> Unit) -> Unit =  { onDismissRequest, onDate ->
-        Dialog(onDismissRequest = onDismissRequest) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(MaterialTheme.colorScheme.surface)
-            ) {
-                DatePicker(
-                    dateValidator = {
-                        val date = Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault()).toLocalDate()
-                        onDate(date)
-                        true
-                    },
-                    state = stateDate,
-                    showModeToggle = false,
-                    headline = null,
-                    title = null,
-                )
+    val datePickerDialog: @Composable (onDismissRequest: () -> Unit, state: DatePickerState, title: String, onDate: (LocalDate) -> Unit) -> Unit =
+        { onDismissRequest, state, title, onDate ->
+            Dialog(onDismissRequest = onDismissRequest) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(MaterialTheme.colorScheme.surface)
+                ) {
+                    DatePicker(
+                        dateValidator = {
+                            val date = Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault())
+                                .toLocalDate()
+                            onDate(date)
+                            true
+                        },
+                        state = state,
+                        showModeToggle = false,
+                        headline = {
+                            Text(
+                                text = title,
+                                modifier = Modifier.fillMaxWidth().padding(12.dp),
+                                textAlign = TextAlign.Center,
+                                fontSize = 18.sp
+                            )
+                        },
+                        title = null,
+                    )
+                }
             }
         }
-    }
     if (openDialogDatePickerInit) {
-        datePickerDialog({openDialogDatePickerInit = false}) {
+        datePickerDialog(
+            { openDialogDatePickerInit = false },
+            stateDateInit,
+            "Date de inicil",
+        ) {
             initialDate = it
-            true
         }
     }
     if (openDialogDatePickerEnd) {
-        datePickerDialog({openDialogDatePickerEnd = false}) {
+        datePickerDialog(
+            { openDialogDatePickerEnd = false },
+            stateDateEnd,
+            "Date de fim",
+        ) {
             endDate = it
-            true
         }
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview
 @Composable
 private fun DropUpNewCategoryPreview() {
