@@ -4,9 +4,20 @@ import androidx.compose.ui.graphics.Color
 import br.com.fcr.gastin.data.database.model.Categoria
 import br.com.fcr.gastin.data.database.model.Registro
 import java.text.SimpleDateFormat
+import java.time.LocalDate
 import java.util.Date
 
-data class CategoriaViewModel(val Id:Int,val Name:String,val Description:String,val Date:String,val Color:Long)
+data class CategoriaViewModel(
+    val Id: Int,
+    val Name: String,
+    val Description: String,
+    val Date: String,
+    val Color: Long,
+    val isRecurrent: Boolean = false,
+    val isEverDays: Boolean = false,
+    val startDate: String? = null,
+    val endDate:String? = null
+)
 fun Categoria.toView():CategoriaViewModel{
     val formatter = SimpleDateFormat("dd/MM/yyyy")
     val dateString = formatter.format(this.CreateAT)
@@ -19,6 +30,8 @@ fun Categoria.toView():CategoriaViewModel{
     )
 }
 fun CategoriaViewModel.toModel(): Categoria {
+    var startDate: Date? = null//TODO:COMPLETAR
+    var endDate: Date? = null
     return Categoria(
         Id = this.Id,
         Description = this.Description,
