@@ -217,10 +217,6 @@ fun HomeScreenDropUpNewRegister (
                             shape = RoundedCornerShape(16.dp),
                             keyboardActions = KeyboardActions(onNext = {
                                 focusManeger.clearFocus()
-                                CoroutineScope(Dispatchers.Main).launch {
-                                    delay(700)
-                                    focusDesc.requestFocus()
-                                }
                             }),
                             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next,keyboardType = KeyboardType.Number),
                             visualTransformation = if(Valor.isEmpty()) VisualTransformation.None else MaskTransformation()

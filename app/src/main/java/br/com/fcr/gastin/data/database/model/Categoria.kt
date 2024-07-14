@@ -21,12 +21,4 @@ class Categoria (
     var CreateAT: Date = Date(),
     @ColumnInfo(name = "TOTAL")
     var total:Int = 0,
-    @ColumnInfo(name = "IS_RECURRENT")
-    var isRecurrent: Boolean = false,
-    @ColumnInfo(name = "IS_EVER_DAYS")
-    var isEverDays: Boolean = false,
-    @ColumnInfo(name = "START_DATE")
-    var startDate: Date? = null,
-    @ColumnInfo(name = "END_DATE")
-    var endDate: Date? = null
 )
