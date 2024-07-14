@@ -1,0 +1,4 @@
+{
+  "src/*.kt": {"alternate": "test/{}.kt"},
+  "test/*.kt": {"alternate": "src/{}.kt"}
+}

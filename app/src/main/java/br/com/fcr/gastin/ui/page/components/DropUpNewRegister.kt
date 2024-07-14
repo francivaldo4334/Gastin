@@ -157,6 +157,68 @@ fun DropUpNewRegister (
                     shape = RoundedCornerShape(16.dp)
                 )
                 Spacer(modifier = Modifier.height(24.dp))
+                Column{
+                    var width by remember{ mutableStateOf(0) }
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp)
+                            .onGloballyPositioned {
+                                width = it.size.width
+                            }
+                            .clip(RoundedCornerShape(16.dp))
+                            .clickable { openDropDownCategoria = true }
+                            .border(4.dp, Color(Categoria.Color), RoundedCornerShape(16.dp))
+                    ) {
+                        Text(
+                            text = Categoria.Name,
+                            fontSize = 14.sp,
+                            modifier = Modifier.padding(start = 32.dp)
+                        )
+                        Icon(
+                            painter = painterResource(
+                                id = if(openDropDownCategoria)
+                                    R.drawable.ic_arrow_up
+                                else
+                                    R.drawable.ic_arrow_down
+                            ),
+                            contentDescription = "",
+                            modifier = Modifier.padding(end = 16.dp)
+                        )
+                    }
+                    DropdownMenu(
+                        expanded = openDropDownCategoria,
+                        onDismissRequest = { openDropDownCategoria = false },
+                        modifier = Modifier
+                            .width(
+                                with(Density){
+                                    width.toDp()
+                                }
+                            )
+                    ) {
+                        Categorias.forEach {
+                            Row(
+                                modifier = Modifier
+                                    .clickable {
+                                        Categoria = it
+                                        openDropDownCategoria = false
+                                    }
+                                    .padding(16.dp)
+                                    .fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(text = it.Name)
+                                Box(modifier = Modifier
+                                    .size(24.dp)
+                                    .clip(CircleShape)
+                                    .background(Color(it.Color)))
+                            }
+                        }
+                    }
+                }
+                Spacer(modifier = Modifier.height(16.dp))
                 Column(
                     Modifier.fillMaxWidth()
                 ) {
@@ -256,68 +318,6 @@ fun DropUpNewRegister (
                         }
                     }
                 }
-                Spacer(modifier = Modifier.height(16.dp))
-                Column{
-                    var width by remember{ mutableStateOf(0) }
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(56.dp)
-                            .onGloballyPositioned {
-                                width = it.size.width
-                            }
-                            .clip(RoundedCornerShape(16.dp))
-                            .clickable { openDropDownCategoria = true }
-                            .border(4.dp, Color(Categoria.Color), RoundedCornerShape(16.dp))
-                    ) {
-                        Text(
-                            text = Categoria.Name,
-                            fontSize = 14.sp,
-                            modifier = Modifier.padding(start = 32.dp)
-                        )
-                        Icon(
-                            painter = painterResource(
-                                id = if(openDropDownCategoria)
-                                    R.drawable.ic_arrow_up
-                                else
-                                    R.drawable.ic_arrow_down
-                            ),
-                            contentDescription = "",
-                            modifier = Modifier.padding(end = 16.dp)
-                        )
-                    }
-                    DropdownMenu(
-                        expanded = openDropDownCategoria,
-                        onDismissRequest = { openDropDownCategoria = false },
-                        modifier = Modifier
-                            .width(
-                                with(Density){
-                                    width.toDp()
-                                }
-                            )
-                    ) {
-                        Categorias.forEach {
-                            Row(
-                                modifier = Modifier
-                                    .clickable {
-                                        Categoria = it
-                                        openDropDownCategoria = false
-                                    }
-                                    .padding(16.dp)
-                                    .fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text(text = it.Name)
-                                Box(modifier = Modifier
-                                    .size(24.dp)
-                                    .clip(CircleShape)
-                                    .background(Color(it.Color)))
-                            }
-                        }
-                    }
-                }
                 Spacer(modifier = Modifier.height(32.dp))
                 Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd){
                     TextButton(onClick = {
@@ -329,8 +329,8 @@ fun DropUpNewRegister (
                                 CategoriaFk = Categoria.Id,
                                 Date = "",
                                 isRecurrent=isRecurrent,
-                                startDate=initialDate?.format(DateTimeFormatter.ofPattern("YYYY-mm-dd")),
-                                endDate=endDate?.format(DateTimeFormatter.ofPattern("YYYY-mm-dd")),
+                                startDate=initialDate?.format(DateTimeFormatter.ofPattern("dd/MM/YYYY")),
+                                endDate=endDate?.format(DateTimeFormatter.ofPattern("dd/MM/YYYY")),
                                 isEverDays=isEverDays
                             )
                         )

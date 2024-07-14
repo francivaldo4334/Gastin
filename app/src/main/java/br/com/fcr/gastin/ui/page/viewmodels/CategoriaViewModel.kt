@@ -29,7 +29,6 @@ fun Categoria.toView():CategoriaViewModel{
     )
 }
 fun CategoriaViewModel.toModel(): Categoria {
-    val formatter = SimpleDateFormat("dd/MM/yyyy")
     return Categoria(
         Id = this.Id,
         Description = this.Description,

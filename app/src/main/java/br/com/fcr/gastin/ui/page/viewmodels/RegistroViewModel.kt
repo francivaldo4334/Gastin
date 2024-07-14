@@ -26,12 +26,18 @@ fun EmptyCategoriaViewModel():CategoriaViewModel{
 fun Registro.toView():RegistroViewModel{
     val formatter = SimpleDateFormat("dd/MM/yyyy")
     val dateString = formatter.format(this.CreateAT)
+    val startDate = this.startDate?.let { formatter.format(it) }
+    val endDate = this.endDate?.let { formatter.format(it) }
     return RegistroViewModel(
         Description = this.Description,
         Date = dateString,
         Value = this.Value,
         CategoriaFk = this.CategoriaFk,
-        Id = this.Id
+        Id = this.Id,
+        startDate = startDate,
+        endDate = endDate,
+        isRecurrent = this.isRecurrent,
+        isEverDays = this.isEverDays
     )
 }
 fun RegistroViewModel.toModel(isDespesa:Boolean = true): Registro {

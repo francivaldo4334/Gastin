@@ -186,4 +186,5 @@ Sexta-feira
     <string name="date_de_in_cio">Date de início</string>
     <string name="data_de_fim">Data de fim</string>
     <string name="ok">Ok</string>
+    <string name="recorrente">Recorrente</string>
 </resources>

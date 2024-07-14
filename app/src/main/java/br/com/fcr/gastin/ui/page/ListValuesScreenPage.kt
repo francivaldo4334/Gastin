@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -122,6 +123,7 @@ fun ListValuesScreenPage(
     onLoadCategory: (Int, (CategoriaViewModel) -> Unit) -> Unit,
     onDateUpdate: () -> Unit
 ) {
+    val context = LocalContext.current
     var showAllCheckBox by remember { mutableStateOf(false) }
     var openMoreOptions by remember { mutableStateOf(false) }
     var openViewItem by remember { mutableStateOf(false) }
@@ -264,7 +266,9 @@ fun ListValuesScreenPage(
                                     )
                                     Spacer(modifier = Modifier.height(12.dp))
                                     Text(
-                                        text = register.Date,
+                                        text = if (!register.isRecurrent) register.Date
+                                        else if (register.isEverDays) context.getString(R.string.recorrente)
+                                        else "${register.startDate} - ${register.endDate}",
                                         fontSize = 12.sp,
                                         color = MaterialTheme.colorScheme.onBackground.copy(0.5f),
                                         maxLines = 1
