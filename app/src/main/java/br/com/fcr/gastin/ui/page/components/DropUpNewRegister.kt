@@ -46,8 +46,6 @@ import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
-@RequiresApi(Build.VERSION_CODES.O)
-@OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun DropUpNewRegister (
@@ -66,36 +64,10 @@ fun DropUpNewRegister (
     var openDropDownCategoria by remember { mutableStateOf(false) }
     var Categoria by remember{ mutableStateOf(CategoriaDefault) }
     val Density = LocalDensity.current
-    var isRecurrent by remember {
-        mutableStateOf(false)
-    }
-    var initialDate by remember {
-        mutableStateOf<LocalDate?>(null)
-    }
-    var endDate by remember {
-        mutableStateOf<LocalDate?>(null)
-    }
-    var isEverDays by remember {
-        mutableStateOf(true)
-    }
-    var stateDateInit = rememberDatePickerState(
-        initialDisplayMode = DisplayMode.Input
-    )
-    var stateDateEnd = rememberDatePickerState(
-        initialDisplayMode = DisplayMode.Input
-    )
+    var recurrentForm = RecurrentFormData()
     val localOnDismiss = {
         onDismiss.invoke()
-        initialDate = null
-        endDate = null
-        isRecurrent = false
-        isEverDays = true
-    }
-    var openDialogDatePickerInit by remember {
-        mutableStateOf(false)
-    }
-    var openDialogDatePickerEnd by remember {
-        mutableStateOf(false)
+        recurrentForm = RecurrentFormData()
     }
 
     BoxDropUpContent(enable = enable, onDismiss = localOnDismiss) {
@@ -218,107 +190,8 @@ fun DropUpNewRegister (
                         }
                     }
                 }
+                RecurrentForm(recurrentForm=recurrentForm)
                 Spacer(modifier = Modifier.height(16.dp))
-                Column(
-                    Modifier.fillMaxWidth()
-                ) {
-                    Row(
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(end = 16.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = stringResource(R.string.recorr_ncia),
-                            fontSize = 14.sp,
-                            modifier = Modifier.padding(start = 16.dp)
-                        )
-                        Switch(checked = isRecurrent, onCheckedChange = { isRecurrent = it })
-                    }
-                    AnimatedVisibility(
-                        visible = isRecurrent, enter = expandVertically(), exit = shrinkVertically()
-                    ) {
-                        Column {
-                            Divider()
-                            Row(
-                                Modifier
-                                    .fillMaxWidth()
-                                    .padding(end = 16.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(
-                                    text = stringResource(R.string.todos_os_dias),
-                                    fontSize = 14.sp,
-                                    modifier = Modifier.padding(start = 16.dp)
-                                )
-                                Switch(checked = isEverDays, onCheckedChange = { isEverDays = it })
-                            }
-                            AnimatedVisibility(
-                                visible = !isEverDays,
-                                enter = expandVertically(),
-                                exit = shrinkVertically()
-                            ) {
-                                Column(Modifier.fillMaxWidth()) {
-                                    Divider()
-                                    Spacer(modifier = Modifier.height(12.dp))
-                                    Text(
-                                        text = stringResource(R.string.vig_ncia),
-                                        fontSize = 14.sp,
-                                        modifier = Modifier.padding(start = 16.dp)
-                                    )
-                                    Spacer(modifier = Modifier.height(12.dp))
-                                    Row(
-                                        Modifier
-                                            .fillMaxWidth()
-                                            .padding(horizontal = 16.dp),
-                                        horizontalArrangement = Arrangement.spacedBy(16.dp)
-                                    ) {
-                                        val textDateSelector: @Composable RowScope.(date: LocalDate?, label: String, onClick: () -> Unit) -> Unit =
-                                            { date, label, onClick ->
-                                                Column(
-                                                    modifier = Modifier.weight(1f)
-                                                ) {
-                                                    Text(text = label, fontSize = 12.sp)
-                                                    TextButton(
-                                                        enabled = !isEverDays,
-                                                        modifier = Modifier
-                                                            .fillMaxWidth()
-                                                            .border(
-                                                                2.dp,
-                                                                MaterialTheme.colorScheme.onBackground.copy(
-                                                                    0.5f
-                                                                ),
-                                                                OutlinedTextFieldDefaults.shape,
-                                                            ),
-                                                        onClick = onClick,
-                                                        shape = OutlinedTextFieldDefaults.shape,
-                                                    ) {
-                                                        Text(
-                                                            text = date?.format(
-                                                                DateTimeFormatter.ofPattern("dd/MM/YYYY")
-                                                            ) ?: "DD/MM/AAAA"
-                                                        )
-                                                    }
-                                                }
-                                            }
-                                        textDateSelector(
-                                            initialDate,
-                                            stringResource(R.string.in_cil)
-                                        ) {
-                                            openDialogDatePickerInit = true
-                                        }
-                                        textDateSelector(endDate, stringResource(R.string.fim)) {
-                                            openDialogDatePickerEnd = true
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                Spacer(modifier = Modifier.height(32.dp))
                 Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd){
                     TextButton(onClick = {
                         onActionsResult(
@@ -328,10 +201,10 @@ fun DropUpNewRegister (
                                 Value = if(Valor.isEmpty()) 0 else Valor.toInt(),
                                 CategoriaFk = Categoria.Id,
                                 Date = "",
-                                isRecurrent=isRecurrent,
-                                startDate=initialDate?.format(DateTimeFormatter.ofPattern("dd/MM/YYYY")),
-                                endDate=endDate?.format(DateTimeFormatter.ofPattern("dd/MM/YYYY")),
-                                isEverDays=isEverDays
+                                isRecurrent=recurrentForm.isRecurrent.value,
+                                startDate=recurrentForm.startDate.value,
+                                endDate=recurrentForm.endDate.value,
+                                isEverDays=recurrentForm.isEverDays.value
                             )
                         )
                         localOnDismiss()
@@ -345,66 +218,5 @@ fun DropUpNewRegister (
     }
     BackHandler(enabled = enable) {
         localOnDismiss()
-    }
-    val datePickerDialog: @Composable (onDismissRequest: () -> Unit, state: DatePickerState, title: String, onDate: (LocalDate) -> Unit) -> Unit =
-        { onDismissRequest, state, title, onDate ->
-            Dialog(onDismissRequest = onDismissRequest) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(MaterialTheme.colorScheme.surface),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    DatePicker(
-                        dateValidator = {
-                            val date = Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault())
-                                .toLocalDate()
-                            onDate(date)
-                            true
-                        },
-                        state = state,
-                        showModeToggle = false,
-                        headline = {
-                            Text(
-                                text = title,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(12.dp),
-                                textAlign = TextAlign.Center,
-                                fontSize = 18.sp
-                            )
-                        },
-                        title = null
-                    )
-                    Button(
-                        onClick = onDismissRequest,
-                        modifier = Modifier
-                            .fillMaxWidth().padding(bottom = 12.dp).padding(horizontal = 12.dp),
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        Text(text = stringResource(R.string.ok))
-                    }
-                }
-            }
-        }
-    if (openDialogDatePickerInit) {
-        datePickerDialog(
-            { openDialogDatePickerInit = false },
-            stateDateInit,
-            stringResource(R.string.date_de_in_cio),
-        ) {
-            initialDate = it
-        }
-    }
-    if (openDialogDatePickerEnd) {
-        datePickerDialog(
-            { openDialogDatePickerEnd = false },
-            stateDateEnd,
-            stringResource(R.string.data_de_fim),
-        ) {
-            endDate = it
-        }
     }
 }

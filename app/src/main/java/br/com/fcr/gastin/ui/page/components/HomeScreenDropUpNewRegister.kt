@@ -1,7 +1,9 @@
 package br.com.fcr.gastin.ui.page.components
 
 import android.content.res.Configuration
+import android.os.Build
 import androidx.activity.compose.BackHandler
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -120,11 +122,13 @@ fun HomeScreenDropUpNewRegister (
     }
     if(IsDespesa != null)
         ROUTE = INSERT_VALUES_REGISTER
+    var recurrentForm = RecurrentFormData()
     BackHandler(enabled = enable) {
         if(ROUTE != SELECT_TYPE_REGISTER){
             ROUTE = SELECT_TYPE_REGISTER
         }else
             _onDismiss()
+        recurrentForm = RecurrentFormData()
     }
     BoxDropUpContent(enable = enable, onDismiss = _onDismiss) {
         Column(
@@ -299,7 +303,8 @@ fun HomeScreenDropUpNewRegister (
                                 }
                             }
                         }
-                        Spacer(modifier = Modifier.height(32.dp))
+                        RecurrentForm(recurrentForm = recurrentForm)
+                        Spacer(modifier = Modifier.height(16.dp))
                         Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd){
                             TextButton(onClick = {
 
@@ -310,7 +315,11 @@ fun HomeScreenDropUpNewRegister (
                                         Description = Descricao,
                                         Value = if(Valor.isEmpty()) 0 else Valor.toInt(),
                                         CategoriaFk = Categoria.Id,
-                                        Date = ""
+                                        Date = "",
+                                        isRecurrent = recurrentForm.isRecurrent.value,
+                                        isEverDays = recurrentForm.isEverDays.value,
+                                        startDate = recurrentForm.startDate.value,
+                                        endDate = recurrentForm.endDate.value,
                                     )
                                 )
                                 ROUTE = SELECT_TYPE_REGISTER
