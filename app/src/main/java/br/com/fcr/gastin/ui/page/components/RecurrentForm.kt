@@ -1,5 +1,7 @@
 package br.com.fcr.gastin.ui.page.components
 
+import android.icu.text.SimpleDateFormat
+import android.icu.util.Calendar
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
@@ -16,13 +18,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
-import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.DisplayMode
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -36,20 +40,21 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.OffsetMapping
+import androidx.compose.ui.text.input.TransformedText
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import br.com.fcr.gastin.R
-import java.text.SimpleDateFormat
-import java.time.Instant
-import java.time.LocalDateTime
-import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import java.util.Date
 import java.util.Locale
-import java.util.TimeZone
 
 class RecurrentFormData(
     isRecurrent: Boolean = false,
@@ -61,18 +66,54 @@ class RecurrentFormData(
     var isEverDays = mutableStateOf(isEverDays)
     var startDate = mutableStateOf(startDate)
     var endDate = mutableStateOf(endDate)
+    fun isValid(): Pair<Boolean, String> {
+        if (isRecurrent.value) {
+            if (!isEverDays.value) {
+                if (startDate.value == null)
+                    return false to "Data de inicio da vigência não pode ser nula."
+                if (endDate.value == null)
+                    return false to "Data de terminiu da vigência não pode ser nula."
+                val formatter = SimpleDateFormat("dd/MM/yyyy")
+                val startDate = formatter.parse(startDate.value)
+                val endDate = formatter.parse(endDate.value)
+
+                if (startDate.before(endDate))
+                    return false to "A data inicial não pode ser maior que a data final."
+            }
+            return true to ""
+        }
+        isEverDays.value = false
+        startDate.value = null
+        endDate.value = null
+        return true to ""
+    }
 }
 
-private fun timestampToDate(timestamp: Long): String {
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
-        val localDateTime =
-            LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.systemDefault())
-        formatter.format(localDateTime)
-    } else {
-        val formatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-        val date = Date(timestamp)
-        formatter.format(date)
+private class DateVisualTransformation(
+) : VisualTransformation {
+    override fun filter(text: AnnotatedString): TransformedText {
+        var out = ""
+        text.text.forEachIndexed { index, char ->
+            when (index) {
+                2 -> out += "/$char"
+                4 -> out += "/$char"
+                else -> out += char
+            }
+        }
+        val numberOffsetTranslator = object : OffsetMapping {
+            override fun originalToTransformed(offset: Int): Int {
+                if (offset <= 2) return offset
+                if (offset <= 4) return offset + 1
+                return offset + 2
+            }
+
+            override fun transformedToOriginal(offset: Int): Int {
+                if (offset <= 2) return offset
+                if (offset <= 5) return offset - 1
+                return offset - 2
+            }
+        }
+        return TransformedText(AnnotatedString(out), numberOffsetTranslator)
     }
 }
 
@@ -201,8 +242,11 @@ fun RecurrentForm(recurrentForm: RecurrentFormData) {
             }
         }
     }
-    val datePickerDialog: @Composable (onDismissRequest: () -> Unit, state: DatePickerState, title: String, onDate: (String) -> Unit) -> Unit =
-        { onDismissRequest, state, title, onDate ->
+    val datePickerDialog: @Composable (date: String?, onDismissRequest: () -> Unit, state: DatePickerState, title: String, onDate: (String) -> Unit) -> Unit =
+        { date, onDismissRequest, state, title, onDate ->
+            val focus = remember {
+                FocusRequester()
+            }
             Dialog(onDismissRequest = onDismissRequest) {
                 Column(
                     modifier = Modifier
@@ -212,26 +256,58 @@ fun RecurrentForm(recurrentForm: RecurrentFormData) {
                         .background(MaterialTheme.colorScheme.surface),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    DatePicker(
-                        dateValidator = {
-                            onDate(timestampToDate(it))
-                            true
+                    var text by remember {
+                        mutableStateOf("")
+                    }
+                    var isValid by remember {
+                        mutableStateOf(false)
+                    }
+                    OutlinedTextField(
+                        isError = !isValid,
+                        value = text,
+                        onValueChange = {
+                            if (it.length <= 8) {
+                                text = it
+                            }
+                            if (text.length == 8) {
+                                val formatter = SimpleDateFormat("ddMMyyyy")
+                                formatter.isLenient = false
+                                isValid = try {
+                                    formatter.parse(it)
+                                    true
+                                } catch (e: Exception) {
+                                    false
+                                }
+                                if (isValid) {
+                                    val dia = text.substring(0, 2)
+                                    val mes = text.substring(2, 4)
+                                    val ano = text.subSequence(4, 8)
+                                    onDate("$dia/$mes/$ano")
+                                    focus.freeFocus()
+                                }
+                            }
                         },
-                        state = state,
-                        showModeToggle = false,
-                        headline = {
-                            Text(
-                                text = title,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(12.dp),
-                                textAlign = TextAlign.Center,
-                                fontSize = 18.sp
-                            )
-                        },
-                        title = null
+                        label = { Text("Data (ddMMyyyy)") },
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Number,
+                            imeAction = ImeAction.Done
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onDone = {
+                                if (isValid) {
+                                    focus.freeFocus()
+                                }
+                            }
+                        ),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .focusRequester(focus)
+                            .padding(horizontal = 16.dp, vertical = 8.dp),
+                        visualTransformation = DateVisualTransformation()
                     )
                     Button(
+                        enabled = isValid,
                         onClick = onDismissRequest,
                         modifier = Modifier
                             .fillMaxWidth()
@@ -246,6 +322,7 @@ fun RecurrentForm(recurrentForm: RecurrentFormData) {
         }
     if (openDialogDatePickerInit) {
         datePickerDialog(
+            recurrentForm.startDate.value,
             { openDialogDatePickerInit = false },
             stateDateInit,
             stringResource(R.string.date_de_in_cio),
@@ -255,6 +332,7 @@ fun RecurrentForm(recurrentForm: RecurrentFormData) {
     }
     if (openDialogDatePickerEnd) {
         datePickerDialog(
+            recurrentForm.endDate.value,
             { openDialogDatePickerEnd = false },
             stateDateEnd,
             stringResource(R.string.data_de_fim),

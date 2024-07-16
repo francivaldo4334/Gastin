@@ -2,6 +2,7 @@ package br.com.fcr.gastin.ui.page.components
 
 import android.annotation.SuppressLint
 import android.os.Build
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.*
@@ -22,6 +23,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
@@ -56,6 +58,7 @@ fun DropUpNewRegister (
     CategoriaDefault:CategoriaViewModel,
     onDateUpdate:()->Unit
 ){
+    val context = LocalContext.current
     val focusManager = LocalFocusManager.current
     val focusDesc = remember { FocusRequester() }
     val focusValue = remember { FocusRequester() }
@@ -194,21 +197,26 @@ fun DropUpNewRegister (
                 Spacer(modifier = Modifier.height(16.dp))
                 Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd){
                     TextButton(onClick = {
-                        onActionsResult(
-                            RegistroViewModel(
-                                Id = 0,
-                                Description = Descricao,
-                                Value = if(Valor.isEmpty()) 0 else Valor.toInt(),
-                                CategoriaFk = Categoria.Id,
-                                Date = "",
-                                isRecurrent=recurrentForm.isRecurrent.value,
-                                startDate=recurrentForm.startDate.value,
-                                endDate=recurrentForm.endDate.value,
-                                isEverDays=recurrentForm.isEverDays.value
+                        val (isValid, message) = recurrentForm.isValid()
+                        if (isValid) {
+                            onActionsResult(
+                                RegistroViewModel(
+                                    Id = 0,
+                                    Description = Descricao,
+                                    Value = if(Valor.isEmpty()) 0 else Valor.toInt(),
+                                    CategoriaFk = Categoria.Id,
+                                    Date = "",
+                                    isRecurrent=recurrentForm.isRecurrent.value,
+                                    startDate=recurrentForm.startDate.value,
+                                    endDate=recurrentForm.endDate.value,
+                                    isEverDays=recurrentForm.isEverDays.value
+                                )
                             )
-                        )
-                        localOnDismiss()
-                        onDateUpdate()
+                            localOnDismiss()
+                            onDateUpdate()
+                        } else {
+                            Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+                        }
                     }) {
                         Text(text = stringResource(R.string.txt_salvar))
                     }
