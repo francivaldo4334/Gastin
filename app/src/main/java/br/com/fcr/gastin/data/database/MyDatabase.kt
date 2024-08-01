@@ -14,7 +14,7 @@ import br.com.fcr.gastin.data.database.resource.Converters
         Categoria::class,
         Registro::class
     ),
-    version = 1
+    version = 2
 )
 @TypeConverters(Converters::class)
 abstract class MyDatabase : RoomDatabase() {
