@@ -108,12 +108,6 @@ WHERE
     TB_REGISTRO.IS_DEPESA = 1 
     AND (
         strftime('%Y/%W', datetime(TB_REGISTRO.CREATE_AT/1000, 'unixepoch')) = (CAST(:year as TEXT) || '/' || CAST(:week as TEXT))
-        OR (IS_RECURRENT = 1 AND IS_EVER_DAYS = 1)
-        OR (
-            IS_RECURRENT = 1
-            AND strftime('%Y/%W', datetime(START_DATE/1000, 'unixepoch')) <= (CAST(:year as TEXT) || '/' || CAST(:week as TEXT))
-            AND strftime('%Y/%W', datetime(END_DATE/1000, 'unixepoch')) >= (CAST(:year as TEXT) || '/' || CAST(:week as TEXT))
-        )
     )
 GROUP BY 
     CAST(strftime('%d', datetime(TB_REGISTRO.CREATE_AT/1000, 'unixepoch')) AS int)
