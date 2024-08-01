@@ -77,7 +77,7 @@ class RecurrentFormData(
                 val startDate = formatter.parse(startDate.value)
                 val endDate = formatter.parse(endDate.value)
 
-                if (startDate.before(endDate))
+                if (startDate.after(endDate))
                     return false to "A data inicial não pode ser maior que a data final."
             }
             return true to ""

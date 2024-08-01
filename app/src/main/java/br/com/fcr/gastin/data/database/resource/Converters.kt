@@ -1,6 +1,8 @@
 package br.com.fcr.gastin.data.database.resource
 
+import android.util.Log
 import androidx.room.TypeConverter
+import java.text.SimpleDateFormat
 import java.util.*
 
 class Converters {

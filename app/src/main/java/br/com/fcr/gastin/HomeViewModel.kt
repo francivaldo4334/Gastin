@@ -69,7 +69,7 @@ class HomeViewModel constructor(
     private val calendar = Calendar.getInstance().apply {
         time = datenow
         Log.d("MONTH", get(Calendar.MONTH).toString())
-        mesAno = Pair(get(Calendar.MONTH) + 1, get(Calendar.YEAR))
+        mesAno = Pair(get(Calendar.MONTH), get(Calendar.YEAR))
         semanaAno = Pair(get(Calendar.WEEK_OF_YEAR), get(Calendar.YEAR))
     }
 

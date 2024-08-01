@@ -20,18 +20,18 @@ fun List<Categoria>.toFlowTriper(): MutableStateFlow<List<Triple<String, Int, Co
 }
 fun Pair<Int,Int>.toFlowMonth(context:Context):MutableStateFlow<String>{
     var resp = when(this.first){
-        1 -> context.getString(R.string.txt_january)
-        2 -> context.getString(R.string.txt_february)
-        3 -> context.getString(R.string.txt_march)
-        4 -> context.getString(R.string.txt_april)
-        5 -> context.getString(R.string.txt_may)
-        6 -> context.getString(R.string.txt_june)
-        7 -> context.getString(R.string.txt_july)
-        8 -> context.getString(R.string.txt_august)
-        9 -> context.getString(R.string.txt_september)
-        10 -> context.getString(R.string.txt_october)
-        11 -> context.getString(R.string.txt_november)
-        12 -> context.getString(R.string.txt_december)
+        0 -> context.getString(R.string.txt_january)
+        1 -> context.getString(R.string.txt_february)
+        2 -> context.getString(R.string.txt_march)
+        3 -> context.getString(R.string.txt_april)
+        4 -> context.getString(R.string.txt_may)
+        5 -> context.getString(R.string.txt_june)
+        6 -> context.getString(R.string.txt_july)
+        7 -> context.getString(R.string.txt_august)
+        8 -> context.getString(R.string.txt_september)
+        9 -> context.getString(R.string.txt_october)
+        10 -> context.getString(R.string.txt_november)
+        11 -> context.getString(R.string.txt_december)
         else -> ""
     }
     return MutableStateFlow(resp)

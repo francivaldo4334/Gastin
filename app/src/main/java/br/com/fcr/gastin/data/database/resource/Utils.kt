@@ -1,5 +1,7 @@
 package br.com.fcr.gastin.data.database.resource
 
+import android.util.Log
+import java.text.SimpleDateFormat
 import java.util.Calendar
 
 fun getStartOfMonthTimestamp(year: Int, month: Int): Long {
