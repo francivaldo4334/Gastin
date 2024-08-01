@@ -20,7 +20,7 @@ object DB {
             MyDatabase::class.java,
             MyDatabase.NAME
         ).addMigrations(
-
+            MIGRATION_1_2
         ).fallbackToDestructiveMigration().build()
     }
 }
