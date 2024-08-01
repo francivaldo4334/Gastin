@@ -1,5 +1,6 @@
 package br.com.fcr.gastin.ui.page
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.*
 import androidx.compose.foundation.background
@@ -29,6 +30,8 @@ import br.com.fcr.gastin.ui.page.components.DropUpUpdateCategoria
 import br.com.fcr.gastin.ui.page.components.DropUpViewCategoria
 import br.com.fcr.gastin.ui.page.viewmodels.CategoriaViewModel
 import br.com.fcr.gastin.ui.page.viewmodels.toModel
+import br.com.fcr.gastin.ui.utils.toJson
+import org.json.JSONObject
 
 private var listIdCheckeds by mutableStateOf(listOf<Int>())
 
@@ -193,7 +196,8 @@ fun ListCategoriasPage (
             openDropUpNewCategory = false
         }
     ){
-        onNewCategoria(it.toModel())
+        Log.d("TESTE_JSON:", toJson(it))
+        onNewCategoria(it.toModel())//TODO:
     }
     DropUpViewCategoria(
         enable = openDropUpViewCategoria,

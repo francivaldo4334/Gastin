@@ -1,5 +1,8 @@
 package br.com.fcr.gastin
 
+import android.util.Log
+import br.com.fcr.gastin.data.database.model.Registro
+import br.com.fcr.gastin.ui.utils.toJson
 import org.junit.Test
 
 import org.junit.Assert.*

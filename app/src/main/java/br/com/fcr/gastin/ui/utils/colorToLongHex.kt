@@ -6,3 +6,4 @@ import androidx.compose.ui.graphics.toArgb
 fun colorToLongHex(color: Color): Long {
     return color.toArgb().toLong()
 }
+fun Color.toLongHex(): Long = colorToLongHex(this)

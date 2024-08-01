@@ -52,6 +52,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -65,7 +66,9 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import br.com.fcr.gastin.R
 import br.com.fcr.gastin.ui.page.viewmodels.CategoriaViewModel
+import br.com.fcr.gastin.ui.page.viewmodels.toModel
 import br.com.fcr.gastin.ui.utils.colorToLongHex
+import br.com.fcr.gastin.ui.utils.toLongHex
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -190,6 +193,11 @@ fun DropUpNewCategory(
                 Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
                     TextButton(onClick = {
                         onDismiss()
+                        onActionsResult(CategoriaViewModel(
+                            Name=name,
+                            Description=descripton,
+                            Color= colorSelect.toLongHex()
+                        ))
                     }) {
                         Text(text = stringResource(R.string.txt_salvar))
                     }

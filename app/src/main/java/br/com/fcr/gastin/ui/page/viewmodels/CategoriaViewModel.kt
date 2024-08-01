@@ -10,10 +10,10 @@ import java.time.format.DateTimeFormatter
 import java.util.Date
 
 data class CategoriaViewModel(
-    val Id: Int,
+    val Id: Int = 0,
     val Name: String,
     val Description: String,
-    val Date: String,
+    val Date: String = "",
     val Color: Long,
 )
 @SuppressLint("SimpleDateFormat")

@@ -26,10 +26,16 @@ interface CategoriaDao {
             "JOIN TB_REGISTRO " +
             "ON TB_REGISTRO.CATEGORIA_FK = TB_CATEGORIA.ID " +
             "WHERE TB_REGISTRO.IS_DEPESA = 1 "+
-            "AND CAST(strftime('%m', datetime(TB_REGISTRO.CREATE_AT/1000, 'unixepoch')) AS int) = :mes " +
-            "AND CAST(strftime('%Y', datetime(TB_REGISTRO.CREATE_AT/1000, 'unixepoch')) AS int) = :ano "+
+            "AND (TB_REGISTRO.CREATE_AT BETWEEN :startTimestamp AND :endTimestamp " +
+            """
+            OR (TB_REGISTRO.IS_RECURRENT = 1 AND TB_REGISTRO.IS_EVER_DAYS = 1)
+            OR (
+                TB_REGISTRO.IS_RECURRENT = 1
+                AND TB_REGISTRO.START_DATE <= :endTimestamp
+                AND TB_REGISTRO.END_DATE >= :startTimestamp
+            ))""" +
             "GROUP BY TB_CATEGORIA.ID ")
-    fun getAllWithMesAno(mes:Int, ano:Int):Flow<List<Categoria>>
+    fun getAllWithMesAno(startTimestamp: Long, endTimestamp: Long):Flow<List<Categoria>>
     @Update
     fun update(it: Categoria)
     @Query("DELETE FROM TB_CATEGORIA WHERE ID IN(:it)")

@@ -37,32 +37,33 @@ FROM TB_REGISTRO
 WHERE 
     IS_DEPESA = 1 
     AND (
-        strftime('%Y-%m', datetime(TB_REGISTRO.CREATE_AT/1000, 'unixepoch'))=(CAST(:ano as TEXT) || '-'|| printf('%02d', :mes)) 
+        (CREATE_AT BETWEEN :startTimestamp AND :endTimestamp)
         OR (IS_RECURRENT = 1 AND IS_EVER_DAYS = 1)
         OR (
             IS_RECURRENT = 1
-            AND strftime('%Y-%m',START_DATE) <= (CAST(:ano as TEXT)||'-'||printf('%02d', :mes))
-            AND strftime('%Y-%m',END_DATE) >= (CAST(:ano as TEXT)||'/'||printf('%02d', :mes))
+            AND START_DATE <= :endTimestamp
+            AND END_DATE >= :startTimestamp
         )
     )
 """)
-    fun getAllDespesasValorMesAno(mes:Int, ano:Int): Flow<Int?>
+    fun getAllDespesasValorMesAno(startTimestamp: Long, endTimestamp: Long): Flow<Int?>
     @Query("""
 SELECT SUM(VALUE) 
 FROM TB_REGISTRO 
 WHERE 
     IS_DEPESA = 0 
     AND (
-        strftime('%Y-%m', datetime(TB_REGISTRO.CREATE_AT/1000, 'unixepoch'))=(CAST(:ano as TEXT) || '-'|| printf('%02d', :mes)) 
+        (CREATE_AT BETWEEN :startTimestamp AND :endTimestamp)
         OR (IS_RECURRENT = 1 AND IS_EVER_DAYS = 1)
         OR (
             IS_RECURRENT = 1
-            AND strftime('%Y-%m',START_DATE) <= (CAST(:ano as TEXT)||'-'||printf('%02d', :mes))
-            AND strftime('%Y-%m',END_DATE) >= (CAST(:ano as TEXT)||'/'||printf('%02d', :mes))
+            AND START_DATE <= :endTimestamp
+            AND END_DATE >= :startTimestamp
         )
     )
 """)
-    fun getAllReceitasValorMesAno(mes:Int, ano:Int): Flow<Int?>
+    fun getAllReceitasValorMesAno(startTimestamp: Long, endTimestamp: Long): Flow<Int?>
+
     @Update
     fun update(resgister: Registro)
     @Query("""
@@ -71,47 +72,47 @@ FROM TB_REGISTRO
 WHERE 
     IS_DEPESA = 1 
     AND (
-        strftime('%Y-%m', datetime(TB_REGISTRO.CREATE_AT/1000, 'unixepoch'))=(CAST(:ano as TEXT) || '-'|| printf('%02d', :mes)) 
+        (CREATE_AT BETWEEN :startTimestamp AND :endTimestamp)
         OR (IS_RECURRENT = 1 AND IS_EVER_DAYS = 1)
         OR (
             IS_RECURRENT = 1
-            AND strftime('%Y-%m',START_DATE) <= (CAST(:ano as TEXT)||'-'||printf('%02d', :mes))
-            AND strftime('%Y-%m',END_DATE) >= (CAST(:ano as TEXT)||'/'||printf('%02d', :mes))
+            AND START_DATE <= :endTimestamp
+            AND END_DATE >= :startTimestamp
         )
     )
 """)
-    fun getAllDespesasMesAno(mes: Int, ano: Int): Flow<List<Registro>>
+    fun getAllDespesasMesAno(startTimestamp: Long, endTimestamp: Long): Flow<List<Registro>>
     @Query("""
 SELECT * 
 FROM TB_REGISTRO 
 WHERE 
     IS_DEPESA = 0 
     AND (
-        strftime('%Y-%m', datetime(TB_REGISTRO.CREATE_AT/1000, 'unixepoch'))=(CAST(:ano as TEXT) || '-'|| printf('%02d', :mes)) 
+        (CREATE_AT BETWEEN :startTimestamp AND :endTimestamp)
         OR (IS_RECURRENT = 1 AND IS_EVER_DAYS = 1)
         OR (
             IS_RECURRENT = 1
-            AND strftime('%Y-%m',START_DATE) <= (CAST(:ano as TEXT)||'-'||printf('%02d', :mes))
-            AND strftime('%Y-%m',END_DATE) >= (CAST(:ano as TEXT)||'/'||printf('%02d', :mes))
+            AND START_DATE <= :endTimestamp
+            AND END_DATE >= :startTimestamp
         )
     )
 """)
-    fun getAllReceitasMesAno(mes: Int, ano: Int): Flow<List<Registro>>
+    fun getAllReceitasMesAno(startTimestamp: Long, endTimestamp: Long): Flow<List<Registro>>
     @Query("""
 SELECT 
     SUM(TB_REGISTRO.VALUE) AS valor, 
-    TB_REGISTRO.CREATE_AT AS date 
+    TB_REGISTRO.CREATE_AT AS date
 FROM 
     TB_REGISTRO 
 WHERE 
     TB_REGISTRO.IS_DEPESA = 1 
     AND (
-        strftime('%Y/%W', datetime(TB_REGISTRO.CREATE_AT/1000, 'unixepoch'))=(CAST(:year as TEXT)||'/'|| CAST(:week as TEXT)) 
+        strftime('%Y/%W', datetime(TB_REGISTRO.CREATE_AT/1000, 'unixepoch')) = (CAST(:year as TEXT) || '/' || CAST(:week as TEXT))
         OR (IS_RECURRENT = 1 AND IS_EVER_DAYS = 1)
         OR (
             IS_RECURRENT = 1
-            AND strftime('%Y/%W',START_DATE) <= (CAST(:year as TEXT)||'/'||CAST(:week as TEXT)) 
-            AND strftime('%Y/%W',END_DATE) >= (CAST(:year as TEXT)||'/'|| CAST(:week as TEXT)) 
+            AND strftime('%Y/%W', datetime(START_DATE/1000, 'unixepoch')) <= (CAST(:year as TEXT) || '/' || CAST(:week as TEXT))
+            AND strftime('%Y/%W', datetime(END_DATE/1000, 'unixepoch')) >= (CAST(:year as TEXT) || '/' || CAST(:week as TEXT))
         )
     )
 GROUP BY 
@@ -126,15 +127,15 @@ FROM TB_REGISTRO
 WHERE
 TB_REGISTRO.IS_DEPESA = 1 
 AND (
-    strftime('%Y-%m', TB_REGISTRO.CREATE_AT) = (CAST(:year as TEXT) || '-'|| printf('%02d', :month))
+    (CREATE_AT BETWEEN :startTimestamp AND :endTimestamp)
     OR (IS_RECURRENT = 1 AND IS_EVER_DAYS = 1)
     OR (
         IS_RECURRENT = 1
-        AND strftime('%Y-%m',START_DATE) <= (CAST(:year as TEXT) || '-'|| printf('%02d', :month))
-        AND strftime('%Y-%m',END_DATE) >= (CAST(:year as TEXT) || '-'||printf('%02d', :month))
+        AND START_DATE <= :endTimestamp
+        AND END_DATE >= :startTimestamp
     )
 )
 """)
 
-    fun getDasboardMonth(month: Int, year: Int): Flow<List<DashboardWeek>>
+    fun getDasboardMonth(startTimestamp: Long, endTimestamp: Long): Flow<List<DashboardWeek>>
 }

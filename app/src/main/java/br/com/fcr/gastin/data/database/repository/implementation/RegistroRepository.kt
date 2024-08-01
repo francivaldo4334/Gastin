@@ -4,6 +4,8 @@ import androidx.lifecycle.LiveData
 import br.com.fcr.gastin.data.database.MyDatabase
 import br.com.fcr.gastin.data.database.model.Registro
 import br.com.fcr.gastin.data.database.repository.IRegistroRepository
+import br.com.fcr.gastin.data.database.resource.getStartOfMonthTimestamp
+import br.com.fcr.gastin.data.database.resource.getEndOfMonthTimestamp
 import br.com.fcr.gastin.data.database.viewmodel.DashboardWeek
 import kotlinx.coroutines.flow.Flow
 
@@ -15,7 +17,8 @@ class RegistroRepository constructor(
     }
 
     override fun getAllDespesasMesAno(mes: Int, ano: Int): Flow<List<Registro>> {
-        return db.getRegistroDao().getAllDespesasMesAno(mes,ano)
+        val (startTimestamp, endTimestamp) = getStartOfMonthTimestamp(ano, mes) to getEndOfMonthTimestamp(ano, mes)
+        return db.getRegistroDao().getAllDespesasMesAno(startTimestamp, endTimestamp)
     }
 
     override fun getAllReceitas(): Flow<List<Registro>> {
@@ -23,7 +26,8 @@ class RegistroRepository constructor(
     }
 
     override fun getAllReceitasMesAno(mes: Int, ano: Int): Flow<List<Registro>> {
-        return db.getRegistroDao().getAllReceitasMesAno(mes,ano)
+        val (startTimestamp, endTimestamp) = getStartOfMonthTimestamp(ano, mes) to getEndOfMonthTimestamp(ano, mes)
+        return db.getRegistroDao().getAllReceitasMesAno(startTimestamp, endTimestamp)
     }
 
     override fun getById(ID: Int): Flow<Registro> {
@@ -62,18 +66,21 @@ class RegistroRepository constructor(
     }
 
     override fun getAllDespesasValorMesAno(mes: Int, ano: Int): Flow<Int?> {
-        return db.getRegistroDao().getAllDespesasValorMesAno(mes,ano)
+        val (startTimestamp, endTimestamp) = getStartOfMonthTimestamp(ano, mes) to getEndOfMonthTimestamp(ano, mes)
+        return db.getRegistroDao().getAllDespesasValorMesAno(startTimestamp, endTimestamp)
     }
 
     override fun getAllReceitasValorMesAno(mes: Int, ano: Int): Flow<Int?> {
-        return db.getRegistroDao().getAllReceitasValorMesAno(mes,ano)
+        val (startTimestamp, endTimestamp) = getStartOfMonthTimestamp(ano, mes) to getEndOfMonthTimestamp(ano, mes)
+        return db.getRegistroDao().getAllReceitasValorMesAno(startTimestamp, endTimestamp)
     }
     override fun getDasboardWeek(week:Int,year:Int):Flow<List<DashboardWeek>>{
         return db.getRegistroDao().getDasboardWeek(week,year)
     }
 
     override fun getDasboardMonth(month: Int, year: Int): Flow<List<DashboardWeek>> {
-        return db.getRegistroDao().getDasboardMonth(month,year)
+        val (startTimestamp, endTimestamp) = getStartOfMonthTimestamp(year, month) to getEndOfMonthTimestamp(year, month)
+        return db.getRegistroDao().getDasboardMonth(startTimestamp, endTimestamp)
     }
 
 }

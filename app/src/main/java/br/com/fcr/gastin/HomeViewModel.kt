@@ -3,6 +3,8 @@ package br.com.fcr.gastin
 import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
+import android.util.Log
+import androidx.glance.LocalGlanceId
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.fcr.gastin.data.database.model.Categoria
@@ -66,6 +68,7 @@ class HomeViewModel constructor(
     private val datenow = Date()
     private val calendar = Calendar.getInstance().apply {
         time = datenow
+        Log.d("MONTH", get(Calendar.MONTH).toString())
         mesAno = Pair(get(Calendar.MONTH) + 1, get(Calendar.YEAR))
         semanaAno = Pair(get(Calendar.WEEK_OF_YEAR), get(Calendar.YEAR))
     }

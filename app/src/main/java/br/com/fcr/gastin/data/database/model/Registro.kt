@@ -31,5 +31,5 @@ class Registro(
     @ColumnInfo(name = "START_DATE")
     var startDate: Date? = null,
     @ColumnInfo(name = "END_DATE")
-    var endDate: Date? = null
+    var endDate: Date? = null,
 )
