@@ -11,6 +11,8 @@ import br.com.fcr.gastin.data.database.model.Categoria
 import br.com.fcr.gastin.data.database.model.Registro
 import br.com.fcr.gastin.data.database.repository.implementation.CategoriaRepository
 import br.com.fcr.gastin.data.database.repository.implementation.RegistroRepository
+import br.com.fcr.gastin.data.database.resource.getEndOfWeekTimestamp
+import br.com.fcr.gastin.data.database.resource.getStartOfWeekTimestamp
 import br.com.fcr.gastin.data.database.viewmodel.DashboardWeek
 import br.com.fcr.gastin.ui.page.viewmodels.toView
 import br.com.fcr.gastin.ui.utils.getDatesOfWeek
@@ -25,6 +27,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 
@@ -68,7 +71,6 @@ class HomeViewModel constructor(
     private val datenow = Date()
     private val calendar = Calendar.getInstance().apply {
         time = datenow
-        Log.d("MONTH", get(Calendar.MONTH).toString())
         mesAno = Pair(get(Calendar.MONTH), get(Calendar.YEAR))
         semanaAno = Pair(get(Calendar.WEEK_OF_YEAR), get(Calendar.YEAR))
     }
@@ -164,22 +166,24 @@ class HomeViewModel constructor(
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
 
     //TODO: INFOR DASHBOARD GRAPHIC
+    @SuppressLint("SimpleDateFormat")
     val graphicInforms = graphicPeriod.flatMapLatest {
         when (it) {
             GraphicPeriod.WEEK -> {
                 buscaSemanaAno.flatMapLatest { busca ->
+                    val format = SimpleDateFormat("yyyy-MM-dd")
                     registroRepository.getDasboardWeek(busca.first, busca.second)
                         .flatMapLatest { listWeek ->
-                            var resp: MutableList<DashboardWeek> = mutableListOf()
-                            getDatesOfWeek(busca.second, busca.first).map {
+                            val resp: MutableList<DashboardWeek> = mutableListOf()
+                            getDatesOfWeek(busca.second, busca.first).map {weekDay ->
                                 DashboardWeek(
                                     0,
-                                    it
+                                    weekDay
                                 )
                             }.forEach { itResp ->
-                                var item = listWeek.firstOrNull {
-                                    it.date.day == itResp.date.day &&
-                                            it.date.year == itResp.date.year
+                                val itRespString = format.format(itResp.date)
+                                val item = listWeek.firstOrNull {
+                                    format.format(it.date) == itRespString
                                 }
                                 if (item == null)
                                     resp.add(itResp)
@@ -330,7 +334,7 @@ class HomeViewModel constructor(
         calendar.clear()
         calendar.time = date
         buscaMesAno.value = Pair(
-            calendar.get(Calendar.MONTH) + 1,
+            calendar.get(Calendar.MONTH),
             calendar.get(Calendar.YEAR)
         )
         buscaSemanaAno.value = Pair(

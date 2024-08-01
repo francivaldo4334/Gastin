@@ -34,8 +34,9 @@ fun getStartOfWeekTimestamp(year: Int, weekOfYear: Int): Long {
 fun getEndOfWeekTimestamp(year: Int, weekOfYear: Int): Long {
     val calendar = Calendar.getInstance()
     calendar.set(Calendar.YEAR, year)
-    calendar.set(Calendar.WEEK_OF_YEAR, weekOfYear)
-    calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY) // Definindo o fim da semana como domingo
+    calendar.set(Calendar.WEEK_OF_YEAR, weekOfYear + 1)
+    calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY) // Definindo o fim da semana como domingo
+    calendar.add(Calendar.DAY_OF_MONTH, -1)
     calendar.set(Calendar.HOUR_OF_DAY, 23)
     calendar.set(Calendar.MINUTE, 59)
     calendar.set(Calendar.SECOND, 59)

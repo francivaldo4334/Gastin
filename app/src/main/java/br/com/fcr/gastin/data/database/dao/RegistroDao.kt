@@ -107,12 +107,12 @@ FROM
 WHERE 
     TB_REGISTRO.IS_DEPESA = 1 
     AND (
-        strftime('%Y/%W', datetime(TB_REGISTRO.CREATE_AT/1000, 'unixepoch')) = (CAST(:year as TEXT) || '/' || CAST(:week as TEXT))
+        TB_REGISTRO.CREATE_AT BETWEEN :startTimestamp and :endTimestamp
     )
 GROUP BY 
     CAST(strftime('%d', datetime(TB_REGISTRO.CREATE_AT/1000, 'unixepoch')) AS int)
 """)
-    fun getDasboardWeek(week:Int,year:Int):Flow<List<DashboardWeek>>
+    fun getDasboardWeek(startTimestamp: Long, endTimestamp: Long):Flow<List<DashboardWeek>>
     @Query("""
 SELECT 
     TB_REGISTRO.VALUE AS valor,

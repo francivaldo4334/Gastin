@@ -6,6 +6,8 @@ import br.com.fcr.gastin.data.database.model.Registro
 import br.com.fcr.gastin.data.database.repository.IRegistroRepository
 import br.com.fcr.gastin.data.database.resource.getStartOfMonthTimestamp
 import br.com.fcr.gastin.data.database.resource.getEndOfMonthTimestamp
+import br.com.fcr.gastin.data.database.resource.getEndOfWeekTimestamp
+import br.com.fcr.gastin.data.database.resource.getStartOfWeekTimestamp
 import br.com.fcr.gastin.data.database.viewmodel.DashboardWeek
 import kotlinx.coroutines.flow.Flow
 
@@ -75,7 +77,8 @@ class RegistroRepository constructor(
         return db.getRegistroDao().getAllReceitasValorMesAno(startTimestamp, endTimestamp)
     }
     override fun getDasboardWeek(week:Int,year:Int):Flow<List<DashboardWeek>>{
-        return db.getRegistroDao().getDasboardWeek(week,year)
+        val (startTimestamp, endTimestamp) = getStartOfWeekTimestamp(year, week) to getEndOfWeekTimestamp(year, week)
+        return db.getRegistroDao().getDasboardWeek(startTimestamp, endTimestamp)
     }
 
     override fun getDasboardMonth(month: Int, year: Int): Flow<List<DashboardWeek>> {

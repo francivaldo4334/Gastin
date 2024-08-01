@@ -1,10 +1,14 @@
 package br.com.fcr.gastin.ui.utils
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.ui.graphics.Color
 import br.com.fcr.gastin.R
 import br.com.fcr.gastin.data.database.model.Categoria
+import br.com.fcr.gastin.data.database.resource.getEndOfWeekTimestamp
+import br.com.fcr.gastin.data.database.resource.getStartOfWeekTimestamp
 import kotlinx.coroutines.flow.MutableStateFlow
+import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 
@@ -19,19 +23,27 @@ fun List<Categoria>.toFlowTriper(): MutableStateFlow<List<Triple<String, Int, Co
     return MutableStateFlow(resp)
 }
 fun Pair<Int,Int>.toFlowMonth(context:Context):MutableStateFlow<String>{
-    var resp = when(this.first){
-        0 -> context.getString(R.string.txt_january)
-        1 -> context.getString(R.string.txt_february)
-        2 -> context.getString(R.string.txt_march)
-        3 -> context.getString(R.string.txt_april)
-        4 -> context.getString(R.string.txt_may)
-        5 -> context.getString(R.string.txt_june)
-        6 -> context.getString(R.string.txt_july)
-        7 -> context.getString(R.string.txt_august)
-        8 -> context.getString(R.string.txt_september)
-        9 -> context.getString(R.string.txt_october)
-        10 -> context.getString(R.string.txt_november)
-        11 -> context.getString(R.string.txt_december)
+    val month = first
+    val year = second
+    val calendar = Calendar.getInstance()
+    calendar.clear()
+    calendar.set(Calendar.MONTH, month)
+    calendar.set(Calendar.YEAR, year)
+    val format = SimpleDateFormat("MM")
+    val indexMonth = format.format(calendar.time).toInt()
+    val resp = when(indexMonth){
+        1 -> context.getString(R.string.txt_january)
+        2 -> context.getString(R.string.txt_february)
+        3 -> context.getString(R.string.txt_march)
+        4 -> context.getString(R.string.txt_april)
+        5 -> context.getString(R.string.txt_may)
+        6 -> context.getString(R.string.txt_june)
+        7 -> context.getString(R.string.txt_july)
+        8 -> context.getString(R.string.txt_august)
+        9 -> context.getString(R.string.txt_september)
+        10 -> context.getString(R.string.txt_october)
+        11 -> context.getString(R.string.txt_november)
+        12 -> context.getString(R.string.txt_december)
         else -> ""
     }
     return MutableStateFlow(resp)
@@ -53,20 +65,15 @@ fun Int.toWeekString(context:Context):String{
 fun getDatesOfWeek(year: Int, week: Int): List<Date> {
     val calendar = Calendar.getInstance()
     calendar.clear()
-    calendar.set(Calendar.YEAR, year)
-    calendar.set(Calendar.WEEK_OF_YEAR, week)
-
     val datesOfWeek = mutableListOf<Date>()
 
     // Definir o primeiro dia da semana como domingo
-    calendar.firstDayOfWeek = Calendar.SUNDAY
-    calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY)
-
+    calendar.timeInMillis = getStartOfWeekTimestamp(year, week)
+    val endDate = getEndOfWeekTimestamp(year, week)
     // Adicionar os 7 dias da semana à lista
-    repeat(7) {
+    while (calendar.timeInMillis < endDate) {
         datesOfWeek.add(calendar.time)
         calendar.add(Calendar.DAY_OF_WEEK, 1)
     }
-
     return datesOfWeek
 }

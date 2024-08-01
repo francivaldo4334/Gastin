@@ -1,5 +1,6 @@
 package br.com.fcr.gastin.ui.page.components
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -70,7 +71,7 @@ fun HomeScreenEvolucaoDespesas(
             }
             AnimatedVisibility(visible = simpleList.isNotEmpty()) {
                 Column(Modifier.fillMaxWidth()) {
-                    val dates = listDays.sortedBy { it.third }
+                    val dates = listDays
                     Text(
                         text = "${dates.first().third} - ${dates.last().third}",
                         fontSize = 12.sp,
