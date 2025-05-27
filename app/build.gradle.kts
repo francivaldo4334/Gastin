@@ -1,17 +1,18 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.jetbrainsCompose)
     id("kotlin-kapt")
 }
 
 android {
     namespace = "br.com.fcr.gastin"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "br.com.fcr.gastin"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 12
         versionName = "3.0"
 
@@ -41,7 +42,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "1.5.15"
     }
     packaging {
         resources {
