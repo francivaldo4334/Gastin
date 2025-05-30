@@ -197,8 +197,9 @@ class HomeViewModel constructor(
                                                 itResp.date.after(it.startDate) && itResp.date.before(it.endDate) ||
                                                     itResp.date ==  it.startDate || itResp.date  == it.endDate
                                             )
-                                    ) ||
-                                    format.format(it.date) == itRespString
+                                    ) || (
+                                            format.format(it.date) == itRespString && !it.isRecurrent
+                                    )
                                 }.sumOf { it.valor }
                                 resp.add(DashboardWeek(
                                     valor,
