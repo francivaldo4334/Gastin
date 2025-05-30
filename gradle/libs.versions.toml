@@ -17,11 +17,12 @@ navigationCompose = "2.9.0"
 roomRuntime = "2.7.1"
 junitKtx = "1.2.1"
 runner = "1.6.2"
+vico = "2.1.2"
 
 [libraries]
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
-androidx-core-testing = { module = "androidx.arch.core:core-testing", version.ref = "coreTesting" }
+#androidx-core-testing = { module = "androidx.arch.core:core-testing", version.ref = "coreTesting" }
 androidx-glance-appwidget = { module = "androidx.glance:glance-appwidget", version.ref = "glanceAppwidget" }
 androidx-glance-material3 = { module = "androidx.glance:glance-material3", version.ref = "glanceAppwidget" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
@@ -47,9 +48,28 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 androidx-junit-ktx = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "junitKtx" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesTest" }
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockitoCore" }
+# For Jetpack Compose.
+vico-compose = { group = "com.patrykandpatrick.vico", name = "compose", version.ref = "vico" }
+
+# For Material 2 theming in Jetpack Compose.
+vico-compose-m2 = { group = "com.patrykandpatrick.vico", name = "compose-m2", version.ref = "vico" }
+
+# For Material 3 theming in Jetpack Compose.
+vico-compose-m3 = { group = "com.patrykandpatrick.vico", name = "compose-m3", version.ref = "vico" }
+
+# For Compose Multiplatform (Android, iOS, desktop).
+vico-multiplatform = { group = "com.patrykandpatrick.vico", name = "multiplatform", version.ref = "vico" }
+
+# For Material 2 theming in Compose Multiplatform.
+vico-multiplatform-m2 = { group = "com.patrykandpatrick.vico", name = "multiplatform-m2", version.ref = "vico" }
+
+# For Material 3 theming in Compose Multiplatform.
+vico-multiplatform-m3 = { group = "com.patrykandpatrick.vico", name = "multiplatform-m3", version.ref = "vico" }
+
+# For the Android view system.
+vico-views = { group = "com.patrykandpatrick.vico", name = "views", version.ref = "vico" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 jetbrainsCompose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-

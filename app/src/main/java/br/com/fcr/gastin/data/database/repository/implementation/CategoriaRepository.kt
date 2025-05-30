@@ -1,5 +1,6 @@
 package br.com.fcr.gastin.data.database.repository.implementation
 
+import android.util.Log
 import br.com.fcr.gastin.data.database.MyDatabase
 import br.com.fcr.gastin.data.database.model.Categoria
 import br.com.fcr.gastin.data.database.repository.ICategoriaRepository
@@ -38,7 +39,8 @@ class CategoriaRepository constructor(
     }
     override fun getAllWithMesAno(mes:Int,ano:Int):Flow<List<Categoria>>{
         val (startTimestamp, endTimestamp) = getStartOfMonthTimestamp(ano, mes) to getEndOfMonthTimestamp(ano, mes)
-        return db.getCategoriaDao().getAllWithMesAno(startTimestamp, endTimestamp)
+        val result = db.getCategoriaDao().getAllWithMesAno(startTimestamp, endTimestamp)
+        return result;
     }
 
 }

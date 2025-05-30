@@ -21,7 +21,7 @@ interface CategoriaDao {
             "WHERE TB_REGISTRO.IS_DEPESA = 1 "+
             "GROUP BY TB_CATEGORIA.ID")
     fun getAllWithTotal():Flow<List<Categoria>>
-    @Query("SELECT TB_CATEGORIA.*,SUM(TB_REGISTRO.VALUE) AS TOTAL " +
+    @Query("SELECT SUM(TB_REGISTRO.VALUE) AS TOTAL, TB_CATEGORIA.* " +
             "FROM TB_CATEGORIA " +
             "JOIN TB_REGISTRO " +
             "ON TB_REGISTRO.CATEGORIA_FK = TB_CATEGORIA.ID " +

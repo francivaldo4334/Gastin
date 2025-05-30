@@ -74,6 +74,12 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+//    implementation(libs.vico.compose)
+//    implementation(libs.vico.compose.m2)
+//    implementation(libs.vico.compose.m3)
+//    implementation(libs.vico.multiplatform)
+//    implementation(libs.vico.views)
+
     implementation("junit:junit:4.+")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")

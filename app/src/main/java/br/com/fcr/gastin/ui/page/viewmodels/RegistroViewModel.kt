@@ -10,7 +10,7 @@ data class RegistroViewModel(
     val Id: Int,
     val Description: String,
     val Date: String,
-    val Value: Int,
+    val Value:Int,
     val CategoriaFk: Int? = null,
     val isRecurrent: Boolean = false,
     val startDate: String? = null,

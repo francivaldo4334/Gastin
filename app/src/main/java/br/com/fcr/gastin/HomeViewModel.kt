@@ -162,7 +162,9 @@ class HomeViewModel constructor(
         if (isTotal) listCatgoria = categoriaRepository.getAllWithTotal()
         else listCatgoria =
             buscaMesAno.flatMapLatest { categoriaRepository.getAllWithMesAno(it.first, it.second) }
-        listCatgoria.flatMapLatest { it.toFlowTriper() }
+        listCatgoria.flatMapLatest {
+            it.toFlowTriper()
+        }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
 
     //TODO: INFOR DASHBOARD GRAPHIC
