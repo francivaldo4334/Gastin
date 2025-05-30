@@ -6,4 +6,7 @@ data class DashboardWeek (
     val valor:Int,
     val date:Date,
     val isRecurrent: Boolean,
+    val isEverDays: Boolean,
+    val startDate: Date?,
+    val endDate: Date?,
 )

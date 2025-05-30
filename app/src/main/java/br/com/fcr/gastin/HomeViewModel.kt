@@ -182,17 +182,31 @@ class HomeViewModel constructor(
                                     0,
                                     weekDay,
                                     false,
+                                    false,
+                                    null,
+                                    null,
                                 )
                             }.forEach { itResp ->
                                 val itRespString = format.format(itResp.date)
                                 val valor = listWeek.filter {
-                                    it.isRecurrent ||
+                                    (
+                                            it.isRecurrent && it.isEverDays
+                                    ) || (
+                                        it.isRecurrent &&
+                                            (
+                                                itResp.date.after(it.startDate) && itResp.date.before(it.endDate) ||
+                                                    itResp.date ==  it.startDate || itResp.date  == it.endDate
+                                            )
+                                    ) ||
                                     format.format(it.date) == itRespString
                                 }.sumOf { it.valor }
                                 resp.add(DashboardWeek(
                                     valor,
                                     itResp.date,
                                     itResp.isRecurrent,
+                                    itResp.isEverDays,
+                                    itResp.startDate,
+                                    itResp.endDate,
                                 ))
 
                             }
