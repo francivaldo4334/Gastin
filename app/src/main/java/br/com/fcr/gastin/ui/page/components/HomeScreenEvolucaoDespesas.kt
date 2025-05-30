@@ -22,6 +22,8 @@ import br.com.fcr.gastin.R
 import br.com.fcr.gastin.ui.utils.toMonetaryString
 
 private fun createList(max:Int,min:Int):List<Int>{
+    if (min ==  max && max > 0)
+        return listOf(0, max)
     if (min >= max)
         return emptyList()
     val increment = (max - min)/6
@@ -29,6 +31,8 @@ private fun createList(max:Int,min:Int):List<Int>{
     for (it in min..max step increment){
         listResponse.add(it)
     }
+    listResponse.removeLastOrNull()
+    listResponse.add(max)
     return listResponse
 }
 @Composable

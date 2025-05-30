@@ -180,17 +180,21 @@ class HomeViewModel constructor(
                             getDatesOfWeek(busca.second, busca.first).map {weekDay ->
                                 DashboardWeek(
                                     0,
-                                    weekDay
+                                    weekDay,
+                                    false,
                                 )
                             }.forEach { itResp ->
                                 val itRespString = format.format(itResp.date)
-                                val item = listWeek.firstOrNull {
+                                val valor = listWeek.filter {
+                                    it.isRecurrent ||
                                     format.format(it.date) == itRespString
-                                }
-                                if (item == null)
-                                    resp.add(itResp)
-                                else
-                                    resp.add(item)
+                                }.sumOf { it.valor }
+                                resp.add(DashboardWeek(
+                                    valor,
+                                    itResp.date,
+                                    itResp.isRecurrent,
+                                ))
+
                             }
                             MutableStateFlow(resp)
                         }

@@ -100,23 +100,37 @@ WHERE
     fun getAllReceitasMesAno(startTimestamp: Long, endTimestamp: Long): Flow<List<Registro>>
     @Query("""
 SELECT 
-    SUM(TB_REGISTRO.VALUE) AS valor, 
-    TB_REGISTRO.CREATE_AT AS date
+    TB_REGISTRO.VALUE AS valor, 
+    TB_REGISTRO.CREATE_AT AS date,
+    TB_REGISTRO.IS_RECURRENT AS isRecurrent,
+    TB_REGISTRO.IS_EVER_DAYS AS isEverDays
 FROM 
     TB_REGISTRO 
 WHERE 
-    TB_REGISTRO.IS_DEPESA = 1 
+    TB_REGISTRO.IS_DEPESA = 1
     AND (
-        TB_REGISTRO.CREATE_AT BETWEEN :startTimestamp and :endTimestamp
+        (
+            TB_REGISTRO.IS_RECURRENT = 0 AND
+            TB_REGISTRO.CREATE_AT BETWEEN :startTimestamp  AND :endTimestamp
+        )
+        OR (
+            TB_REGISTRO.IS_RECURRENT = 1
+            AND TB_REGISTRO.IS_EVER_DAYS = 1 
+        )
+        OR (
+            TB_REGISTRO.IS_RECURRENT  = 1
+            AND START_DATE <= :endTimestamp
+            AND END_DATE >= :startTimestamp
+        )
     )
-GROUP BY 
-    CAST(strftime('%d', datetime(TB_REGISTRO.CREATE_AT/1000, 'unixepoch')) AS int)
 """)
     fun getDasboardWeek(startTimestamp: Long, endTimestamp: Long):Flow<List<DashboardWeek>>
     @Query("""
 SELECT 
     TB_REGISTRO.VALUE AS valor,
-    TB_REGISTRO.CREATE_AT AS date 
+    TB_REGISTRO.CREATE_AT AS date,
+    TB_REGISTRO.IS_RECURRENT AS isRecurrent,
+    TB_REGISTRO.IS_EVER_DAYS AS isEverDays
 FROM TB_REGISTRO 
 WHERE
 TB_REGISTRO.IS_DEPESA = 1 
